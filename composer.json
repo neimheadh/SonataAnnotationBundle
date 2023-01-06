@@ -1,5 +1,5 @@
 {
-  "name": "kunicmarko/sonata-annotation-bundle",
+  "name": "neimheadh/sonata-annotation-bundle",
   "type": "symfony-bundle",
   "description": "Symfony Bundle that adds annotations for Sonata Admin.",
   "keywords": [
@@ -15,19 +15,23 @@
       "name": "Marko Kunic",
       "email": "kunicmarko20@gmail.com",
       "homepage": "https://twitter.com/kunicmarko20"
+    },
+    {
+      "name": "Mathieu Wambre",
+      "email": "contact@neimheadh.fr"
     }
   ],
   "require": {
-    "php": "^7.1",
-    "doctrine/annotations": "^1.6",
-    "sonata-project/admin-bundle": "^3.35",
-    "symfony/config": "^3.4 || ^4.0",
-    "symfony/dependency-injection": "^3.4 || ^4.0",
-    "symfony/finder": "^3.4 || ^4.0",
-    "symfony/http-kernel": "^3.4 || ^4.0"
+    "php": "^7.4 || ^8.0",
+    "doctrine/annotations": "^1.7",
+    "sonata-project/admin-bundle": "^4.0",
+    "symfony/config": "^4.4 || ^5.4 || ^6.0",
+    "symfony/dependency-injection": "^4.4.8 || ^5.4 || ^6.0",
+    "symfony/finder": "^4.4 || ^5.4 || ^6.0",
+    "symfony/http-kernel": "^4.4 || ^5.4 || ^6.0"
   },
   "conflict": {
-    "sonata-project/admin-bundle": "<3.35"
+    "sonata-project/admin-bundle": "<4.0"
   },
   "require-dev": {
     "behat/behat": "^3.5",
@@ -38,19 +42,20 @@
     "behat/mink-selenium2-driver": "^1.3",
     "behat/symfony2-extension": "^2.1",
     "doctrine/doctrine-fixtures-bundle": "^3.0",
-    "matthiasnoback/symfony-dependency-injection-test": "^3.0",
-    "phpstan/phpstan-phpunit": "^0.11.2",
-    "sonata-project/doctrine-orm-admin-bundle": "^3.6",
-    "symfony/framework-bundle": "^3.4 || ^4.0",
-    "symfony/phpunit-bridge": "^4.0",
-    "symfony/var-dumper": "^3.4 || ^4.0"
+    "matthiasnoback/symfony-dependency-injection-test": "^4.2",
+    "phpstan/phpstan-phpunit": "^1.0",
+    "sonata-project/doctrine-orm-admin-bundle": "^3.6 || ^4.0",
+    "symfony/framework-bundle": "^4.4.6 || ^5.4 || ^6.0",
+    "symfony/phpunit-bridge": "^6.1",
+    "symfony/var-dumper": "^4.0 || ^5.0 || ^6.0"
   },
   "config": {
     "sort-packages": true
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "2.x-dev"
+      "dev-master": "2.x-dev",
+      "dev-develop": "4.x-dev"
     }
   },
   "autoload": {
