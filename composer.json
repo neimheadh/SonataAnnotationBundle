@@ -33,20 +33,6 @@
   "conflict": {
     "sonata-project/admin-bundle": "<4.0"
   },
-  "require-dev": {
-    "doctrine/doctrine-fixtures-bundle": "^3.0",
-    "friends-of-behat/mink-browserkit-driver": "^1.6",
-    "friends-of-behat/mink-extension": "^2.7",
-    "friends-of-behat/symfony-extension": "^2.4",
-    "matthiasnoback/symfony-dependency-injection-test": "^4.2",
-    "phpspec/prophecy": "^1.16",
-    "phpstan/phpstan-phpunit": "^1.0",
-    "phpunit/phpunit": "^9.5",
-    "sonata-project/doctrine-orm-admin-bundle": "^3.6 || ^4.0",
-    "symfony/framework-bundle": "^5.4 || ^6.0",
-    "symfony/phpunit-bridge": "^6.1",
-    "symfony/var-dumper": "^5.0 || ^6.0"
-  },
   "config": {
     "sort-packages": true
   },
@@ -67,5 +53,10 @@
       "KunicMarko\\SonataAnnotationBundle\\Features\\Fixtures\\Project\\": "features/Fixtures/Project/src",
       "KunicMarko\\SonataAnnotationBundle\\Features\\": "features/"
     }
+  },
+  "require-dev": {
+    "doctrine/doctrine-bundle": "^2.8",
+    "phpunit/phpunit": "^9.5",
+    "symfony/yaml": "^6.2"
   }
 }
