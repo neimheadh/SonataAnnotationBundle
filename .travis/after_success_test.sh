@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 set -ev
 
-coveralls -v
+php vendor/bin/php-coveralls -v
