@@ -10,6 +10,7 @@ php:
 env:
   global:
     - TARGET=test
+    - XDEBUG_MODE=coverage
 
 matrix:
   fast_finish: true
