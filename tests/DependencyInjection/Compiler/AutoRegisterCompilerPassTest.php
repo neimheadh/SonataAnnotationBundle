@@ -5,6 +5,7 @@ namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
  * Dependency injection auto-register test suite.
@@ -32,6 +33,44 @@ class AutoRegisterCompilerPassTest extends KernelTestCase
           AnnotationAdmin::class,
           static::getContainer()->get('app.admin.Book')
         );
+    }
+
+    /**
+     * Test model without namespace admin are not created.
+     *
+     * @test
+     * @functional
+     */
+    public function shouldNotCreateWithoutNamespace(): void
+    {
+        $e = null;
+
+        try {
+            static::getContainer()->get('app.admin.NoNamespace');
+        } catch (ServiceNotFoundException $e) {}
+
+        $this->assertNotNull($e);
+    }
+
+    /**
+     * Test model with bad class name admin are not created.
+     *
+     * @test
+     * @functional
+     */
+    public function shouldNotCreateWithWrongClassName(): void
+    {
+        $e = null;
+        try {
+            static::getContainer()->get('app.admin.WrongClassName');
+        } catch (ServiceNotFoundException $e) {}
+        $this->assertNotNull($e);
+
+        $e = null;
+        try {
+            static::getContainer()->get('app.admin.IHaveABadClassName');
+        } catch (ServiceNotFoundException $e) {}
+        $this->assertNotNull($e);
     }
 
 }
