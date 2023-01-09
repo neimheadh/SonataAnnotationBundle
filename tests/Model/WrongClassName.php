@@ -8,6 +8,8 @@ if (!class_exists('KunicMarko\\SonataAnnotationBundle\\Tests\\Model\\IHaveABadCl
     /**
      * Test model with bad class name.
      *
+     * @author Mathieu Wambre <contact@neimheadh.fr>
+     *
      * @Sonata\Admin
      */
     class IHaveABadClassName

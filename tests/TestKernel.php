@@ -6,7 +6,6 @@ use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Knp\Bundle\MenuBundle\KnpMenuBundle;
 use KunicMarko\SonataAnnotationBundle\SonataAnnotationBundle;
 use Sonata\AdminBundle\SonataAdminBundle;
-use Sonata\Doctrine\Bridge\Symfony\SonataDoctrineBundle;
 use Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\SecurityBundle\SecurityBundle;
@@ -17,6 +16,8 @@ use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Test suite kernel.
+ *
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 class TestKernel extends Kernel
 {
@@ -52,6 +53,12 @@ class TestKernel extends Kernel
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
         $loader->load(__DIR__ . '/config.yml');
+
+        if (str_starts_with(Kernel::VERSION, '5')) {
+            $loader->load(__DIR__ . '/config_5.yml');
+        } else {
+            $loader->load(__DIR__ . '/config_latest.yml');
+        }
 
         $loader->load(function (ContainerBuilder $container) use ($loader) {
             $container->setParameter('kernel.project_dir', __DIR__);

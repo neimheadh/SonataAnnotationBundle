@@ -24,6 +24,7 @@ services:
       - setCode: ['app.admin.Person']
       - setModelClass: ['KunicMarko\\SonataAnnotationBundle\\Tests\\Model\\Person']
 
+
 doctrine:
   dbal:
     driver: pdo_sqlite
@@ -34,6 +35,7 @@ doctrine:
     auto_mapping: false
 
 framework:
+  default_locale: en
   test: true
   http_method_override: false
   http_client:
@@ -45,16 +47,22 @@ framework:
   router:
     utf8: true
     resource: 'kernel::loadRoutes'
+  translator:
+    default_path: '%kernel.project_dir%/translations'
 
 security:
   password_hashers:
     Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
   providers:
-    users_in_memory: { memory: null }
+    users_in_memory:
+      memory:
+        users:
+          test:
+            password: test
+            roles: 'ROLE_USER'
   firewalls:
-    main:
-      lazy: true
-      provider: users_in_memory
+    main: ~
+
   access_control: ~
 
 sonata_annotation:

@@ -14,17 +14,18 @@ env:
 
 matrix:
   fast_finish: true
-  include:
-    - php: '7.4'
-      env: SYMFONY=5.4.*
-    - php: '8.0'
-      env: SYMFONY=5.4.*
-    - php: '8.0'
-      env: SYMFONY=6.0.*
-    - php: '8.1'
-      env: SYMFONY=5.4.*
-    - php: '8.1'
-      env: SYMFONY=6.0.*
+#  @todo Allow symfony version specification.
+#  include:
+#    - php: '7.4'
+#      env: SYMFONY=5.4.*
+#    - php: '8.0'
+#      env: SYMFONY=5.4.*
+#    - php: '8.0'
+#      env: SYMFONY=6.0.*
+#    - php: '8.1'
+#      env: SYMFONY=5.4.*
+#    - php: '8.1'
+#      env: SYMFONY=6.0.*
 
 
   allow_failures:

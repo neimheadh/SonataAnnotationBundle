@@ -3,12 +3,14 @@
 namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 
 use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * Dependency injection auto-register test suite.
+ * Dependency injection auto-register test suite
+ *
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 class AutoRegisterCompilerPassTest extends KernelTestCase
 {
@@ -47,7 +49,8 @@ class AutoRegisterCompilerPassTest extends KernelTestCase
 
         try {
             static::getContainer()->get('app.admin.NoNamespace');
-        } catch (ServiceNotFoundException $e) {}
+        } catch (ServiceNotFoundException $e) {
+        }
 
         $this->assertNotNull($e);
     }
@@ -63,13 +66,15 @@ class AutoRegisterCompilerPassTest extends KernelTestCase
         $e = null;
         try {
             static::getContainer()->get('app.admin.WrongClassName');
-        } catch (ServiceNotFoundException $e) {}
+        } catch (ServiceNotFoundException $e) {
+        }
         $this->assertNotNull($e);
 
         $e = null;
         try {
             static::getContainer()->get('app.admin.IHaveABadClassName');
-        } catch (ServiceNotFoundException $e) {}
+        } catch (ServiceNotFoundException $e) {
+        }
         $this->assertNotNull($e);
     }
 

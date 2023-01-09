@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+rm -Rf composer.lock vendor
+bash .travis/install_test.sh
+bash .travis/script_test.sh

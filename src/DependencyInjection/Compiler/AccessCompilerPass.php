@@ -10,17 +10,23 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
+ * Bundle compiler pass.
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class AccessCompilerPass implements CompilerPassInterface
 {
     use FindClassTrait;
 
     /**
-     * @var Reader
+     * @var Reader|null
      */
-    private $annotationReader;
+    private ?Reader $annotationReader = null;
 
+    /**
+     * {@inheritDoc}
+     */
     public function process(ContainerBuilder $container): void
     {
         $this->annotationReader = $container->get('annotation_reader');
@@ -38,6 +44,7 @@ final class AccessCompilerPass implements CompilerPassInterface
 
         $container->setParameter('security.role_hierarchy.roles', $roles);
     }
+
 
     private function getRolePrefix(string $serviceId): string
     {

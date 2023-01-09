@@ -1,0 +1,41 @@
+volumes:
+  composer_74: ~
+  composer_74_lock: ~
+  composer_80: ~
+  composer_80_lock: ~
+  composer_81: ~
+  composer_81_lock: ~
+
+services:
+  php74:
+    environment:
+      SYMFONY_VERSION: ${SYMFONY_VERSION:-}
+    build:
+      context: .
+      args:
+        FROM_IMAGE: php:7.4
+    volumes:
+      - .:/var/www
+    working_dir: /var/www
+
+  php80:
+    environment:
+      SYMFONY_VERSION: ${SYMFONY_VERSION:-}
+    build:
+      context: .
+      args:
+        FROM_IMAGE: php:8.0
+    volumes:
+      - .:/var/www
+    working_dir: /var/www
+
+  php81:
+    environment:
+      SYMFONY_VERSION: ${SYMFONY_VERSION:-}
+    build:
+      context: .
+      args:
+        FROM_IMAGE: php:8.1
+    volumes:
+      - .:/var/www
+    working_dir: /var/www

@@ -3,7 +3,6 @@
 namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection;
 
 use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use Symfony\Component\DependencyInjection\Container;
 use KunicMarko\SonataAnnotationBundle\Tests\TestKernel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
@@ -11,6 +10,8 @@ use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Kernel configuration test suite.
+ *
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 class ConfigurationTest extends TestCase
 {

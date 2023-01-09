@@ -22,6 +22,7 @@ use function class_exists;
  * Auto-registering Sonata annotated admin services compiler.
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class AutoRegisterCompilerPass implements CompilerPassInterface
 {
@@ -43,12 +44,11 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container): void
     {
         $this->annotationReader = $container->get('annotation_reader');
+        $files = $this->findFiles(
+          $container->getParameter('sonata_annotation.directory')
+        );
 
-        foreach (
-          $this->findFiles(
-            $container->getParameter('sonata_annotation.directory')
-          ) as $file
-        ) {
+        foreach ($files as $file) {
             if (!($className = $this->getFullyQualifiedClassName($file))) {
                 continue;
             }

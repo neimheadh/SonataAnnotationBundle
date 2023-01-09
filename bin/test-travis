@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+docker-compose run --rm php74
+docker-compose run --rm php80
+docker-compose run --rm php81
+SYMFONY_VERSION="5.4.*" docker-compose run --rm php74
+SYMFONY_VERSION="5.4.*" docker-compose run --rm php80
+SYMFONY_VERSION="5.4.*" docker-compose run --rm php81
+SYMFONY_VERSION="6.0.*" docker-compose run --rm php80
+SYMFONY_VERSION="6.0.*" docker-compose run --rm php81
