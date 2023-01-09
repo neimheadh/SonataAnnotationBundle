@@ -6,6 +6,8 @@ namespace KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\Reader;
 use KunicMarko\SonataAnnotationBundle\Annotation\Access;
+use ReflectionClass;
+use ReflectionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -17,6 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  */
 final class AccessCompilerPass implements CompilerPassInterface
 {
+
     use FindClassTrait;
 
     /**
@@ -26,18 +29,22 @@ final class AccessCompilerPass implements CompilerPassInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws ReflectionException
      */
     public function process(ContainerBuilder $container): void
     {
         $this->annotationReader = $container->get('annotation_reader');
         $roles = $container->getParameter('security.role_hierarchy.roles');
+        $services = $container->findTaggedServiceIds('sonata.admin');
 
-        foreach ($container->findTaggedServiceIds('sonata.admin') as $id => $tag) {
-            if (!($class = $this->getClass($container, $id))) {
-                continue;
-            }
+        foreach ($services as $id => $tag) {
+            $class = $this->getClass($container, $id);
 
-            if ($permissions = $this->getRoles(new \ReflectionClass($class), $this->getRolePrefix($id))) {
+            if ($permissions = $this->getRoles(
+              new ReflectionClass($class),
+              $this->getRolePrefix($id)
+            )) {
                 $roles = array_merge_recursive($roles, $permissions);
             }
         }
@@ -45,29 +52,46 @@ final class AccessCompilerPass implements CompilerPassInterface
         $container->setParameter('security.role_hierarchy.roles', $roles);
     }
 
-
+    /**
+     * Get service role name.
+     *
+     * @param string $serviceId Service name.
+     *
+     * @return string
+     */
     private function getRolePrefix(string $serviceId): string
     {
         return 'ROLE_' . str_replace('.', '_', strtoupper($serviceId)) . '_';
     }
 
-    private function getRoles(\ReflectionClass $class, string $prefix): array
+    /**
+     * Get the list of permissions associated roles.
+     *
+     * @param ReflectionClass $class  Service class.
+     * @param string          $prefix Service role name (permission roles
+     *                                prefix).
+     *
+     * @return array
+     */
+    private function getRoles(ReflectionClass $class, string $prefix): array
     {
         $roles = [];
+        $annotations = $this->annotationReader->getClassAnnotations($class);
 
-        foreach ($this->annotationReader->getClassAnnotations($class) as $annotation) {
+        foreach ($annotations as $annotation) {
             if (!$annotation instanceof Access) {
                 continue;
             }
 
             $roles[$annotation->getRole()] = array_map(
-                function (string $permission) use ($prefix) {
-                    return $prefix . strtoupper($permission);
-                },
-                $annotation->permissions
+              function (string $permission) use ($prefix) {
+                  return $prefix . strtoupper($permission);
+              },
+              $annotation->permissions
             );
         }
 
         return $roles;
     }
+
 }

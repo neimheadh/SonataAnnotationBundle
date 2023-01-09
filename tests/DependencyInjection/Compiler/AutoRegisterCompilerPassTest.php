@@ -5,7 +5,6 @@ namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Dependency injection auto-register test suite

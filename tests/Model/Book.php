@@ -10,6 +10,7 @@ use KunicMarko\SonataAnnotationBundle\Annotation as Sonata;
  * @author Mathieu Wambre <contact@neimheadh.fr>
  *
  * @Sonata\Admin()
+ * @Sonata\Access(role="ROLE_USER", permissions={"READ"})
  */
 class Book
 {

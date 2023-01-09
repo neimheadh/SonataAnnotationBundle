@@ -9,18 +9,23 @@ namespace KunicMarko\SonataAnnotationBundle\Annotation;
  * @Target("CLASS")
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class Access implements AnnotationInterface
 {
     /**
+     * Allowed role.
+     *
      * @var string
      */
-    public $role;
+    public ?string $role = null;
 
     /**
+     * Allowed permissions.
+     *
      * @var array
      */
-    public $permissions;
+    public array $permissions = [];
 
     public function getRole(): string
     {
