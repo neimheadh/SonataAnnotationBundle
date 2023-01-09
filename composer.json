@@ -58,6 +58,8 @@
     "doctrine/doctrine-bundle": "^2.8",
     "php-coveralls/php-coveralls": "^2.5",
     "phpunit/phpunit": "^9.5",
+    "sonata-project/doctrine-orm-admin-bundle": "^4.9",
+    "symfony/phpunit-bridge": "^6.2",
     "symfony/yaml": "^5.4 || ^6.0"
   }
 }

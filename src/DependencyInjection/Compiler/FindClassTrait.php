@@ -18,7 +18,8 @@ trait FindClassTrait
         $definition = $container->getDefinition($id);
 
         //Entity can be a class or a parameter
-        $class = $definition->getArgument(1); //1 is Entity
+        $tag = current($definition->getTag('sonata.admin'));
+        $class = $tag['model_class'] ?? '';
 
         if ($class[0] !== '%') {
             return $class;

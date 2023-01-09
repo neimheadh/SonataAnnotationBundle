@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use KunicMarko\SonataAnnotationBundle\Reader\AddChildReader;
+use ReflectionClass;
+use ReflectionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -15,6 +17,11 @@ final class AddChildCompilerPass implements CompilerPassInterface
 {
     use FindClassTrait;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws ReflectionException
+     */
     public function process(ContainerBuilder $container): void
     {
         /** @var AddChildReader $annotationReader */
@@ -31,7 +38,7 @@ final class AddChildCompilerPass implements CompilerPassInterface
 
             $admins[$class] = $id;
 
-            if ($children = $annotationReader->getChildren(new \ReflectionClass($class))) {
+            if ($children = $annotationReader->getChildren(new ReflectionClass($class))) {
                 $adminChildren[$id] = $children;
             }
         }

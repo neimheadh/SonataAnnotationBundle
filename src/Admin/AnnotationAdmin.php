@@ -115,10 +115,6 @@ class AnnotationAdmin extends AbstractAdmin
      *                                                     annotation reader.
      * @param ShowReader            $showReader            Show page annotation
      *                                                     reader.
-     * @param string|null           $code                  Admin service code.
-     * @param string|null           $class                 Administrated model
-     *                                                     class.
-     * @param string|null           $baseControllerName    Admin controller.
      */
     public function __construct(
       ActionButtonReader $actionButtonReader,
@@ -129,12 +125,9 @@ class AnnotationAdmin extends AbstractAdmin
       FormReader $formReader,
       ListReader $listReader,
       RouteReader $routeReader,
-      ShowReader $showReader,
-      ?string $code = null,
-      ?string $class = null,
-      ?string $baseControllerName = null
+      ShowReader $showReader
     ) {
-        parent::__construct($code, $class, $baseControllerName);
+        parent::__construct();
 
         $this->actionButtonReader = $actionButtonReader;
         $this->datagridReader = $datagridReader;

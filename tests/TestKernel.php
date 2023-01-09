@@ -3,7 +3,14 @@
 namespace KunicMarko\SonataAnnotationBundle\Tests;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Knp\Bundle\MenuBundle\KnpMenuBundle;
 use KunicMarko\SonataAnnotationBundle\SonataAnnotationBundle;
+use Sonata\AdminBundle\SonataAdminBundle;
+use Sonata\Doctrine\Bridge\Symfony\SonataDoctrineBundle;
+use Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\SecurityBundle\SecurityBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Kernel;
@@ -21,6 +28,7 @@ class TestKernel extends Kernel
     {
         return __DIR__ . '/../var/cache/' . $this->getEnvironment();
     }
+
     /**
      * {@inheritDoc}
      */
@@ -28,7 +36,13 @@ class TestKernel extends Kernel
     {
         return [
           new DoctrineBundle(),
+          new FrameworkBundle(),
+          new KnpMenuBundle(),
+          new SecurityBundle(),
+          new SonataAdminBundle(),
           new SonataAnnotationBundle(),
+          new SonataDoctrineORMAdminBundle(),
+          new TwigBundle(),
         ];
     }
 
@@ -40,6 +54,8 @@ class TestKernel extends Kernel
         $loader->load(__DIR__ . '/config.yml');
 
         $loader->load(function (ContainerBuilder $container) use ($loader) {
+            $container->setParameter('kernel.project_dir', __DIR__);
+
             $container->register('kernel', self::class)
               ->addTag('controller.service_arguments')
               ->setAutoconfigured(true)

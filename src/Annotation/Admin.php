@@ -87,6 +87,8 @@ final class Admin implements AnnotationInterface
     public function getTagOptions(): array
     {
         return [
+            'code'                      => $this->code,
+            'controller'                => $this->controller,
             'manager_type'              => $this->managerType,
             'group'                     => $this->group,
             'label'                     => $this->label,
