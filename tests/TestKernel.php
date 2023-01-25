@@ -23,6 +23,13 @@ class TestKernel extends Kernel
 {
 
     /**
+     * Additional configuration files to load.
+     *
+     * @var array<string>
+     */
+    public array $additionalConfigFiles = [];
+
+    /**
      * {@inheritDoc}
      */
     public function getCacheDir(): string
@@ -70,6 +77,14 @@ class TestKernel extends Kernel
             $loader->load("$configDir/config_5.yml");
         } else {
             $loader->load("$configDir/config_latest.yml");
+        }
+
+        foreach ($this->additionalConfigFiles as $configFile) {
+            if (substr($configFile, 0, 1) !== "/") {
+                $configFile = "$configDir/$configFile";
+            }
+
+            $loader->load($configFile);
         }
     }
 }

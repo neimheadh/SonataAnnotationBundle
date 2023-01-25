@@ -1,6 +1,7 @@
 parameters:
   kernel.secret: '!ItIsNotASecret!'
-  security.role_hierarchy.roles: []
+  security.role_hierarchy.roles: [ ]
+  model.class.person: 'KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Person'
 
 services:
   annotation_reader:
@@ -20,9 +21,8 @@ services:
       - '@sonata.annotation.reader.list'
       - '@sonata.annotation.reader.route'
       - '@sonata.annotation.reader.show'
-    calls:
-      - setCode: ['app.admin.Person']
-      - setModelClass: ['KunicMarko\\SonataAnnotationBundle\\Tests\\Model\\Person']
+    tags:
+      - { name: sonata.admin, manager_type: orm, model_class: '%model.class.person%' }
 
 
 doctrine:
