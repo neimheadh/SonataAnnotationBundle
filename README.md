@@ -187,7 +187,7 @@ class Category
 
 ### AddChild
 
-You can read more about this [here](https://sonata-project.org/bundles/admin/master/doc/reference/child_admin.html).
+You can read more about this [here](https://docs.sonata-project.org/projects/SonataAdminBundle/en/4.x/reference/child_admin/).
 
 >This annotation can be used without Admin annotation present. If you have an admin class for your entity
 you can still use this annotation.

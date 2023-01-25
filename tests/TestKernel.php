@@ -52,13 +52,7 @@ class TestKernel extends Kernel
      */
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load(__DIR__ . '/config.yml');
-
-        if (str_starts_with(Kernel::VERSION, '5')) {
-            $loader->load(__DIR__ . '/config_5.yml');
-        } else {
-            $loader->load(__DIR__ . '/config_latest.yml');
-        }
+        $configDir = __DIR__ . '/Resources/config';
 
         $loader->load(function (ContainerBuilder $container) use ($loader) {
             $container->setParameter('kernel.project_dir', __DIR__);
@@ -69,6 +63,13 @@ class TestKernel extends Kernel
               ->setSynthetic(true)
               ->setPublic(true);
         });
-    }
 
+        $loader->load("$configDir/config.yml");
+
+        if (substr(Kernel::VERSION, 0, 1) === '5') {
+            $loader->load("$configDir/config_5.yml");
+        } else {
+            $loader->load("$configDir/config_latest.yml");
+        }
+    }
 }

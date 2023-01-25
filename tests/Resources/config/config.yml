@@ -66,4 +66,4 @@ security:
   access_control: ~
 
 sonata_annotation:
-  directory: '%kernel.project_dir%/Model/'
+  directory: '%kernel.project_dir%/Resources/Model/'
