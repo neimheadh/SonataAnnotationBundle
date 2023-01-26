@@ -26,13 +26,6 @@ class DatagridField extends AbstractField
     public array $filterOptions = [];
 
     /**
-     * Datagrid form type.
-     *
-     * @var string
-     */
-    public string $fieldType;
-
-    /**
      * Datagrid form field type options.
      *
      * @var array
@@ -56,7 +49,6 @@ class DatagridField extends AbstractField
         return [
           $this->type ?? null,
           $this->filterOptions,
-          $this->fieldType ?? null,
           $this->fieldOptions,
           $this->fieldDescriptionOptions,
         ];

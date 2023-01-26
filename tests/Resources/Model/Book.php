@@ -25,6 +25,7 @@ class Book
      * @ORM\GeneratedValue
      * @ORM\Column(type="int")
      * @Sonata\ListField()
+     * @Sonata\DatagridField()
      */
     public int $id;
 
@@ -32,6 +33,7 @@ class Book
      * Book author.
      *
      * @Sonata\ListAssociationField(field="name")
+     * @Sonata\DatagridAssociationField(field="name")
      *
      * @var Author|null
      */
@@ -41,6 +43,7 @@ class Book
      * Book title.
      *
      * @Sonata\ListField()
+     * @Sonata\DatagridField(position=1)
      *
      * @var string|null
      */
