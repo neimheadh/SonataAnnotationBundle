@@ -5,26 +5,17 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\Annotation;
 
 /**
+ * Action annotations main class.
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 abstract class AbstractAction implements AnnotationInterface
 {
     /**
+     * Action template.
+     *
      * @var string
      */
-    public $template;
-
-    public function getTemplate(): string
-    {
-        if ($this->template) {
-            return $this->template;
-        }
-
-        throw new \InvalidArgumentException(
-            sprintf(
-                'Argument "template" is mandatory in "%s" annotation.',
-                static::class
-            )
-        );
-    }
+    public string $template;
 }

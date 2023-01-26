@@ -5,29 +5,23 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\Annotation;
 
 /**
+ * Export association field annotation.
+ *
+ * Allow you to configure the export for the annotated field having an
+ * association field..
+ *
  * @Annotation
  * @Target({"PROPERTY"})
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class ExportAssociationField extends ExportField
 {
     /**
+     * Association field name.
+     *
      * @var string
      */
-    public $field;
-
-    public function getField(): string
-    {
-        if ($this->field) {
-            return $this->field;
-        }
-
-        throw new \InvalidArgumentException(
-            sprintf(
-                'Argument "field" is mandatory in "%s" annotation.',
-                self::class
-            )
-        );
-    }
+    public string $field;
 }

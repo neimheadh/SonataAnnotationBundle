@@ -1,0 +1,76 @@
+<?php
+
+namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
+
+use Doctrine\Common\Annotations\AnnotationReader;
+use KunicMarko\SonataAnnotationBundle\Annotation\AddChild;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use KunicMarko\SonataAnnotationBundle\Reader\AddChildReader;
+use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Book;
+use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+
+/**
+ * AddChildReader test suite.
+ */
+class AddChildReaderTest extends TestCase
+{
+
+    /**
+     * Test AddChild annotation argument controls.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     */
+    public function shouldHaveCorrectArguments(): void
+    {
+        $reader = new AddChildReader(new AnnotationReader());
+        $msg = sprintf(
+          'Argument "%%s" is mandatory for annotation %s on %%s.',
+          AddChild::class,
+        );
+
+        $class = new ReflectionClass(TestInvalidClassArgument::class);
+        $e = null;
+        try {
+            $reader->getChildren($class);
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf($msg, 'class', TestInvalidClassArgument::class),
+          $e->getMessage(),
+        );
+
+        $class = new ReflectionClass(TestInvalidFieldArgument::class);
+        $e = null;
+        try {
+            $reader->getChildren($class);
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf($msg, 'field', TestInvalidFieldArgument::class),
+          $e->getMessage(),
+        );
+    }
+
+}
+
+/**
+ * @AddChild()
+ */
+class TestInvalidClassArgument
+{
+
+}
+
+/**
+ * @AddChild(class=Book::class)
+ */
+class TestInvalidFieldArgument
+{
+
+}

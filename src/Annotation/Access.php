@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\Annotation;
 
 /**
+ * Access control annotation.
+ *
+ * Allow you to control permission per role.
+ *
  * @Annotation
  * @Target("CLASS")
  *
@@ -18,7 +22,7 @@ final class Access implements AnnotationInterface
      *
      * @var string
      */
-    public ?string $role = null;
+    public string $role;
 
     /**
      * Allowed permissions.
@@ -26,18 +30,4 @@ final class Access implements AnnotationInterface
      * @var array
      */
     public array $permissions = [];
-
-    public function getRole(): string
-    {
-        if ($this->role) {
-            return $this->role;
-        }
-
-        throw new \InvalidArgumentException(
-            sprintf(
-                'Argument "role" is mandatory in "%s" annotation.',
-                self::class
-            )
-        );
-    }
 }

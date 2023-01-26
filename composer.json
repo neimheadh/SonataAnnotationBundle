@@ -55,6 +55,8 @@
     }
   },
   "require-dev": {
+    "ext-pdo": "*",
+    "ext-pdo_sqlite": "*",
     "doctrine/doctrine-bundle": "^2.8",
     "php-coveralls/php-coveralls": "^2.5",
     "phpunit/phpunit": "^9.5",

@@ -7,98 +7,141 @@ namespace KunicMarko\SonataAnnotationBundle\Annotation;
 use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
 
 /**
+ * Admin annotation.
+ *
+ * Auto-build the admin service of your model class.
+ *
  * @Annotation
  * @Target("CLASS")
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class Admin implements AnnotationInterface
 {
-    /**
-     * @var string
-     */
-    public $label;
 
     /**
+     * Admin label.
+     *
      * @var string
      */
-    public $managerType = 'orm';
+    public string $label;
 
     /**
+     * Admin model manager type.
+     *
      * @var string
      */
-    public $group;
+    public string $managerType = 'orm';
 
     /**
+     * Admin group.
+     *
+     * @var string
+     */
+    public string $group;
+
+    /**
+     * Is admin shown in dashboard?
+     *
      * @var bool
      */
-    public $showInDashboard = true;
+    public bool $showInDashboard = true;
 
     /**
+     * Is admin is kept open.
+     *
      * @var bool
      */
-    public $keepOpen = false;
+    public bool $keepOpen = false;
 
     /**
+     * Is admin a top menu?
+     *
+     * This option put your admin link directly in the menu and not as a
+     * sub-menu.
+     *
      * @var bool
      */
-    public $onTop = false;
+    public bool $onTop = false;
 
     /**
+     * Admin link icon.
+     *
      * @var string
      */
-    public $icon;
+    public string $icon;
 
     /**
+     * Admin label translator strategy.
+     *
      * @var string
      */
-    public $labelTranslatorStrategy;
+    public string $labelTranslatorStrategy;
 
     /**
+     * Admin label translation catalogue.
+     *
      * @var string
      */
-    public $labelCatalogue;
+    public string $labelCatalogue;
 
     /**
+     * Admin pager type.
+     *
      * @var string
      */
-    public $pagerType;
+    public string $pagerType;
 
     /**
+     * Admin controller.
+     *
      * @var string
      */
-    public $controller;
+    public string $controller;
 
     /**
+     * Admin service id.
+     *
      * @var string
      */
-    public $serviceId;
+    public string $serviceId;
 
     /**
+     * Admin service class.
+     *
      * @var string
      */
-    public $admin = AnnotationAdmin::class;
+    public string $admin = AnnotationAdmin::class;
 
     /**
+     * Admin code.
+     *
      * @var string
      */
-    public $code;
+    public string $code;
 
+    /**
+     * Get service "sonata.admin" tag options.
+     *
+     * @return array<string|bool>
+     */
     public function getTagOptions(): array
     {
         return [
-            'code'                      => $this->code,
-            'controller'                => $this->controller,
-            'manager_type'              => $this->managerType,
-            'group'                     => $this->group,
-            'label'                     => $this->label,
-            'show_in_dashboard'         => $this->showInDashboard,
-            'keep_open'                 => $this->keepOpen,
-            'on_top'                    => $this->onTop,
-            'icon'                      => $this->icon,
-            'label_translator_strategy' => $this->labelTranslatorStrategy,
-            'label_catalogue'           => $this->labelCatalogue,
-            'pager_type'                => $this->pagerType,
+          'code' => $this->code ?? null,
+          'controller' => $this->controller ?? null,
+          'manager_type' => $this->managerType,
+          'group' => $this->group ?? null,
+          'label' => $this->label ?? null,
+          'show_in_dashboard' => $this->showInDashboard,
+          'keep_open' => $this->keepOpen,
+          'on_top' => $this->onTop,
+          'icon' => $this->icon ?? null,
+          'label_translator_strategy' => $this->labelTranslatorStrategy ?? null,
+          'label_catalogue' => $this->labelCatalogue ?? null,
+          'pager_type' => $this->pagerType ?? null,
         ];
     }
+
 }

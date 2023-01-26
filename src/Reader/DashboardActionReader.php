@@ -7,11 +7,18 @@ namespace KunicMarko\SonataAnnotationBundle\Reader;
 use KunicMarko\SonataAnnotationBundle\Annotation\DashboardAction;
 
 /**
+ * DashboardAction reader.
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class DashboardActionReader extends AbstractActionReader
 {
-    protected function isSupported($annotation): bool
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function isSupported(object $annotation): bool
     {
         return $annotation instanceof DashboardAction;
     }

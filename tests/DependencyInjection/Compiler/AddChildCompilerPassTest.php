@@ -7,7 +7,6 @@ use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use KunicMarko\SonataAnnotationBundle\Tests\TestKernel;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
-use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Add child annotation compiler pass test suite.
@@ -50,8 +49,8 @@ class AddChildCompilerPassTest extends KernelTestCase
     {
         $kernel = new TestKernel('test', false);
 
-        $model = __DIR__.'/../../Resources/Model/BadChildAdminClass.php.dist';
-        $file = __DIR__.'/../../Resources/Model/BadChildAdminClass.php';
+        $model = __DIR__ . '/../../Resources/Model/BadChildAdminClass.php.dist';
+        $file = __DIR__ . '/../../Resources/Model/BadChildAdminClass.php';
 
         if (is_file($file)) {
             unlink($file);
@@ -61,10 +60,15 @@ class AddChildCompilerPassTest extends KernelTestCase
         $e = null;
         try {
             $kernel->boot();
-        } catch (InvalidArgumentException $e) {}
+        } catch (InvalidArgumentException $e) {
+        }
         unlink($file);
 
         $this->assertNotNull($e);
-        $this->assertEquals('Unknown is missing Admin Class.', $e->getMessage());
+        $this->assertEquals(
+          'Unknown is missing Admin Class.',
+          $e->getMessage()
+        );
     }
+
 }

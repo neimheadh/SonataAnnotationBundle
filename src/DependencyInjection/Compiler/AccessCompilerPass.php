@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\Reader;
+use InvalidArgumentException;
 use KunicMarko\SonataAnnotationBundle\Annotation\Access;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -83,7 +85,15 @@ final class AccessCompilerPass implements CompilerPassInterface
                 continue;
             }
 
-            $roles[$annotation->getRole()] = array_map(
+            if (!isset($annotation->role)) {
+                throw new MissingAnnotationArgumentException(
+                  $annotation,
+                  'role',
+                  $class
+                );
+            }
+
+            $roles[$annotation->role] = array_map(
               function (string $permission) use ($prefix) {
                   return $prefix . strtoupper($permission);
               },

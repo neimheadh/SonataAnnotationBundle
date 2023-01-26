@@ -6,15 +6,26 @@ namespace KunicMarko\SonataAnnotationBundle\Reader;
 
 use InvalidArgumentException;
 use KunicMarko\SonataAnnotationBundle\Annotation\AddChild;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
 
 /**
+ * AddChild annotation reader.
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class AddChildReader
 {
     use AnnotationReaderTrait;
 
+    /**
+     * Get admin children.
+     *
+     * @param ReflectionClass $class Entity class.
+     *
+     * @return array<string, string> Children model class => field list.
+     */
     public function getChildren(ReflectionClass $class): array
     {
         $children = [];
@@ -25,20 +36,18 @@ final class AddChildReader
             }
 
             if (!isset($annotation->class)) {
-                throw new InvalidArgumentException(
-                  sprintf(
-                    'Argument "class" is mandatory for annotation AddChild on class "%s".',
-                    $class->getName(),
-                  )
+                throw new MissingAnnotationArgumentException(
+                  $annotation,
+                  'class',
+                  $class
                 );
             }
 
             if (!isset($annotation->field)) {
-                throw new InvalidArgumentException(
-                  sprintf(
-                    'Argument "field" is mandatory for annotation AddChild on class "%s".',
-                    $class->getName(),
-                  )
+                throw new MissingAnnotationArgumentException(
+                  $annotation,
+                  'field',
+                  $class
                 );
             }
 

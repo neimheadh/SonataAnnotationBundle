@@ -5,24 +5,32 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\Annotation;
 
 /**
+ * Field annotations main class.
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 abstract class AbstractField implements AnnotationInterface
 {
     /**
      * @var string
      */
-    public $type;
+    public string $type;
 
     /**
      * @var array
      */
-    public $fieldDescriptionOptions = [];
+    public array $fieldDescriptionOptions = [];
 
+    /**
+     * Get field settings.
+     *
+     * @return array
+     */
     public function getSettings(): array
     {
         return [
-            $this->type,
+            $this->type ?? null,
             $this->fieldDescriptionOptions
         ];
     }

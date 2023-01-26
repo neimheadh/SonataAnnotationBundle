@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\Annotation;
 
 /**
+ * Add child annotation.
+ *
  * Add child admin to current admin class or admin annotated model.
  *
  * @Annotation

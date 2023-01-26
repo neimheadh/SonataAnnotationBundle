@@ -4,19 +4,40 @@ declare(strict_types=1);
 
 namespace KunicMarko\SonataAnnotationBundle\Reader;
 
+use InvalidArgumentException;
 use KunicMarko\SonataAnnotationBundle\Annotation\ShowAssociationField;
 use KunicMarko\SonataAnnotationBundle\Annotation\ShowField;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use ReflectionClass;
 use Sonata\AdminBundle\Show\ShowMapper;
 
+use function array_key_exists;
+use function array_merge;
+use function ksort;
+
 /**
+ * Show configuration reader.
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class ShowReader
 {
+
     use AnnotationReaderTrait;
 
-    public function configureFields(\ReflectionClass $class, ShowMapper $showMapper): void
-    {
+    /**
+     * Build show fields configuration.
+     *
+     * @param ReflectionClass $class
+     * @param ShowMapper      $showMapper
+     *
+     * @return void
+     */
+    public function configureFields(
+      ReflectionClass $class,
+      ShowMapper $showMapper
+    ): void {
         $propertiesAndMethodsWithPosition = [];
         $propertiesAndMethodsWithoutPosition = [];
 
@@ -26,37 +47,49 @@ final class ShowReader
 
         foreach ($class->getProperties() as $property) {
             foreach ($this->getPropertyAnnotations($property) as $annotation) {
-                if (!$annotation instanceof ShowField && !$annotation instanceof ShowAssociationField) {
+                if (!$annotation instanceof ShowField) {
                     continue;
                 }
 
                 // the name property changes for ShowAssociationField
                 $name = $property->getName();
                 if ($annotation instanceof ShowAssociationField) {
-                    $name .= '.'.$annotation->getField();
+                    if (!isset($annotation->field)) {
+                        throw new MissingAnnotationArgumentException(
+                          $annotation,
+                          'field',
+                        );
+                    }
+
+                    $name .= '.' . $annotation->field;
                 }
 
-                if (!$annotation->hasPosition()) {
+                if (!isset($annotation->position)) {
                     $propertiesAndMethodsWithoutPosition[] = [
-                        'name' => $name,
-                        'settings' => $annotation->getSettings(),
+                      'name' => $name,
+                      'settings' => $annotation->getSettings(),
                     ];
 
                     continue;
                 }
 
-                if (\array_key_exists($annotation->position, $propertiesAndMethodsWithPosition)) {
-                    throw new \InvalidArgumentException(sprintf(
+                if (array_key_exists(
+                  $annotation->position,
+                  $propertiesAndMethodsWithPosition
+                )) {
+                    throw new InvalidArgumentException(
+                      sprintf(
                         'Position "%s" is already in use by "%s", try setting a different position for "%s".',
                         $annotation->position,
                         $propertiesAndMethodsWithPosition[$annotation->position]['name'],
                         $property->getName()
-                    ));
+                      )
+                    );
                 }
 
                 $propertiesAndMethodsWithPosition[$annotation->position] = [
-                    'name' => $name,
-                    'settings' => $annotation->getSettings(),
+                  'name' => $name,
+                  'settings' => $annotation->getSettings(),
                 ];
             }
         }
@@ -66,30 +99,39 @@ final class ShowReader
         //
 
         foreach ($class->getMethods() as $method) {
-            if ($annotation = $this->getMethodAnnotation($method, ShowField::class)) {
+            /** @var ShowField|null $annotation */
+            if ($annotation = $this->getMethodAnnotation(
+              $method,
+              ShowField::class
+            )) {
                 $name = $method->getName();
 
-                if (!$annotation->hasPosition()) {
+                if (!isset($annotation->position)) {
                     $propertiesAndMethodsWithoutPosition[] = [
-                        'name' => $name,
-                        'settings' => $annotation->getSettings(),
+                      'name' => $name,
+                      'settings' => $annotation->getSettings(),
                     ];
 
                     continue;
                 }
 
-                if (\array_key_exists($annotation->position, $propertiesAndMethodsWithPosition)) {
-                    throw new \InvalidArgumentException(sprintf(
+                if (array_key_exists(
+                  $annotation->position,
+                  $propertiesAndMethodsWithPosition
+                )) {
+                    throw new InvalidArgumentException(
+                      sprintf(
                         'Position "%s" is already in use by "%s", try setting a different position for "%s".',
                         $annotation->position,
                         $propertiesAndMethodsWithPosition[$annotation->position]['name'],
                         $name
-                    ));
+                      )
+                    );
                 }
 
                 $propertiesAndMethodsWithPosition[$annotation->position] = [
-                    'name' => $name,
-                    'settings' => $annotation->getSettings(),
+                  'name' => $name,
+                  'settings' => $annotation->getSettings(),
                 ];
             }
         }
@@ -98,12 +140,20 @@ final class ShowReader
         // Sorting
         //
 
-        \ksort($propertiesAndMethodsWithPosition);
+        ksort($propertiesAndMethodsWithPosition);
 
-        $propertiesAndMethods = \array_merge($propertiesAndMethodsWithPosition, $propertiesAndMethodsWithoutPosition);
+        $propertiesAndMethods = array_merge(
+          $propertiesAndMethodsWithPosition,
+          $propertiesAndMethodsWithoutPosition
+        );
 
         foreach ($propertiesAndMethods as $propertyAndMethod) {
-            $showMapper->add($propertyAndMethod['name'], ...$propertyAndMethod['settings']);
+            $showMapper->add(
+              $propertyAndMethod['name'],
+              ...
+              $propertyAndMethod['settings']
+            );
         }
     }
+
 }

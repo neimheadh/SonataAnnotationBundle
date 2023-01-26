@@ -2,6 +2,7 @@
 
 namespace KunicMarko\SonataAnnotationBundle\Tests\Resources\Model;
 
+use Doctrine\ORM\Mapping as ORM;
 use KunicMarko\SonataAnnotationBundle\Annotation as Sonata;
 
 /**
@@ -9,23 +10,51 @@ use KunicMarko\SonataAnnotationBundle\Annotation as Sonata;
  *
  * @author Mathieu Wambre <contact@neimheadh.fr>
  *
+ * @ORM\Entity
  * @Sonata\Admin()
  * @Sonata\Access(role="ROLE_USER", permissions={"READ"})
+ * @Sonata\ListAction(
+ *     name="import",
+ *     options={"template"="import_list_button.html.twig"}
+ * )
  */
 class Book
 {
+    /**
+     * @ORM\Id
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="int")
+     * @Sonata\ListField()
+     */
+    public int $id;
 
     /**
      * Book author.
+     *
+     * @Sonata\ListAssociationField(field="name")
      *
      * @var Author|null
      */
     public ?Author $author = null;
 
     /**
-     * Library containing book.
+     * Book title.
      *
-     * @var Library|null
+     * @Sonata\ListField()
+     *
+     * @var string|null
      */
-    public ?Library $library = null;
+    public string $title = '';
+
+    /**
+     * Get cover title.
+     *
+     * @Sonata\ListField()
+     *
+     * @return string
+     */
+    public function getCoverTitle(): string
+    {
+        return "$this->title\n$this->author";
+    }
 }

@@ -5,30 +5,24 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\Annotation;
 
 /**
+ * List field annotation.
+ *
+ * Allows you to configure your list field.
+ *
  * @Annotation
  * @Target({"PROPERTY", "METHOD"})
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 class ListField extends AbstractField
 {
-    /**
-     * @var bool
-     */
-    public $identifier = false;
 
     /**
+     * Field position.
+     *
      * @var int
      */
-    public $position;
+    public int $position;
 
-    public function getPosition(): int
-    {
-        return $this->position;
-    }
-
-    public function hasPosition(): bool
-    {
-        return null !== $this->position;
-    }
 }
