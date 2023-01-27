@@ -10,11 +10,11 @@ create admin class instead.
 
 This bundle is a fork of the archived [KunicMarko\SonataAnnotationBundle](https://github.com/kunicmarko20/SonataAnnotationBundle).
 
-[![PHP Version](https://img.shields.io/badge/php-%5E7.1|%5E8.0-blue.svg)](https://img.shields.io/badge/php-%5E7.1|%5E8.0-blue.svg)
+[![PHP Version](https://img.shields.io/badge/php-%5E7.1|%5E8-blue.svg)](https://img.shields.io/badge/php-%5E7.1|%5E8.0-blue.svg)
 [![Latest Stable Version](https://poser.pugx.org/neimheadh/sonata-annotation-bundle/v/stable)](https://packagist.org/packages/neimheadh/sonata-annotation-bundle)
 [![Latest Unstable Version](https://poser.pugx.org/neimheadh/sonata-annotation-bundle/v/unstable)](https://packagist.org/packages/neimheadh/sonata-annotation-bundle)
 
-[![Build Status](https://travis-ci.org/neimheadh/SonataAnnotationBundle.svg?branch=develop)](https://travis-ci.org/neimheadh/SonataAnnotationBundle)
+[![Build Status](https://app.travis-ci.com/neimheadh/SonataAnnotationBundle.svg?branch=develop)](https://app.travis-ci.com/github/neimheadh/SonataAnnotationBundle)
 [![Coverage Status](https://coveralls.io/repos/github/neimheadh/SonataAnnotationBundle/badge.svg?branch=develop)](https://coveralls.io/github/neimheadh/SonataAnnotationBundle?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/neimheadh/SonataAnnotationBundle/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/neimheadh/SonataAnnotationBundle/?branch=master)
 
