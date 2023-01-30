@@ -17,6 +17,8 @@ use KunicMarko\SonataAnnotationBundle\Annotation as Sonata;
  *     name="import",
  *     options={"template"="import_list_button.html.twig"}
  * )
+ * @Sonata\AddRoute(name="custom", path="/book/custom")
+ * @Sonata\RemoveRoute(name="batch")
  */
 class Book
 {

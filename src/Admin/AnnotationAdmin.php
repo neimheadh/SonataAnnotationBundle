@@ -283,7 +283,7 @@ class AnnotationAdmin extends AbstractAdmin
         /** @var AddRoute $route */
         foreach ($addRoutes as $route) {
             $collection->add(
-              $route->getName(),
+              $route->name,
               $route->path ? $this->replaceIdParameterInRoutePath(
                 $route->path
               ) : $route->getName()
@@ -292,7 +292,7 @@ class AnnotationAdmin extends AbstractAdmin
 
         /** @var RemoveRoute $route */
         foreach ($removeRoutes as $route) {
-            $collection->remove($route->getName());
+            $collection->remove($route->name);
         }
     }
 
