@@ -4,16 +4,13 @@ namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
-use KunicMarko\SonataAnnotationBundle\Annotation\ActionButton;
+use KunicMarko\SonataAnnotationBundle\Annotation\DashboardAction;
 use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
-use KunicMarko\SonataAnnotationBundle\Reader\ActionButtonReader;
+use KunicMarko\SonataAnnotationBundle\Reader\DashboardActionReader;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
-/**
- * ActionButtonReader test suite.
- */
-class ActionButtonReaderTest extends TestCase
+class DashboardActionReaderTest extends TestCase
 {
 
     /**
@@ -27,10 +24,10 @@ class ActionButtonReaderTest extends TestCase
      */
     public function shouldSupportAnnotation(): void
     {
-        $reader = new ActionButtonReader(new AnnotationReader());
+        $reader = new DashboardActionReader(new AnnotationReader());
 
         $actions = $reader->getActions(
-          new ReflectionClass(ActionButtonTestCase::class),
+          new ReflectionClass(DashboardActionReaderTestCase::class),
           []
         );
         $this->assertCount(1, $actions);
@@ -49,23 +46,26 @@ class ActionButtonReaderTest extends TestCase
      */
     public function shouldTemplateAttributeMandatory(): void
     {
-        $reader = new ActionButtonReader(new AnnotationReader());
+        $reader = new DashboardActionReader(new AnnotationReader());
 
         $e = null;
         try {
             $reader->getActions(
-              new ReflectionClass(NoTemplateActionButtonTestCase::class),
+              new ReflectionClass(
+                NoTemplateDashboardActionReaderTestCase::class
+              ),
               []
             );
-        } catch (MissingAnnotationArgumentException $e) {}
+        } catch (MissingAnnotationArgumentException $e) {
+        }
 
         $this->assertNotNull($e);
         $this->assertEquals(
           sprintf(
             'Argument "%s" is mandatory for annotation %s on %s.',
             'template',
-            ActionButton::class,
-            NoTemplateActionButtonTestCase::class,
+            DashboardAction::class,
+            NoTemplateDashboardActionReaderTestCase::class,
           ),
           $e->getMessage(),
         );
@@ -73,18 +73,19 @@ class ActionButtonReaderTest extends TestCase
 
 }
 
+
 /**
- * @ActionButton(template="test.html.twig")
+ * @DashboardAction(template="test.html.twig")
  */
-class ActionButtonTestCase
+class DashboardActionReaderTestCase
 {
 
 }
 
 /**
- * @ActionButton()
+ * @DashboardAction()
  */
-class NoTemplateActionButtonTestCase
+class NoTemplateDashboardActionReaderTestCase
 {
 
 }
