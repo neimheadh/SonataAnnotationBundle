@@ -10,6 +10,9 @@ use KunicMarko\SonataAnnotationBundle\Reader\DashboardActionReader;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
+/**
+ * DashboardActionReader test suite.
+ */
 class DashboardActionReaderTest extends TestCase
 {
 
