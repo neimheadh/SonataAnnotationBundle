@@ -3,6 +3,7 @@
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Exception;
 use InvalidArgumentException;
 use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use KunicMarko\SonataAnnotationBundle\Annotation\ListAction;
@@ -33,9 +34,11 @@ class ListReaderTest extends KernelTestCase
      * @functional
      *
      * @return void
+     * @throws Exception
      */
     public function shouldBookListHaveAuthorAndTitles(): void
     {
+        /** @var TestContainer $container */
         $container = static::getContainer();
         /** @var AnnotationAdmin $admin */
         $admin = $container->get('app.admin.Book');
@@ -73,6 +76,7 @@ class ListReaderTest extends KernelTestCase
      * @functional
      *
      * @return void
+     * @throws Exception
      */
     public function shouldBookListHaveImportAction(): void
     {

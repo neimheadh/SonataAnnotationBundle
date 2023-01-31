@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KunicMarko\SonataAnnotationBundle\Reader;
 
+use InvalidArgumentException;
 use KunicMarko\SonataAnnotationBundle\Annotation\FormField;
 use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
@@ -39,7 +40,7 @@ final class FormReader
         $this->configureFields(
           $class,
           $formMapper,
-          FormField::ACTION_EDIT
+          FormField::ACTION_CREATE
         );
     }
 
@@ -55,7 +56,11 @@ final class FormReader
       ReflectionClass $class,
       FormMapper $formMapper
     ): void {
-        $this->configureFields($class, $formMapper, FormField::ACTION_CREATE);
+        $this->configureFields(
+          $class,
+          $formMapper,
+          FormField::ACTION_EDIT
+        );
     }
 
     /**
@@ -81,14 +86,9 @@ final class FormReader
                     continue;
                 }
 
-                if (!isset($annotation->action)) {
-                    throw new MissingAnnotationArgumentException(
-                      $annotation,
-                      'action'
-                    );
-                }
-
-                if ($annotation->action !== $action) {
+                if (isset($annotation->action)
+                  && $annotation->action !== $action
+                ) {
                     continue;
                 }
 
@@ -105,7 +105,7 @@ final class FormReader
                   $annotation->position,
                   $propertiesWithPosition
                 )) {
-                    throw new \InvalidArgumentException(
+                    throw new InvalidArgumentException(
                       sprintf(
                         'Position "%s" is already in use by "%s", try setting a different position for "%s".',
                         $annotation->position,
