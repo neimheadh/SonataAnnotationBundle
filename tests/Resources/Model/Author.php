@@ -21,4 +21,11 @@ class Author
      * @var string
      */
     public string $name = '';
+
+    /**
+     * Author main genre.
+     *
+     * @var string
+     */
+    public string $genre = '';
 }
