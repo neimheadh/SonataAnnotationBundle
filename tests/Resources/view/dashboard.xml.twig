@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<dashboard>
+    <blocks>
+        {% for position,blocks in blocks %}
+            {% for block in blocks %}
+                <{{ block.position }} roles="{{ block.roles | join(',')}}" type="{{ block.type }}">
+                    {{ sonata_block_render({ 'type': block.type, 'settings': block.settings}) }}
+                </{{ block.position }}>
+            {% endfor %}
+        {% endfor %}
+    </blocks>
+</dashboard>

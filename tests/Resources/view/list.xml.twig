@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<list>
+    <filters>
+        {% for name, filter in admin.datagrid.filters %}
+            <filter>{{ name }}</filter>
+        {% endfor %}
+    </filters>
+    <actions>
+        {% for action in admin.getActionButtons('list') %}
+            <action>{{ action.template }}</action>
+        {% endfor %}
+    </actions>
+    <items>
+        {% for item in admin.datagrid.results %}
+            <item>
+                <fields>
+                    {% for field_description in admin.list.getElements() %}
+                        {% if field_description.name != '_action' %}
+                            <field name="{{ field_description.name }}">{{ field_description.value(item) }}</field>
+                        {% endif %}
+                    {% endfor %}
+                </fields>
+                <actions>
+                    {% for field_description in admin.list.getElements() %}
+                        {% if field_description.name == '_action' %}
+                            {% for name,action in field_description.option('actions') %}
+                                <action template="{{ action.template }}">{{ name }}</action>
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </actions>
+            </item>
+        {% endfor %}
+    </items>
+    <exports>
+        {% if admin.hasRoute('export') and admin.hasAccess('export') and export_formats|length %}
+            {% for format in export_formats %}
+                <format>{{ format }}</format>
+            {% endfor %}
+        {% endif %}
+    </exports>
+</list>

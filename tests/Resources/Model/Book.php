@@ -19,23 +19,30 @@ use KunicMarko\SonataAnnotationBundle\Annotation as Sonata;
  * )
  * @Sonata\AddRoute(name="custom", path="/book/custom")
  * @Sonata\RemoveRoute(name="batch")
+ * @Sonata\ExportFormats({"json"})
+ * @Sonata\DashboardAction("export_book_list.html.twig")
+ * @Sonata\ActionButton("export_book_list.html.twig")
  */
 class Book
 {
     /**
      * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="int")
+     * @ORM\Column(type="integer")
      * @Sonata\ListField()
      * @Sonata\DatagridField()
+     * @Sonata\ShowField(position=1)
      */
     public int $id;
 
     /**
      * Book author.
      *
+     * @ORM\ManyToOne(targetEntity=Author::class)
      * @Sonata\ListAssociationField(field="name")
      * @Sonata\DatagridAssociationField(field="name")
+     * @Sonata\ShowAssociationField(position=2, field="name")
+     * @Sonata\ExportAssociationField(field="name", label="Author")
+     * @Sonata\FormField(position=2)
      *
      * @var Author|null
      */
@@ -44,8 +51,12 @@ class Book
     /**
      * Book title.
      *
+     * @ORM\Column(type="string", length=125)
      * @Sonata\ListField()
      * @Sonata\DatagridField(position=1)
+     * @Sonata\ShowField()
+     * @Sonata\ExportField()
+     * @Sonata\FormField(position=1)
      *
      * @var string|null
      */

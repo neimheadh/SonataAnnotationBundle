@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KunicMarko\SonataAnnotationBundle\Admin;
 
+use Exception;
 use KunicMarko\SonataAnnotationBundle\Annotation\AddRoute;
 use KunicMarko\SonataAnnotationBundle\Annotation\RemoveRoute;
 use KunicMarko\SonataAnnotationBundle\Reader\ActionButtonReader;
@@ -51,6 +52,8 @@ class AnnotationAdmin extends AbstractAdmin
      * Datagrid values annotation reader.
      *
      * @var DatagridValuesReader
+     * @todo Replace the previously buildDatagrid() to use datagrid values
+     *       reader.
      */
     private DatagridValuesReader $datagridValuesReader;
 
@@ -186,6 +189,7 @@ class AnnotationAdmin extends AbstractAdmin
      *
      * @return array<string, array<string, mixed>>
      * @throws ReflectionException
+     * @throws Exception
      */
     protected function configureDashboardActions(array $actions): array
     {
@@ -274,7 +278,8 @@ class AnnotationAdmin extends AbstractAdmin
      * @return void
      * @throws ReflectionException
      */
-    protected function configureRoutes(RouteCollectionInterface $collection
+    protected function configureRoutes(
+      RouteCollectionInterface $collection
     ): void {
         [$addRoutes, $removeRoutes] = $this->routeReader->getRoutes(
           $this->getReflectionClass()
@@ -329,23 +334,6 @@ class AnnotationAdmin extends AbstractAdmin
         );
     }
 
-    /*
-    public function buildDatagrid(): void
-    {
-        if (!$this->datagridValuesLoaded) {
-            $this->datagridValues = $this->get(
-              'sonata.annotation.reader.datagrid_values'
-            )
-              ->getDatagridValues(
-                $this->getReflectionClass()
-              ) ?: $this->datagridValues;
-
-            $this->datagridValuesLoaded = true;
-        }
-
-        parent::buildDatagrid();
-    }*/
-
     /**
      * Get the reflection class of the current admin model.
      *
@@ -356,5 +344,4 @@ class AnnotationAdmin extends AbstractAdmin
     {
         return new ReflectionClass($this->getClass());
     }
-
 }

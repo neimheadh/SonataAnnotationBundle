@@ -26,7 +26,6 @@ use Sonata\AdminBundle\Security\Handler\SecurityHandlerInterface;
 use Sonata\AdminBundle\Translator\LabelTranslatorStrategyInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
-use Symfony\Component\Form\FormBuilderInterface;
 
 /**
  * Add createNewAnnotationAdmin function to KernelBrowser tests.
@@ -86,15 +85,21 @@ trait CreateNewAnnotationAdminTrait
         /** @var ListBuilderInterface $listBuilder */
         $listBuilder = $container->get('sonata.admin.builder.orm_list');
         /** @var RouteGeneratorInterface $routeGenerator */
-        $routeGenerator = $container->get('sonata.admin.route.default_generator');
+        $routeGenerator = $container->get(
+          'sonata.admin.route.default_generator'
+        );
         /** @var RouteBuilderInterface $routeBuilder */
         $routeBuilder = $container->get('sonata.admin.route.path_info');
         /** @var SecurityHandlerInterface $security */
         $security = $container->get('sonata.admin.security.handler.noop');
         /** @var FieldDescriptionFactoryInterface $fieldDescriptionFactory */
-        $fieldDescriptionFactory = $container->get('sonata.admin.field_description_factory.orm');
+        $fieldDescriptionFactory = $container->get(
+          'sonata.admin.field_description_factory.orm'
+        );
         /** @var LabelTranslatorStrategyInterface $labelTranslationStrategy */
-        $labelTranslationStrategy = $container->get('sonata.admin.label.strategy.native');
+        $labelTranslationStrategy = $container->get(
+          'sonata.admin.label.strategy.native'
+        );
         /** @var DatagridBuilderInterface $datagridBuilder */
         $datagridBuilder = $container->get('sonata.admin.builder.orm_datagrid');
         /** @var ShowBuilderInterface $showBuilder */

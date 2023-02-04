@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+{% set tabs = admin.getshowtabs() %}
+
+<show>
+    {% for tab in tabs %}
+        {% set groups = tab.groups %}
+        {% for code in groups %}
+            {% set show_group = admin.showgroups[code] %}
+            {% for show_field_name in show_group.fields %}
+                {% if elements[show_field_name] is defined %}
+                    <field>
+                        <label>{{ show_field_name }}</label>
+                        <value>{{ elements[show_field_name].value(object) }}</value>
+                    </field>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+</show>

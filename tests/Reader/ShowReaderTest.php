@@ -51,7 +51,6 @@ class ShowReaderTest extends KernelTestCase
             'sex',
             'getString',
             'name',
-            'author.name',
             'author.genre',
             'getStringEnd',
           ],
@@ -170,7 +169,6 @@ class ShowReaderTestCase
     private string $name = '';
 
     /**
-     * @ShowAssociationField(field="name")
      * @ShowAssociationField(field="genre")
      *
      * @var Author|null

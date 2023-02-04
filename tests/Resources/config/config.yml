@@ -75,3 +75,23 @@ security:
 
 sonata_annotation:
   directory: '%kernel.project_dir%/Resources/Model/'
+
+monolog:
+  channels: [doctrine_channel]
+  handlers:
+    main:
+      type: stream
+      path: "%kernel.project_dir%/../var/log/%kernel.environment%.log"
+      level: info
+
+twig:
+  paths: ['%kernel.project_dir%/Resources/view']
+
+sonata_admin:
+  templates:
+    dashboard: 'dashboard.xml.twig'
+    edit: 'edit.xml.twig'
+    layout: 'layout.html.twig'
+    list: 'list.xml.twig'
+    list_block: 'list_block.xml.twig'
+    show: 'show.xml.twig'
