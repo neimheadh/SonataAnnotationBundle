@@ -77,6 +77,7 @@ class TestKernel extends Kernel
 
         $loader->load(function (ContainerBuilder $container) use ($loader) {
             $container->setParameter('kernel.project_dir', __DIR__);
+            $container->setParameter('kernel.cache_dir', dirname(__DIR__). '/var/cache');
 
             $container->register('kernel', self::class)
               ->addTag('controller.service_arguments')

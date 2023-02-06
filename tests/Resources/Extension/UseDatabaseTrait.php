@@ -5,6 +5,7 @@ namespace KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Tools\SchemaTool;
+use Doctrine\ORM\Tools\ToolsException;
 use Exception;
 use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Author;
 use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Book;

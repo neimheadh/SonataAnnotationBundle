@@ -12,22 +12,6 @@ env:
     - TARGET=test
     - XDEBUG_MODE=coverage
 
-matrix:
-  fast_finish: true
-#  @todo Allow symfony version specification.
-#  include:
-#    - php: '7.4'
-#      env: SYMFONY=5.4.*
-#    - php: '8.0'
-#      env: SYMFONY=5.4.*
-#    - php: '8.0'
-#      env: SYMFONY=6.0.*
-#    - php: '8.1'
-#      env: SYMFONY=5.4.*
-#    - php: '8.1'
-#      env: SYMFONY=6.0.*
-
-
   allow_failures:
     - php: nightly
 

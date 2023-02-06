@@ -3,7 +3,6 @@
 namespace KunicMarko\SonataAnnotationBundle\Tests\Admin;
 
 use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Exception\ORMException;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -19,7 +18,6 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * AnnotationAdmin test suite.
@@ -54,6 +52,9 @@ class AnnotationAdminTest extends WebTestCase
         }
 
         $this->logDir = "$logDir/test";
+
+        $em->getConnection()->prepare('DELETE FROM Book')->executeQuery();
+        $em->getConnection()->prepare('DELETE FROM Author')->executeQuery();
 
         $author = new Author();
         $author->id = 1;
@@ -110,7 +111,10 @@ class AnnotationAdminTest extends WebTestCase
         $blocks = $dom->getElementsByTagName('blocks')->item(0);
         /** @var DOMElement $left */
         $left = $blocks->getElementsByTagName('left')->item(0);
-        $this->assertEquals('sonata.admin.block.admin_list', $left->getAttribute('type'));
+        $this->assertEquals(
+          'sonata.admin.block.admin_list',
+          $left->getAttribute('type')
+        );
         /** @var DOMElement $groups */
         $groups = $left->getElementsByTagName('groups')->item(0);
         $this->assertEquals(1, $groups->getElementsByTagName('group')->length);
@@ -127,7 +131,10 @@ class AnnotationAdminTest extends WebTestCase
         /** @var DOMNodeList|DOMElement[] $actions */
         $actions = $items[1]->getElementsByTagName('action');
         $this->assertEquals(3, $actions->length);
-        $this->assertEquals('export_book_list.html.twig', $actions[2]->textContent);
+        $this->assertEquals(
+          'export_book_list.html.twig',
+          $actions[2]->textContent
+        );
     }
 
     /**
@@ -283,10 +290,16 @@ class AnnotationAdminTest extends WebTestCase
         $route = $container->get('router')
           ->generate('admin_tests_resources_book_export', ['format' => 'json']);
 
+        ob_start();
         $client->request('GET', $route);
+        $json = ob_get_contents();
+        ob_end_clean();
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
-        $json = json_decode($client->getInternalResponse()->getContent(), true);
+        if (!$json) {
+            $json = $client->getInternalResponse()->getContent();
+        }
+        $json = json_decode($json, true);
 
         $this->assertIsArray($json);
         $this->assertEquals(
@@ -341,7 +354,10 @@ class AnnotationAdminTest extends WebTestCase
         /** @var DOMElement $actions */
         $actions = $list->getElementsByTagName('actions')->item(0);
 
-        $this->assertEquals(2, $actions->getElementsByTagName('action')->length);
+        $this->assertEquals(
+          2,
+          $actions->getElementsByTagName('action')->length
+        );
         /** @var DOMElement $action */
         $action = $actions->getElementsByTagName('action')->item(1);
         $this->assertEquals('export_book_list.html.twig', $action->textContent);
