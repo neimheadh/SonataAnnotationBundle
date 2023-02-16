@@ -57,9 +57,9 @@ final class FormField extends AbstractField
     public function getSettings(): array
     {
         return [
-          $this->type ?? null,
-          $this->options,
-          $this->fieldDescriptionOptions,
+            $this->type ?? null,
+            $this->options,
+            $this->fieldDescriptionOptions,
         ];
     }
 

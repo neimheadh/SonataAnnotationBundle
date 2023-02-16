@@ -17,6 +17,7 @@ use ReflectionClass;
  */
 final class AddChildReader
 {
+
     use AnnotationReaderTrait;
 
     /**
@@ -37,17 +38,17 @@ final class AddChildReader
 
             if (!isset($annotation->class)) {
                 throw new MissingAnnotationArgumentException(
-                  $annotation,
-                  'class',
-                  $class
+                    $annotation,
+                    'class',
+                    $class
                 );
             }
 
             if (!isset($annotation->field)) {
                 throw new MissingAnnotationArgumentException(
-                  $annotation,
-                  'field',
-                  $class
+                    $annotation,
+                    'field',
+                    $class
                 );
             }
 
@@ -56,4 +57,5 @@ final class AddChildReader
 
         return $children;
     }
+
 }

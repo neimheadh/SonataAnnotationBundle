@@ -34,13 +34,13 @@ final class FormReader
      * @return void
      */
     public function configureCreateFields(
-      ReflectionClass $class,
-      FormMapper $formMapper
+        ReflectionClass $class,
+        FormMapper $formMapper
     ): void {
         $this->configureFields(
-          $class,
-          $formMapper,
-          FormField::ACTION_CREATE
+            $class,
+            $formMapper,
+            FormField::ACTION_CREATE
         );
     }
 
@@ -53,13 +53,13 @@ final class FormReader
      * @return void
      */
     public function configureEditFields(
-      ReflectionClass $class,
-      FormMapper $formMapper
+        ReflectionClass $class,
+        FormMapper $formMapper
     ): void {
         $this->configureFields(
-          $class,
-          $formMapper,
-          FormField::ACTION_EDIT
+            $class,
+            $formMapper,
+            FormField::ACTION_EDIT
         );
     }
 
@@ -73,9 +73,9 @@ final class FormReader
      * @return void
      */
     private function configureFields(
-      ReflectionClass $class,
-      FormMapper $formMapper,
-      string $action
+        ReflectionClass $class,
+        FormMapper $formMapper,
+        string $action
     ): void {
         $propertiesWithPosition = [];
         $propertiesWithoutPosition = [];
@@ -87,37 +87,37 @@ final class FormReader
                 }
 
                 if (isset($annotation->action)
-                  && $annotation->action !== $action
+                    && $annotation->action !== $action
                 ) {
                     continue;
                 }
 
                 if (!isset($annotation->position)) {
                     $propertiesWithoutPosition[] = [
-                      'name' => $property->getName(),
-                      'settings' => $annotation->getSettings(),
+                        'name' => $property->getName(),
+                        'settings' => $annotation->getSettings(),
                     ];
 
                     continue;
                 }
 
                 if (array_key_exists(
-                  $annotation->position,
-                  $propertiesWithPosition
+                    $annotation->position,
+                    $propertiesWithPosition
                 )) {
                     throw new InvalidArgumentException(
-                      sprintf(
-                        'Position "%s" is already in use by "%s", try setting a different position for "%s".',
-                        $annotation->position,
-                        $propertiesWithPosition[$annotation->position]['name'],
-                        $property->getName()
-                      )
+                        sprintf(
+                            'Position "%s" is already in use by "%s", try setting a different position for "%s".',
+                            $annotation->position,
+                            $propertiesWithPosition[$annotation->position]['name'],
+                            $property->getName()
+                        )
                     );
                 }
 
                 $propertiesWithPosition[$annotation->position] = [
-                  'name' => $property->getName(),
-                  'settings' => $annotation->getSettings(),
+                    'name' => $property->getName(),
+                    'settings' => $annotation->getSettings(),
                 ];
             }
         }
@@ -125,8 +125,8 @@ final class FormReader
         ksort($propertiesWithPosition);
 
         $properties = array_merge(
-          $propertiesWithPosition,
-          $propertiesWithoutPosition
+            $propertiesWithPosition,
+            $propertiesWithoutPosition
         );
 
         foreach ($properties as $property) {

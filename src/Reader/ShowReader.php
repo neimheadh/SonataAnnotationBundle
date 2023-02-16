@@ -35,8 +35,8 @@ final class ShowReader
      * @return void
      */
     public function configureFields(
-      ReflectionClass $class,
-      ShowMapper $showMapper
+        ReflectionClass $class,
+        ShowMapper $showMapper
     ): void {
         $propertiesAndMethodsWithPosition = [];
         $propertiesAndMethodsWithoutPosition = [];
@@ -56,8 +56,8 @@ final class ShowReader
                 if ($annotation instanceof ShowAssociationField) {
                     if (!isset($annotation->field)) {
                         throw new MissingAnnotationArgumentException(
-                          $annotation,
-                          'field',
+                            $annotation,
+                            'field',
                         );
                     }
 
@@ -66,30 +66,30 @@ final class ShowReader
 
                 if (!isset($annotation->position)) {
                     $propertiesAndMethodsWithoutPosition[] = [
-                      'name' => $name,
-                      'settings' => $annotation->getSettings(),
+                        'name' => $name,
+                        'settings' => $annotation->getSettings(),
                     ];
 
                     continue;
                 }
 
                 if (array_key_exists(
-                  $annotation->position,
-                  $propertiesAndMethodsWithPosition
+                    $annotation->position,
+                    $propertiesAndMethodsWithPosition
                 )) {
                     throw new InvalidArgumentException(
-                      sprintf(
-                        'Position "%s" is already in use by "%s", try setting a different position for "%s".',
-                        $annotation->position,
-                        $propertiesAndMethodsWithPosition[$annotation->position]['name'],
-                        $property->getName()
-                      )
+                        sprintf(
+                            'Position "%s" is already in use by "%s", try setting a different position for "%s".',
+                            $annotation->position,
+                            $propertiesAndMethodsWithPosition[$annotation->position]['name'],
+                            $property->getName()
+                        )
                     );
                 }
 
                 $propertiesAndMethodsWithPosition[$annotation->position] = [
-                  'name' => $name,
-                  'settings' => $annotation->getSettings(),
+                    'name' => $name,
+                    'settings' => $annotation->getSettings(),
                 ];
             }
         }
@@ -101,37 +101,37 @@ final class ShowReader
         foreach ($class->getMethods() as $method) {
             /** @var ShowField|null $annotation */
             if ($annotation = $this->getMethodAnnotation(
-              $method,
-              ShowField::class
+                $method,
+                ShowField::class
             )) {
                 $name = $method->getName();
 
                 if (!isset($annotation->position)) {
                     $propertiesAndMethodsWithoutPosition[] = [
-                      'name' => $name,
-                      'settings' => $annotation->getSettings(),
+                        'name' => $name,
+                        'settings' => $annotation->getSettings(),
                     ];
 
                     continue;
                 }
 
                 if (array_key_exists(
-                  $annotation->position,
-                  $propertiesAndMethodsWithPosition
+                    $annotation->position,
+                    $propertiesAndMethodsWithPosition
                 )) {
                     throw new InvalidArgumentException(
-                      sprintf(
-                        'Position "%s" is already in use by "%s", try setting a different position for "%s".',
-                        $annotation->position,
-                        $propertiesAndMethodsWithPosition[$annotation->position]['name'],
-                        $name
-                      )
+                        sprintf(
+                            'Position "%s" is already in use by "%s", try setting a different position for "%s".',
+                            $annotation->position,
+                            $propertiesAndMethodsWithPosition[$annotation->position]['name'],
+                            $name
+                        )
                     );
                 }
 
                 $propertiesAndMethodsWithPosition[$annotation->position] = [
-                  'name' => $name,
-                  'settings' => $annotation->getSettings(),
+                    'name' => $name,
+                    'settings' => $annotation->getSettings(),
                 ];
             }
         }
@@ -143,15 +143,15 @@ final class ShowReader
         ksort($propertiesAndMethodsWithPosition);
 
         $propertiesAndMethods = array_merge(
-          $propertiesAndMethodsWithPosition,
-          $propertiesAndMethodsWithoutPosition
+            $propertiesAndMethodsWithPosition,
+            $propertiesAndMethodsWithoutPosition
         );
 
         foreach ($propertiesAndMethods as $propertyAndMethod) {
             $showMapper->add(
-              $propertyAndMethod['name'],
-              ...
-              $propertyAndMethod['settings']
+                $propertyAndMethod['name'],
+                ...
+                $propertyAndMethod['settings']
             );
         }
     }

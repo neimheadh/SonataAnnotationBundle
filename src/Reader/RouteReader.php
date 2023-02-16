@@ -35,12 +35,12 @@ final class RouteReader
 
         foreach ($this->getClassAnnotations($class) as $annotation) {
             if (($annotation instanceof AddRoute
-                || $annotation instanceof RemoveRoute)
-              && !isset($annotation->name)) {
+                    || $annotation instanceof RemoveRoute)
+                && !isset($annotation->name)) {
                 throw new MissingAnnotationArgumentException(
-                  $annotation,
-                  'name',
-                  $class
+                    $annotation,
+                    'name',
+                    $class
                 );
             }
 

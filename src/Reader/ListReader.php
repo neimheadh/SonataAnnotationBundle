@@ -36,8 +36,8 @@ final class ListReader
      * @return void
      */
     public function configureFields(
-      ReflectionClass $class,
-      ListMapper $listMapper
+        ReflectionClass $class,
+        ListMapper $listMapper
     ): void {
         $propertiesAndMethodsWithPosition = [];
         $propertiesAndMethodsWithoutPosition = [];
@@ -57,8 +57,8 @@ final class ListReader
                 if ($annotation instanceof ListAssociationField) {
                     if (!isset($annotation->field)) {
                         throw new MissingAnnotationArgumentException(
-                          $annotation,
-                          'field',
+                            $annotation,
+                            'field',
                         );
                     }
 
@@ -67,30 +67,30 @@ final class ListReader
 
                 if (!isset($annotation->position)) {
                     $propertiesAndMethodsWithoutPosition[] = [
-                      'name' => $name,
-                      'annotation' => $annotation,
+                        'name' => $name,
+                        'annotation' => $annotation,
                     ];
 
                     continue;
                 }
 
                 if (array_key_exists(
-                  $annotation->position,
-                  $propertiesAndMethodsWithPosition
+                    $annotation->position,
+                    $propertiesAndMethodsWithPosition
                 )) {
                     throw new InvalidArgumentException(
-                      sprintf(
-                        'Position "%s" is already in use by "%s", try setting a different position for "%s".',
-                        $annotation->position,
-                        $propertiesAndMethodsWithPosition[$annotation->position]['name'],
-                        $property->getName()
-                      )
+                        sprintf(
+                            'Position "%s" is already in use by "%s", try setting a different position for "%s".',
+                            $annotation->position,
+                            $propertiesAndMethodsWithPosition[$annotation->position]['name'],
+                            $property->getName()
+                        )
                     );
                 }
 
                 $propertiesAndMethodsWithPosition[$annotation->position] = [
-                  'name' => $name,
-                  'annotation' => $annotation,
+                    'name' => $name,
+                    'annotation' => $annotation,
                 ];
             }
         }
@@ -102,37 +102,37 @@ final class ListReader
         foreach ($class->getMethods() as $method) {
             /** @var ListField|null $annotation */
             if ($annotation = $this->getMethodAnnotation(
-              $method,
-              ListField::class
+                $method,
+                ListField::class
             )) {
                 $name = $method->getName();
 
                 if (!isset($annotation->position)) {
                     $propertiesAndMethodsWithoutPosition[] = [
-                      'name' => $name,
-                      'annotation' => $annotation,
+                        'name' => $name,
+                        'annotation' => $annotation,
                     ];
 
                     continue;
                 }
 
                 if (array_key_exists(
-                  $annotation->position,
-                  $propertiesAndMethodsWithPosition
+                    $annotation->position,
+                    $propertiesAndMethodsWithPosition
                 )) {
                     throw new InvalidArgumentException(
-                      sprintf(
-                        'Position "%s" is already in use by "%s", try setting a different position for "%s".',
-                        $annotation->position,
-                        $propertiesAndMethodsWithPosition[$annotation->position]['name'],
-                        $name
-                      )
+                        sprintf(
+                            'Position "%s" is already in use by "%s", try setting a different position for "%s".',
+                            $annotation->position,
+                            $propertiesAndMethodsWithPosition[$annotation->position]['name'],
+                            $name
+                        )
                     );
                 }
 
                 $propertiesAndMethodsWithPosition[$annotation->position] = [
-                  'name' => $name,
-                  'annotation' => $annotation,
+                    'name' => $name,
+                    'annotation' => $annotation,
                 ];
             }
         }
@@ -144,15 +144,15 @@ final class ListReader
         ksort($propertiesAndMethodsWithPosition);
 
         $propertiesAndMethods = array_merge(
-          $propertiesAndMethodsWithPosition,
-          $propertiesAndMethodsWithoutPosition
+            $propertiesAndMethodsWithPosition,
+            $propertiesAndMethodsWithoutPosition
         );
 
         foreach ($propertiesAndMethods as $propertyAndMethod) {
             $this->addField(
-              $propertyAndMethod['name'],
-              $propertyAndMethod['annotation'],
-              $listMapper
+                $propertyAndMethod['name'],
+                $propertyAndMethod['annotation'],
+                $listMapper
             );
         }
 
@@ -162,7 +162,7 @@ final class ListReader
 
         if ($actions = $this->getListActions($class)) {
             $listMapper->add('_action', null, [
-              'actions' => $actions,
+                'actions' => $actions,
             ]);
         }
     }
@@ -177,9 +177,9 @@ final class ListReader
      * @return void
      */
     private function addField(
-      string $name,
-      ListField $annotation,
-      ListMapper $listMapper
+        string $name,
+        ListField $annotation,
+        ListMapper $listMapper
     ): void {
         $listMapper->add($name, ...$annotation->getSettings());
     }
@@ -201,9 +201,9 @@ final class ListReader
             if ($annotation instanceof ListAction) {
                 if (!isset($annotation->name)) {
                     throw new MissingAnnotationArgumentException(
-                      $annotation,
-                      'name',
-                      $class
+                        $annotation,
+                        'name',
+                        $class
                     );
                 }
 

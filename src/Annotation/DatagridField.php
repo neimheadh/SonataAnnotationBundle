@@ -47,10 +47,10 @@ class DatagridField extends AbstractField
     public function getSettings(): array
     {
         return [
-          $this->type ?? null,
-          $this->filterOptions,
-          $this->fieldOptions,
-          $this->fieldDescriptionOptions,
+            $this->type ?? null,
+            $this->filterOptions,
+            $this->fieldOptions,
+            $this->fieldDescriptionOptions,
         ];
     }
 

@@ -45,8 +45,8 @@ trait AnnotationReaderTrait
      * @return object|AnnotationInterface|null
      */
     protected function getClassAnnotation(
-      ReflectionClass $class,
-      string $annotation
+        ReflectionClass $class,
+        string $annotation
     ): ?object {
         return $this->annotationReader->getClassAnnotation($class, $annotation);
     }
@@ -71,7 +71,7 @@ trait AnnotationReaderTrait
      * @return array<object|AnnotationInterface>
      */
     protected function getPropertyAnnotations(
-      ReflectionProperty $property
+        ReflectionProperty $property
     ): array {
         return $this->annotationReader->getPropertyAnnotations($property);
     }
@@ -85,12 +85,12 @@ trait AnnotationReaderTrait
      * @return object|AnnotationInterface|null
      */
     protected function getMethodAnnotation(
-      ReflectionMethod $method,
-      string $annotation
+        ReflectionMethod $method,
+        string $annotation
     ): ?object {
         return $this->annotationReader->getMethodAnnotation(
-          $method,
-          $annotation
+            $method,
+            $annotation
         );
     }
 

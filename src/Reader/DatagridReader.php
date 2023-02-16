@@ -35,8 +35,8 @@ final class DatagridReader
      * @return void
      */
     public function configureFields(
-      ReflectionClass $class,
-      DatagridMapper $datagridMapper
+        ReflectionClass $class,
+        DatagridMapper $datagridMapper
     ): void {
         $propertiesWithPosition = [];
         $propertiesWithoutPosition = [];
@@ -52,8 +52,8 @@ final class DatagridReader
                 if ($annotation instanceof DatagridAssociationField) {
                     if (!isset($annotation->field)) {
                         throw new MissingAnnotationArgumentException(
-                          $annotation,
-                          'field',
+                            $annotation,
+                            'field',
                         );
                     }
 
@@ -62,30 +62,30 @@ final class DatagridReader
 
                 if (!isset($annotation->position)) {
                     $propertiesWithoutPosition[] = [
-                      'name' => $name,
-                      'annotation' => $annotation,
+                        'name' => $name,
+                        'annotation' => $annotation,
                     ];
 
                     continue;
                 }
 
                 if (array_key_exists(
-                  $annotation->position,
-                  $propertiesWithPosition
+                    $annotation->position,
+                    $propertiesWithPosition
                 )) {
                     throw new InvalidArgumentException(
-                      sprintf(
-                        'Position "%s" is already in use by "%s", try setting a different position for "%s".',
-                        $annotation->position,
-                        $propertiesWithPosition[$annotation->position]['name'],
-                        $property->getName()
-                      )
+                        sprintf(
+                            'Position "%s" is already in use by "%s", try setting a different position for "%s".',
+                            $annotation->position,
+                            $propertiesWithPosition[$annotation->position]['name'],
+                            $property->getName()
+                        )
                     );
                 }
 
                 $propertiesWithPosition[$annotation->position] = [
-                  'name' => $name,
-                  'annotation' => $annotation,
+                    'name' => $name,
+                    'annotation' => $annotation,
                 ];
             }
         }
@@ -93,14 +93,14 @@ final class DatagridReader
         ksort($propertiesWithPosition);
 
         $properties = array_merge(
-          $propertiesWithPosition,
-          $propertiesWithoutPosition
+            $propertiesWithPosition,
+            $propertiesWithoutPosition
         );
 
         foreach ($properties as $property) {
             $datagridMapper->add(
-                 $property['name'],
-              ...$property['annotation']->getSettings()
+                $property['name'],
+                ...$property['annotation']->getSettings()
             );
         }
     }

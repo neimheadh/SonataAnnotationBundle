@@ -11,9 +11,11 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class SonataAnnotationExtension extends Extension
 {
+
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
@@ -21,10 +23,18 @@ final class SonataAnnotationExtension extends Extension
 
         $container->setParameter(
             'sonata_annotation.directory',
-            $config['directory'] ?? $container->getParameter('kernel.project_dir') . '/src/'
+            $config['directory'] ?? $container->getParameter(
+                'kernel.project_dir'
+            ) . '/src/'
         );
 
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader = new XmlFileLoader(
+            $container,
+            new FileLocator(
+                __DIR__ . '/../Resources/config'
+            )
+        );
         $loader->load('reader.xml');
     }
+
 }

@@ -120,15 +120,15 @@ class AnnotationAdmin extends AbstractAdmin
      *                                                     reader.
      */
     public function __construct(
-      ActionButtonReader $actionButtonReader,
-      DatagridReader $datagridReader,
-      DatagridValuesReader $datagridValuesReader,
-      DashboardActionReader $dashboardActionReader,
-      ExportReader $exportReader,
-      FormReader $formReader,
-      ListReader $listReader,
-      RouteReader $routeReader,
-      ShowReader $showReader
+        ActionButtonReader $actionButtonReader,
+        DatagridReader $datagridReader,
+        DatagridValuesReader $datagridValuesReader,
+        DashboardActionReader $dashboardActionReader,
+        ExportReader $exportReader,
+        FormReader $formReader,
+        ListReader $listReader,
+        RouteReader $routeReader,
+        ShowReader $showReader
     ) {
         parent::__construct();
 
@@ -152,7 +152,7 @@ class AnnotationAdmin extends AbstractAdmin
     public function getExportFormats(): array
     {
         return $this->exportReader->getFormats(
-          $this->getReflectionClass()
+            $this->getReflectionClass()
         ) ?: parent::getExportFormats();
     }
 
@@ -167,19 +167,19 @@ class AnnotationAdmin extends AbstractAdmin
      * @throws ReflectionException
      */
     protected function configureActionButtons(
-      array $buttonList,
-      string $action,
-      ?object $object = null
+        array $buttonList,
+        string $action,
+        ?object $object = null
     ): array {
         return $this->actionButtonReader
-          ->getActions(
-            $this->getReflectionClass(),
-            parent::configureActionButtons(
-              $buttonList,
-              $action,
-              $object
-            )
-          );
+            ->getActions(
+                $this->getReflectionClass(),
+                parent::configureActionButtons(
+                    $buttonList,
+                    $action,
+                    $object
+                )
+            );
     }
 
     /**
@@ -194,10 +194,10 @@ class AnnotationAdmin extends AbstractAdmin
     protected function configureDashboardActions(array $actions): array
     {
         return $this->dashboardActionReader
-          ->getActions(
-            $this->getReflectionClass(),
-            parent::configureDashboardActions($actions)
-          );
+            ->getActions(
+                $this->getReflectionClass(),
+                parent::configureDashboardActions($actions)
+            );
     }
 
     /**
@@ -211,8 +211,8 @@ class AnnotationAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $filter): void
     {
         $this->datagridReader->configureFields(
-          $this->getReflectionClass(),
-          $filter
+            $this->getReflectionClass(),
+            $filter
         );
     }
 
@@ -225,7 +225,7 @@ class AnnotationAdmin extends AbstractAdmin
     protected function configureExportFields(): array
     {
         return $this->exportReader->getFields(
-          $this->getReflectionClass()
+            $this->getReflectionClass()
         ) ?: parent::getExportFields();
     }
 
@@ -241,15 +241,15 @@ class AnnotationAdmin extends AbstractAdmin
     {
         if ($this->getRequest()->get($this->getIdParameter())) {
             $this->formReader->configureEditFields(
-              $this->getReflectionClass(),
-              $form
+                $this->getReflectionClass(),
+                $form
             );
             return;
         }
 
         $this->formReader->configureCreateFields(
-          $this->getReflectionClass(),
-          $form
+            $this->getReflectionClass(),
+            $form
         );
     }
 
@@ -264,10 +264,10 @@ class AnnotationAdmin extends AbstractAdmin
     protected function configureListFields(ListMapper $list): void
     {
         $this->listReader
-          ->configureFields(
-            $this->getReflectionClass(),
-            $list
-          );
+            ->configureFields(
+                $this->getReflectionClass(),
+                $list
+            );
     }
 
     /**
@@ -279,19 +279,19 @@ class AnnotationAdmin extends AbstractAdmin
      * @throws ReflectionException
      */
     protected function configureRoutes(
-      RouteCollectionInterface $collection
+        RouteCollectionInterface $collection
     ): void {
         [$addRoutes, $removeRoutes] = $this->routeReader->getRoutes(
-          $this->getReflectionClass()
+            $this->getReflectionClass()
         );
 
         /** @var AddRoute $route */
         foreach ($addRoutes as $route) {
             $collection->add(
-              $route->name,
-              $route->path ? $this->replaceIdParameterInRoutePath(
-                $route->path
-              ) : $route->getName()
+                $route->name,
+                $route->path ? $this->replaceIdParameterInRoutePath(
+                    $route->path
+                ) : $route->getName()
             );
         }
 
@@ -312,8 +312,8 @@ class AnnotationAdmin extends AbstractAdmin
     protected function configureShowFields(ShowMapper $show): void
     {
         $this->showReader->configureFields(
-          $this->getReflectionClass(),
-          $show
+            $this->getReflectionClass(),
+            $show
         );
     }
 
@@ -328,9 +328,9 @@ class AnnotationAdmin extends AbstractAdmin
     private function replaceIdParameterInRoutePath(string $path): string
     {
         return str_replace(
-          AddRoute::ID_PARAMETER,
-          $this->getRouterIdParameter(),
-          $path
+            AddRoute::ID_PARAMETER,
+            $this->getRouterIdParameter(),
+            $path
         );
     }
 
@@ -344,4 +344,5 @@ class AnnotationAdmin extends AbstractAdmin
     {
         return new ReflectionClass($this->getClass());
     }
+
 }

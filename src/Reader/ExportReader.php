@@ -37,14 +37,14 @@ final class ExportReader
                 if ($annotation instanceof ExportAssociationField) {
                     if (!isset($annotation->field)) {
                         throw new MissingAnnotationArgumentException(
-                          $annotation,
-                          'field',
+                            $annotation,
+                            'field',
                         );
                     }
 
                     $fieldName = $property->getName()
-                      . '.'
-                      . $annotation->field;
+                        . '.'
+                        . $annotation->field;
 
                     $fields[$annotation->label ?? $fieldName] = $fieldName;
                     continue;
@@ -59,8 +59,8 @@ final class ExportReader
 
         foreach ($class->getMethods() as $method) {
             if ($annotation = $this->getMethodAnnotation(
-              $method,
-              ExportField::class
+                $method,
+                ExportField::class
             )) {
                 $label = $annotation->label ?? $method->getName();
                 $fields[$label] = $method->getName();
@@ -81,8 +81,8 @@ final class ExportReader
     {
         /** @var ExportFormats|null $annotation */
         if ($annotation = $this->getClassAnnotation(
-          $class,
-          ExportFormats::class
+            $class,
+            ExportFormats::class
         )) {
             return $annotation->formats;
         }

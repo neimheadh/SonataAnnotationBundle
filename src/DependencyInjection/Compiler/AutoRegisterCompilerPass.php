@@ -45,7 +45,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     {
         $this->annotationReader = $container->get('annotation_reader');
         $files = $this->findFiles(
-          $container->getParameter('sonata_annotation.directory')
+            $container->getParameter('sonata_annotation.directory')
         );
 
         foreach ($files as $file) {
@@ -58,37 +58,37 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
             }
 
             if (!($annotation = $this->getClassAnnotation(
-              new ReflectionClass($className)
+                new ReflectionClass($className)
             ))) {
                 continue;
             }
 
             $definition = new Definition(
-              $annotation->admin,
-              [
-                new Reference('sonata.annotation.reader.action_button'),
-                new Reference('sonata.annotation.reader.datagrid'),
-                new Reference('sonata.annotation.reader.datagrid_values'),
-                new Reference('sonata.annotation.reader.dashboard_action'),
-                new Reference('sonata.annotation.reader.export'),
-                new Reference('sonata.annotation.reader.form'),
-                new Reference('sonata.annotation.reader.list'),
-                new Reference('sonata.annotation.reader.route'),
-                new Reference('sonata.annotation.reader.show'),
-              ]
+                $annotation->admin,
+                [
+                    new Reference('sonata.annotation.reader.action_button'),
+                    new Reference('sonata.annotation.reader.datagrid'),
+                    new Reference('sonata.annotation.reader.datagrid_values'),
+                    new Reference('sonata.annotation.reader.dashboard_action'),
+                    new Reference('sonata.annotation.reader.export'),
+                    new Reference('sonata.annotation.reader.form'),
+                    new Reference('sonata.annotation.reader.list'),
+                    new Reference('sonata.annotation.reader.route'),
+                    new Reference('sonata.annotation.reader.show'),
+                ]
             );
 
             $definition->addTag(
-              'sonata.admin',
-              array_merge(
-                $annotation->getTagOptions(),
-                ['model_class' => $className],
-              )
+                'sonata.admin',
+                array_merge(
+                    $annotation->getTagOptions(),
+                    ['model_class' => $className],
+                )
             );
 
             $container->setDefinition(
-              $annotation->serviceId ?? $this->getServiceId($file),
-              $definition
+                $annotation->serviceId ?? $this->getServiceId($file),
+                $definition
             );
         }
     }
@@ -103,9 +103,9 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     private function findFiles(string $directory): IteratorAggregate
     {
         return Finder::create()
-          ->in($directory)
-          ->files()
-          ->name('*.php');
+            ->in($directory)
+            ->files()
+            ->name('*.php');
     }
 
     /**
@@ -166,8 +166,8 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     private function getClassAnnotation(ReflectionClass $class): ?Admin
     {
         return $this->annotationReader->getClassAnnotation(
-          $class,
-          Admin::class
+            $class,
+            Admin::class
         );
     }
 
@@ -181,8 +181,8 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     private function getServiceId(SplFileInfo $file): string
     {
         return self::DEFAULT_SERVICE_PREFIX . $this->getClassName(
-            $file->getFilename()
-          );
+                $file->getFilename()
+            );
     }
 
 }

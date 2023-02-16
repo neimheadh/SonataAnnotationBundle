@@ -38,16 +38,16 @@ abstract class AbstractActionReader
             if ($this->isSupported($annotation)) {
                 if (!isset($annotation->template)) {
                     throw new MissingAnnotationArgumentException(
-                      $annotation,
-                      'template',
-                      $class
+                        $annotation,
+                        'template',
+                        $class
                     );
                 }
 
                 /** @var AbstractAction $annotation */
                 $actions[random_int(
-                  -99999,
-                  99999
+                    -99999,
+                    99999
                 )]['template'] = $annotation->template;
             }
         }

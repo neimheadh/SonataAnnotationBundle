@@ -129,18 +129,18 @@ final class Admin implements AnnotationInterface
     public function getTagOptions(): array
     {
         return [
-          'code' => $this->code ?? null,
-          'controller' => $this->controller ?? null,
-          'manager_type' => $this->managerType,
-          'group' => $this->group ?? null,
-          'label' => $this->label ?? null,
-          'show_in_dashboard' => $this->showInDashboard,
-          'keep_open' => $this->keepOpen,
-          'on_top' => $this->onTop,
-          'icon' => $this->icon ?? null,
-          'label_translator_strategy' => $this->labelTranslatorStrategy ?? null,
-          'label_catalogue' => $this->labelCatalogue ?? null,
-          'pager_type' => $this->pagerType ?? null,
+            'code' => $this->code ?? null,
+            'controller' => $this->controller ?? null,
+            'manager_type' => $this->managerType,
+            'group' => $this->group ?? null,
+            'label' => $this->label ?? null,
+            'show_in_dashboard' => $this->showInDashboard,
+            'keep_open' => $this->keepOpen,
+            'on_top' => $this->onTop,
+            'icon' => $this->icon ?? null,
+            'label_translator_strategy' => $this->labelTranslatorStrategy ?? null,
+            'label_catalogue' => $this->labelCatalogue ?? null,
+            'pager_type' => $this->pagerType ?? null,
         ];
     }
 

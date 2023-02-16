@@ -44,8 +44,8 @@ final class AccessCompilerPass implements CompilerPassInterface
             $class = $this->getClass($container, $id);
 
             if ($permissions = $this->getRoles(
-              new ReflectionClass($class),
-              $this->getRolePrefix($id)
+                new ReflectionClass($class),
+                $this->getRolePrefix($id)
             )) {
                 $roles = array_merge_recursive($roles, $permissions);
             }
@@ -87,17 +87,17 @@ final class AccessCompilerPass implements CompilerPassInterface
 
             if (!isset($annotation->role)) {
                 throw new MissingAnnotationArgumentException(
-                  $annotation,
-                  'role',
-                  $class
+                    $annotation,
+                    'role',
+                    $class
                 );
             }
 
             $roles[$annotation->role] = array_map(
-              function (string $permission) use ($prefix) {
-                  return $prefix . strtoupper($permission);
-              },
-              $annotation->permissions
+                function(string $permission) use ($prefix) {
+                    return $prefix . strtoupper($permission);
+                },
+                $annotation->permissions
             );
         }
 
