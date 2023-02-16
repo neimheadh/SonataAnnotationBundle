@@ -1,0 +1,98 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+
+commands:
+  build-env:
+    description: Build test environment
+    steps:
+      - run: mkdir -p bin
+      - run: php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+      - run: php composer-setup.php
+      - run: rm composer-setup.php
+      - run: mv composer.phar bin/composer
+      - run: php -r "copy('https://phar.phpunit.de/phpunit-9.5.27.phar', 'bin/phpunit');"
+
+  install:
+    description: Process the composer install
+    steps:
+      - run: php bin/composer install --prefer-dist --no-interaction
+
+  test:
+    description: Execute tests
+    steps:
+      - run: rm -Rf var/cache/test.sqlite
+      - run: php bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
+
+  coveralls:
+    description: Send coveralls report
+    steps:
+      - run: vendor/bin/php-coveralls
+
+executors:
+  php82:
+    docker:
+      - image: neimheadh/sonata-annotation-bundle:php-8.2
+    environment:
+      SYMFONY_DEPRECATIONS_HELPER: disabled
+  php81:
+    docker:
+      - image: neimheadh/sonata-annotation-bundle:php-8.1
+    environment:
+      SYMFONY_DEPRECATIONS_HELPER: disabled
+  php80:
+    docker:
+      - image: neimheadh/sonata-annotation-bundle:php-8.0
+    environment:
+      SYMFONY_DEPRECATIONS_HELPER: disabled
+  php74:
+    docker:
+      - image: neimheadh/sonata-annotation-bundle:php-7.4
+    environment:
+      SYMFONY_DEPRECATIONS_HELPER: disabled
+
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+jobs:
+  php82-test:
+    executor: php82
+    steps:
+      - checkout
+      - build-env
+      - install
+      - test
+      - coveralls
+
+  php81-test:
+    executor: php81
+    steps:
+      - checkout
+      - build-env
+      - install
+      - test
+
+  php80-test:
+    executor: php80
+    steps:
+      - checkout
+      - build-env
+      - install
+      - test
+
+  php74-test:
+    executor: php74
+    steps:
+      - checkout
+      - build-env
+      - install
+      - test
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  integration-test:
+    jobs:
+      - php82-test
+      - php81-test
+      - php80-test
+      - php74-test
