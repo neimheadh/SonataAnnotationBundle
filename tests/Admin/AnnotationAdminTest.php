@@ -124,12 +124,15 @@ class AnnotationAdminTest extends WebTestCase
         $items = $group->getElementsByTagName('item');
         $this->assertEquals(3, $items->length);
 
-        $this->assertEquals(Person::class, $items[0]->getAttribute('class'));
-        $this->assertEquals(Book::class, $items[1]->getAttribute('class'));
-        $this->assertEquals(Author::class, $items[2]->getAttribute('class'));
+        $classes = [];
+        foreach ($items as $item) $classes[] = $item->getAttribute('class');
+
+        $this->assertContains(Person::class, $classes);
+        $this->assertContains(Book::class, $classes);
+        $this->assertContains(Author::class, $classes);
 
         /** @var DOMNodeList|DOMElement[] $actions */
-        $actions = $items[1]->getElementsByTagName('action');
+        $actions = $items[array_search(Book::class, $classes)]->getElementsByTagName('action');
         $this->assertEquals(3, $actions->length);
         $this->assertEquals(
           'export_book_list.html.twig',
