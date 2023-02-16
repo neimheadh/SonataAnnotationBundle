@@ -14,9 +14,9 @@ This bundle is a fork of the archived [KunicMarko\SonataAnnotationBundle](https:
 [![Latest Stable Version](https://poser.pugx.org/neimheadh/sonata-annotation-bundle/v/stable)](https://packagist.org/packages/neimheadh/sonata-annotation-bundle)
 [![Latest Unstable Version](https://poser.pugx.org/neimheadh/sonata-annotation-bundle/v/unstable)](https://packagist.org/packages/neimheadh/sonata-annotation-bundle)
 
-[![Build Status](https://circleci.com/gh/neimheadh/SonataAnnotationBundle.svg?style=shield)](https://circleci.com/gh/neimheadh/SonataAnnotationBundle)
-[![Coverage Status](https://coveralls.io/repos/github/neimheadh/SonataAnnotationBundle/badge.svg?branch=develop)](https://coveralls.io/github/neimheadh/SonataAnnotationBundle?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/neimheadh/SonataAnnotationBundle/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/neimheadh/SonataAnnotationBundle/?branch=master)
+[![Build Status](https://circleci.com/gh/neimheadh/SonataAnnotationBundle/tree/master.svg?style=shield)](https://circleci.com/gh/neimheadh/SonataAnnotationBundle)
+[![Coverage Status](https://coveralls.io/repos/github/neimheadh/SonataAnnotationBundle/badge.svg?branch=master)](https://coveralls.io/github/neimheadh/SonataAnnotationBundle?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/neimheadh/SonataAnnotationBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/neimheadh/SonataAnnotationBundle/?branch=master)
 
 Documentation
 -------------
