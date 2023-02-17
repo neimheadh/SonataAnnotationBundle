@@ -16,12 +16,15 @@ namespace KunicMarko\SonataAnnotationBundle\Annotation;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class DatagridAssociationField extends DatagridField
+final class DatagridAssociationField extends DatagridField implements
+    AssociationFieldInterface
 {
+
     /**
      * Association field name.
      *
      * @var string
      */
     public string $field;
+
 }

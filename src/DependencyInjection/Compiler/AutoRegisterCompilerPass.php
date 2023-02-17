@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler;
 
-use Doctrine\Common\Annotations\Reader;
+use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
 use IteratorAggregate;
 use KunicMarko\SonataAnnotationBundle\Annotation\Admin;
@@ -30,20 +30,15 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     private const DEFAULT_SERVICE_PREFIX = 'app.admin.';
 
     /**
-     * Doctrine annotation reader.
-     *
-     * @var Reader|null
-     */
-    private ?Reader $annotationReader = null;
-
-    /**
      * {@inheritDoc}
      *
      * @throws Exception
      */
     public function process(ContainerBuilder $container): void
     {
-        $this->annotationReader = $container->get('annotation_reader');
+        /** @var AnnotationReader $annotationReader */
+        $annotationReader = $container->get('annotation_reader');
+
         $files = $this->findFiles(
             $container->getParameter('sonata_annotation.directory')
         );
@@ -57,8 +52,9 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
                 continue;
             }
 
-            if (!($annotation = $this->getClassAnnotation(
-                new ReflectionClass($className)
+            if (!($annotation = $annotationReader->getClassAnnotation(
+                new ReflectionClass($className),
+                Admin::class
             ))) {
                 continue;
             }
@@ -135,7 +131,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     {
         $namespaceLine = preg_grep('/^namespace /', file($filePath));
 
-        if (!$namespaceLine) {
+        if (empty($namespaceLine)) {
             return null;
         }
 
@@ -154,21 +150,6 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     private function getClassName(string $fileName): string
     {
         return str_replace('.php', '', $fileName);
-    }
-
-    /**
-     * Get class admin annotation.
-     *
-     * @param ReflectionClass $class Model class.
-     *
-     * @return Admin|null
-     */
-    private function getClassAnnotation(ReflectionClass $class): ?Admin
-    {
-        return $this->annotationReader->getClassAnnotation(
-            $class,
-            Admin::class
-        );
     }
 
     /**

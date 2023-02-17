@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KunicMarko\SonataAnnotationBundle\Reader;
 
+use Doctrine\Common\Annotations\Reader;
 use KunicMarko\SonataAnnotationBundle\Annotation\DashboardAction;
 
 /**
@@ -18,8 +19,10 @@ final class DashboardActionReader extends AbstractActionReader
     /**
      * {@inheritDoc}
      */
-    protected function isSupported(object $annotation): bool
-    {
-        return $annotation instanceof DashboardAction;
+    public function __construct(
+        Reader $annotationReader
+    ) {
+        parent::__construct($annotationReader, DashboardAction::class);
     }
+
 }

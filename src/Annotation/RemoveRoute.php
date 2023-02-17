@@ -15,7 +15,7 @@ namespace KunicMarko\SonataAnnotationBundle\Annotation;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class RemoveRoute implements AnnotationInterface
+final class RemoveRoute implements RouteAnnotationInterface
 {
     /**
      * Removed route name.

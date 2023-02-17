@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KunicMarko\SonataAnnotationBundle\Reader;
 
+use Doctrine\Common\Annotations\Reader;
 use Exception;
 use KunicMarko\SonataAnnotationBundle\Annotation\AbstractAction;
 use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
@@ -15,10 +16,27 @@ use ReflectionClass;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-abstract class AbstractActionReader
+abstract class AbstractActionReader extends AbstractReader
 {
 
-    use AnnotationReaderTrait;
+    /**
+     * Associated annotation class.
+     *
+     * @var string|null
+     */
+    protected ?string $annotationClass;
+
+    /**
+     * @param Reader  $annotationReader Doctrine annotation reader.
+     * @param ?string $annotationClass  Associated annotation class.
+     */
+    public function __construct(
+        Reader $annotationReader,
+        ?string $annotationClass = null
+    ) {
+        parent::__construct($annotationReader);
+        $this->annotationClass = $annotationClass;
+    }
 
     /**
      * Get action list.
@@ -62,6 +80,9 @@ abstract class AbstractActionReader
      *
      * @return bool
      */
-    abstract protected function isSupported(object $annotation): bool;
+    protected function isSupported(object $annotation): bool
+    {
+        return $annotation instanceof $this->annotationClass;
+    }
 
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace KunicMarko\SonataAnnotationBundle\Reader;
 
-use InvalidArgumentException;
 use KunicMarko\SonataAnnotationBundle\Annotation\AddChild;
 use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
@@ -15,10 +14,8 @@ use ReflectionClass;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class AddChildReader
+final class AddChildReader extends AbstractReader
 {
-
-    use AnnotationReaderTrait;
 
     /**
      * Get admin children.
@@ -31,11 +28,12 @@ final class AddChildReader
     {
         $children = [];
 
-        foreach ($this->getClassAnnotations($class) as $annotation) {
-            if (!$annotation instanceof AddChild) {
-                continue;
-            }
-
+        foreach (
+            $this->getClassAnnotations(
+                $class,
+                AddChild::class
+            ) as $annotation
+        ) {
             if (!isset($annotation->class)) {
                 throw new MissingAnnotationArgumentException(
                     $annotation,

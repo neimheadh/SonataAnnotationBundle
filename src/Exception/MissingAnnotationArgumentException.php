@@ -24,29 +24,11 @@ class MissingAnnotationArgumentException extends InvalidArgumentException
         string $argumentName,
         $class = null
     ) {
-        if ($annotation instanceof AnnotationInterface) {
+        if (is_object($annotation)) {
             $annotation = get_class($annotation);
         }
 
-        if ($class instanceof ReflectionClass) {
-            $class = $class->getName();
-        }
-
-        if (!is_string($annotation)) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Invalid annotation (string|%s) attribute.',
-                    AnnotationInterface::class,
-                )
-            );
-        }
-
-        if ($class !== null && !is_string($class)) {
-            throw new InvalidArgumentException(
-                'Invalid class (string|ReflectionClass|null) attribute.',
-            );
-        }
-
+        $class = $this->getClassName($class);
         if ($class) {
             $message = sprintf(
                 'Argument "%s" is mandatory for annotation %s on %s.',
@@ -63,6 +45,28 @@ class MissingAnnotationArgumentException extends InvalidArgumentException
         }
 
         parent::__construct($message);
+    }
+
+    /**
+     * Get given class name.
+     *
+     * @param string|object|null $class Class.
+     *
+     * @return string|null
+     */
+    private function getClassName($class): ?string
+    {
+        if ($class instanceof ReflectionClass) {
+            $class = $class->getName();
+        }
+
+        if ($class !== null && !is_string($class)) {
+            throw new InvalidArgumentException(
+                'Invalid class (string|ReflectionClass|null) attribute.',
+            );
+        }
+
+        return $class;
     }
 
 }

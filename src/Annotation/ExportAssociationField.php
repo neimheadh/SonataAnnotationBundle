@@ -16,12 +16,15 @@ namespace KunicMarko\SonataAnnotationBundle\Annotation;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class ExportAssociationField extends ExportField
+final class ExportAssociationField extends ExportField implements
+    AssociationFieldInterface
 {
+
     /**
      * Association field name.
      *
      * @var string
      */
     public string $field;
+
 }

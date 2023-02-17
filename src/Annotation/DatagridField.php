@@ -15,7 +15,7 @@ namespace KunicMarko\SonataAnnotationBundle\Annotation;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-class DatagridField extends AbstractField
+class DatagridField extends AbstractField implements PositionAnnotationInterface
 {
 
     /**

@@ -15,7 +15,7 @@ namespace KunicMarko\SonataAnnotationBundle\Annotation;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-class ListField extends AbstractField
+class ListField extends AbstractField implements PositionAnnotationInterface
 {
 
     /**

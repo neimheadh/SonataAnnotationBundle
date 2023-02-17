@@ -28,24 +28,6 @@ class MissingAnnotationArgumentExceptionTest extends TestCase
         $e = null;
         try {
             new MissingAnnotationArgumentException(
-              new stdClass(),
-              'argument',
-            );
-        } catch (InvalidArgumentException $e) {
-        }
-
-        $this->assertNotNull($e);
-        $this->assertEquals(
-          sprintf(
-            'Invalid annotation (string|%s) attribute.',
-            AnnotationInterface::class
-          ),
-          $e->getMessage(),
-        );
-
-        $e = null;
-        try {
-            new MissingAnnotationArgumentException(
               new Access(),
               'argument',
               new stdClass(),

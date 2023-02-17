@@ -15,12 +15,15 @@ namespace KunicMarko\SonataAnnotationBundle\Annotation;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class ListAssociationField extends ListField
+final class ListAssociationField extends ListField implements
+    AssociationFieldInterface
 {
+
     /**
      * Association field name.
      *
      * @var string
      */
     public string $field;
+
 }

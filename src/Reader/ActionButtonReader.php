@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace KunicMarko\SonataAnnotationBundle\Reader;
 
+use Doctrine\Common\Annotations\Reader;
 use KunicMarko\SonataAnnotationBundle\Annotation\ActionButton;
 
 /**
@@ -18,8 +19,9 @@ final class ActionButtonReader extends AbstractActionReader
     /**
      * {@inheritDoc}
      */
-    protected function isSupported(object $annotation): bool
+    public function __construct(Reader $annotationReader)
     {
-        return $annotation instanceof ActionButton;
+        parent::__construct($annotationReader, ActionButton::class);
     }
+
 }

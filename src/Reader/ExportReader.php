@@ -7,8 +7,9 @@ namespace KunicMarko\SonataAnnotationBundle\Reader;
 use KunicMarko\SonataAnnotationBundle\Annotation\ExportAssociationField;
 use KunicMarko\SonataAnnotationBundle\Annotation\ExportField;
 use KunicMarko\SonataAnnotationBundle\Annotation\ExportFormats;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 
 /**
  * Export configuration reader.
@@ -16,10 +17,8 @@ use ReflectionClass;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class ExportReader
+final class ExportReader extends AbstractReader
 {
-
-    use AnnotationReaderTrait;
 
     /**
      * Get exported fields.
@@ -34,25 +33,8 @@ final class ExportReader
 
         foreach ($class->getProperties() as $property) {
             foreach ($this->getPropertyAnnotations($property) as $annotation) {
-                if ($annotation instanceof ExportAssociationField) {
-                    if (!isset($annotation->field)) {
-                        throw new MissingAnnotationArgumentException(
-                            $annotation,
-                            'field',
-                        );
-                    }
-
-                    $fieldName = $property->getName()
-                        . '.'
-                        . $annotation->field;
-
-                    $fields[$annotation->label ?? $fieldName] = $fieldName;
-                    continue;
-                }
-
                 if ($annotation instanceof ExportField) {
-                    $label = $annotation->label ?? $property->getName();
-                    $fields[$label] = $property->getName();
+                    $this->stackExportProperty($property, $annotation, $fields);
                 }
             }
         }
@@ -62,8 +44,7 @@ final class ExportReader
                 $method,
                 ExportField::class
             )) {
-                $label = $annotation->label ?? $method->getName();
-                $fields[$label] = $method->getName();
+                $this->stackExportProperty($method, $annotation, $fields);
             }
         }
 
@@ -88,6 +69,34 @@ final class ExportReader
         }
 
         return [];
+    }
+
+    /**
+     * Stack property or method to exported fields.
+     *
+     * @param ReflectionProperty|ReflectionMethod $property    Stacked property.
+     * @param object                              $annotation  Annotation.
+     * @param array                               $fields      Fields stack.
+     *
+     * @return void
+     */
+    private function stackExportProperty(
+        $property,
+        object $annotation,
+        array &$fields
+    ): void {
+        if ($annotation instanceof ExportAssociationField) {
+            $fieldName = $property->getName()
+                . '.'
+                . $annotation->field;
+
+            $fields[$annotation->label ?? $fieldName] = $fieldName;
+
+            return;
+        }
+
+        $label = $annotation->label ?? $property->getName();
+        $fields[$label] = $property->getName();
     }
 
 }

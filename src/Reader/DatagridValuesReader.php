@@ -13,9 +13,8 @@ use ReflectionClass;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class DatagridValuesReader
+final class DatagridValuesReader extends AbstractReader
 {
-    use AnnotationReaderTrait;
 
     /**
      * Get the list of datagrid values.
@@ -27,10 +26,14 @@ final class DatagridValuesReader
     public function getDatagridValues(ReflectionClass $class): array
     {
         /** @var DatagridValues|null $annotation */
-        if ($annotation = $this->getClassAnnotation($class, DatagridValues::class)) {
+        if ($annotation = $this->getClassAnnotation(
+            $class,
+            DatagridValues::class
+        )) {
             return $annotation->values;
         }
 
         return [];
     }
+
 }

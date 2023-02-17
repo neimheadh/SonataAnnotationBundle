@@ -6,7 +6,7 @@ namespace KunicMarko\SonataAnnotationBundle\Reader;
 
 use KunicMarko\SonataAnnotationBundle\Annotation\AddRoute;
 use KunicMarko\SonataAnnotationBundle\Annotation\RemoveRoute;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use KunicMarko\SonataAnnotationBundle\Annotation\RouteAnnotationInterface;
 use ReflectionClass;
 
 /**
@@ -15,10 +15,8 @@ use ReflectionClass;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class RouteReader
+final class RouteReader extends AbstractReader
 {
-
-    use AnnotationReaderTrait;
 
     /**
      * Get admin routes.
@@ -33,17 +31,12 @@ final class RouteReader
         $addRoutes = [];
         $removeRoutes = [];
 
-        foreach ($this->getClassAnnotations($class) as $annotation) {
-            if (($annotation instanceof AddRoute
-                    || $annotation instanceof RemoveRoute)
-                && !isset($annotation->name)) {
-                throw new MissingAnnotationArgumentException(
-                    $annotation,
-                    'name',
-                    $class
-                );
-            }
-
+        foreach (
+            $this->getClassAnnotations(
+                $class,
+                RouteAnnotationInterface::class
+            ) as $annotation
+        ) {
             if ($annotation instanceof AddRoute) {
                 $addRoutes[$annotation->name] = $annotation;
                 continue;
