@@ -5,47 +5,64 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\Annotation;
 
 /**
+ * Form field annotation.
+ *
+ * Allows you to configure form field for the annotated property.
+ *
  * @Annotation
  * @Target("PROPERTY")
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class FormField extends AbstractField
+final class FormField extends AbstractField implements
+    ActionAnnotationInterface,
+    PositionAnnotationInterface
 {
+
+    /**
+     * Create action name.
+     */
     public const ACTION_CREATE = 'create';
+
+    /**
+     * Edit action name.
+     */
     public const ACTION_EDIT = 'edit';
 
     /**
+     * Action name.
+     *
      * @var string
      */
-    public $action;
+    public string $action;
 
     /**
+     * Field options.
+     *
      * @var array
      */
-    public $options = [];
+    public array $options = [];
 
     /**
-     * @var integer
+     * Field position.
+     *
+     * @var int
      */
-    public $position;
+    public int $position;
 
+    /**
+     * Get field form settings.
+     *
+     * @return array
+     */
     public function getSettings(): array
     {
         return [
-            $this->type,
+            $this->type ?? null,
             $this->options,
-            $this->fieldDescriptionOptions
+            $this->fieldDescriptionOptions,
         ];
     }
 
-    public function getPosition(): int
-    {
-        return $this->position;
-    }
-
-    public function hasPosition(): bool
-    {
-        return $this->position !== null;
-    }
 }

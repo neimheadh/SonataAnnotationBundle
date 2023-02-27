@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+rm -Rf vendor
+mkdir -p bin
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php composer-setup.php
+rm composer-setup.php
+mv composer.phar bin/composer
+php -r "copy('https://phar.phpunit.de/phpunit-9.5.27.phar', 'bin/phpunit');"
+php bin/composer install --prefer-dist --no-interaction
+rm -Rf var/cache/test.sqlite var/cache/test
+php bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
+php vendor/bin/php-coveralls

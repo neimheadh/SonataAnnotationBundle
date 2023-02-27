@@ -5,29 +5,25 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\Annotation;
 
 /**
+ * List association field annotation.
+ *
+ * Allows you to configure your list field having an association field.
+ *
  * @Annotation
  * @Target({"PROPERTY"})
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class ListAssociationField extends ListField
+final class ListAssociationField extends ListField implements
+    AssociationFieldInterface
 {
+
     /**
+     * Association field name.
+     *
      * @var string
      */
-    public $field;
+    public string $field;
 
-    public function getField(): string
-    {
-        if ($this->field) {
-            return $this->field;
-        }
-
-        throw new \InvalidArgumentException(
-            sprintf(
-                'Argument "field" is mandatory in "%s" annotation.',
-                self::class
-            )
-        );
-    }
 }

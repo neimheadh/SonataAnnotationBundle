@@ -1,0 +1,15 @@
+<groups>
+    {% for group in groups %}
+        <group label="{{ group.label }}">
+            {% for admin in group.items %}
+                <item class="{{ admin.class }}">
+                    <actions>
+                        {% for name, action in admin.dashboardActions %}
+                            <action name="{{ name }}">{{ action.template | default('@SonataAdmin/CRUD/dashboard__action.html.twig') }}</action>
+                        {% endfor %}
+                    </actions>
+                </item>
+            {% endfor %}
+        </group>
+    {% endfor %}
+</groups>

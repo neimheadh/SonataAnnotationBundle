@@ -5,51 +5,53 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\Annotation;
 
 /**
+ * Datagrid field annotation.
+ *
+ * Allow you to configure the datagrid for the annotated field.
+ *
  * @Annotation
  * @Target("PROPERTY")
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-class DatagridField extends AbstractField
+class DatagridField extends AbstractField implements PositionAnnotationInterface
 {
+
     /**
+     * Filtering options.
+     *
      * @var array
      */
-    public $filterOptions = [];
+    public array $filterOptions = [];
 
     /**
-     * @var string
-     */
-    public $fieldType;
-
-    /**
+     * Datagrid form field type options.
+     *
      * @var array
      */
-    public $fieldOptions = [];
+    public array $fieldOptions = [];
 
     /**
+     * Datagrid field position.
+     *
      * @var int
      */
-    public $position;
+    public int $position;
 
-    public function getPosition(): int
-    {
-        return $this->position;
-    }
-
-    public function hasPosition(): bool
-    {
-        return null !== $this->position;
-    }
-
+    /**
+     * Get field settings.
+     *
+     * @return array
+     */
     public function getSettings(): array
     {
         return [
-            $this->type,
+            $this->type ?? null,
             $this->filterOptions,
-            $this->fieldType,
             $this->fieldOptions,
-            $this->fieldDescriptionOptions
+            $this->fieldDescriptionOptions,
         ];
     }
+
 }

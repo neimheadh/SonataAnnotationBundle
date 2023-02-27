@@ -1,96 +1,183 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Exception;
+use InvalidArgumentException;
+use KunicMarko\SonataAnnotationBundle\Annotation\FormField;
+use KunicMarko\SonataAnnotationBundle\Annotation\ListField;
 use KunicMarko\SonataAnnotationBundle\Reader\FormReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
+use KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
+use ReflectionClass;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\DoctrineORMAdminBundle\Builder\FormContractor;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormBuilder;
+use Symfony\Component\Form\FormFactory;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * FormReader test suite.
  */
-final class FormReaderTest extends TestCase
+class FormReaderTest extends KernelTestCase
 {
+
+    use CreateNewAnnotationAdminTrait;
+
     /**
-     * @var FormReader
+     * Test the form annotations are supported.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
      */
-    private $formReader;
-    private $formMapper;
-
-    protected function setUp(): void
+    public function shouldSupportAnnotations(): void
     {
-        $this->formMapper = $this->prophesize(FormMapper::class);
-        $this->formReader = new FormReader(new AnnotationReader());
-    }
+        $reader = new FormReader(new AnnotationReader());
+        $class = new ReflectionClass(FormReaderTestCase::class);
 
-    public function testConfigureCreateFieldsNoAnnotation(): void
-    {
-        $this->formMapper->add()->shouldNotBeCalled();
-        $this->formReader->configureCreateFields(
-            new \ReflectionClass(EmptyClass::class),
-            $this->formMapper->reveal()
+        $formMapper = $this->createNewFormMapper();
+        $reader->configureCreateFields($class, $formMapper);
+        $this->assertTrue($formMapper->has('name'));
+        $this->assertTrue($formMapper->has('email'));
+        $this->assertFalse($formMapper->has('id'));
+        $this->assertFalse($formMapper->has('phone'));
+        $this->assertInstanceOf(
+          TextType::class,
+          $formMapper->get('name')->getType()->getInnerType()
         );
-    }
+        $this->assertEquals(['sex', 'name', 'email'], $formMapper->keys());
 
-    public function testConfigureCreateFieldsAnnotationPresent(): void
-    {
-        $this->formMapper->add('field', Argument::cetera())->shouldBeCalled();
-        $this->formMapper->add('parent', Argument::cetera())->shouldBeCalled();
-        $this->formMapper->add('additionalField2', Argument::cetera())->shouldBeCalled();
-
-        $this->formReader->configureCreateFields(
-            new \ReflectionClass(AnnotationClass::class),
-            $this->formMapper->reveal()
+        $formMapper = $this->createNewFormMapper();
+        $reader->configureEditFields($class, $formMapper);
+        $this->assertTrue($formMapper->has('name'));
+        $this->assertTrue($formMapper->has('phone'));
+        $this->assertFalse($formMapper->has('id'));
+        $this->assertFalse($formMapper->has('email'));
+        $this->assertInstanceOf(
+          TextType::class,
+          $formMapper->get('name')->getType()->getInnerType()
         );
-    }
-
-    public function testConfigureEditFieldsAnnotationPresent(): void
-    {
-        $this->formMapper->add('additionalField', Argument::cetera())->shouldBeCalled();
-        $this->formMapper->add('parent', Argument::cetera())->shouldBeCalled();
-        $this->formMapper->add('additionalField2', Argument::cetera())->shouldBeCalled();
-
-        $this->formReader->configureEditFields(
-            new \ReflectionClass(AnnotationClass::class),
-            $this->formMapper->reveal()
-        );
-    }
-
-    public function testConfigureCreateFieldsAnnotationPresentPosition(): void
-    {
-        $mock = $this->createMock(FormMapper::class);
-
-        $properties = ['parent', 'field', 'additionalField2'];
-        $mock->expects($this->exactly(3))
-            ->method('add')
-            ->with($this->callback(static function(string $field) use (&$properties): bool {
-                $property = array_shift($properties);
-                return $field === $property;
-            }));
-
-        $this->formReader->configureCreateFields(
-            new \ReflectionClass(AnnotationClass::class),
-            $mock
-        );
+        $this->assertEquals(['sex', 'name', 'phone'], $formMapper->keys());
     }
 
     /**
-     * @group legacy
+     * Test class cannot have duplicated position.
+     *
+     * @test
+     * @function
+     *
+     * @return void
+     * @throws Exception
      */
-    public function testPositionShouldBeUnique(): void
+    public function shouldNotHaveDuplicatePosition(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Position "1" is already in use by "field", try setting a different position for "field2".');
-        $this->formReader->configureCreateFields(
-            new \ReflectionClass(AnnotationExceptionClass::class),
-            $this->formMapper->reveal()
+        $reader = new FormReader(new AnnotationReader());
+        $formMapper = $this->createNewFormMapper();
+
+        $e = null;
+        try {
+            $reader->configureEditFields(
+              new ReflectionClass(FormReaderTestDuplicatePositionCase::class),
+              $formMapper
+            );
+        } catch (InvalidArgumentException $e) {
+        }
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          'Position "1" is already in use by "name", try setting a different position for "email".',
+          $e->getMessage(),
         );
     }
+
+    /**
+     * Create a new form mapper.
+     *
+     * @return FormMapper
+     * @throws Exception
+     */
+    private function createNewFormMapper(): FormMapper
+    {
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+        /** @var FormContractor $formContractor */
+        $formContractor = $container->get('sonata.admin.builder.orm_form');
+        /** @var EventDispatcher $dispatcher */
+        $dispatcher = $container->get('event_dispatcher');
+        /** @var FormFactory $factory */
+        $factory = $container->get('form.factory');
+
+        return new FormMapper(
+          $formContractor,
+          new FormBuilder(null, null, $dispatcher, $factory),
+          $this->createNewAnnotationAdmin(),
+        );
+    }
+
+}
+
+class FormReaderTestCase
+{
+
+    /**
+     * @ListField()
+     *
+     * @var int
+     */
+    private int $id = 0;
+
+    /**
+     * @FormField()
+     *
+     * @var string
+     */
+    private string $name = '';
+
+    /**
+     * @FormField(action=FormField::ACTION_EDIT)
+     *
+     * @var string
+     */
+    private string $phone = '';
+
+    /**
+     * @FormField(action=FormField::ACTION_CREATE)
+     *
+     * @var string
+     */
+    private string $email = '';
+
+    /**
+     * @FormField(position=1)
+     *
+     * @var string
+     */
+    private string $sex = 'm';
+
+}
+
+class FormReaderTestDuplicatePositionCase
+{
+
+    /**
+     * @FormField(position=1)
+     *
+     * @var string
+     */
+    private string $name = '';
+
+    /**
+     * @FormField(position=1)
+     *
+     * @var string
+     */
+    private string $email = '';
+
 }

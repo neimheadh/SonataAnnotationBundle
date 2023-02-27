@@ -1,71 +1,80 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler\AutoRegisterCompilerPass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * Dependency injection auto-register test suite
+ *
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class AutoRegisterCompilerPassTest extends TestCase
+class AutoRegisterCompilerPassTest extends KernelTestCase
 {
-    /**
-     * @var ContainerBuilder
-     */
-    private $container;
 
+    /**
+     * {@inheritDoc}
+     */
     protected function setUp(): void
     {
-        $this->container =  new ContainerBuilder();
-        $this->container->set('annotation_reader', new AnnotationReader());
-        $this->container->setParameter('sonata_annotation.directory', __DIR__ . '/../../Fixtures');
+        $this->bootKernel();
     }
 
     /**
-     * @dataProvider processData
+     * Test the book admin is created.
+     *
+     * @test
+     * @functional
      */
-    public function testProcess(string $serviceId, string $class, ?string $label): void
+    public function shouldBookAdminCreated(): void
     {
-        $autoRegisterCompilerPass = new AutoRegisterCompilerPass();
-
-        $autoRegisterCompilerPass->process($this->container);
-
-        $this->assertTrue($this->container->hasDefinition($serviceId));
-
-        $admin = $this->container->getDefinition($serviceId);
-
-        $this->assertSame(AnnotationAdmin::class, $admin->getClass());
-        $this->assertContains($class, $admin->getArguments());
-        $this->assertTrue($admin->hasTag('sonata.admin'));
-        $attributes = $admin->getTag('sonata.admin');
-
-        $this->assertSame('orm', $attributes[0]['manager_type']);
-        $this->assertSame($label, $attributes[0]['label']);
-
-        $this->assertCount(2, $this->container->findTaggedServiceIds('sonata.admin'));
+        $this->assertInstanceOf(
+          AnnotationAdmin::class,
+          static::getContainer()->get('app.admin.Book')
+        );
     }
 
-    public function processData(): array
+    /**
+     * Test model without namespace admin are not created.
+     *
+     * @test
+     * @functional
+     */
+    public function shouldNotCreateWithoutNamespace(): void
     {
-        return [
-            [
-                'app.admin.AnnotationClass',
-                AnnotationClass::class,
-                'Test',
-            ],
-            [
-                'test.the.id',
-                AnnotationExceptionClass::class,
-                null,
-            ],
-        ];
+        $e = null;
+
+        try {
+            static::getContainer()->get('app.admin.NoNamespace');
+        } catch (ServiceNotFoundException $e) {
+        }
+
+        $this->assertNotNull($e);
     }
+
+    /**
+     * Test model with bad class name admin are not created.
+     *
+     * @test
+     * @functional
+     */
+    public function shouldNotCreateWithWrongClassName(): void
+    {
+        $e = null;
+        try {
+            static::getContainer()->get('app.admin.WrongClassName');
+        } catch (ServiceNotFoundException $e) {
+        }
+        $this->assertNotNull($e);
+
+        $e = null;
+        try {
+            static::getContainer()->get('app.admin.IHaveABadClassName');
+        } catch (ServiceNotFoundException $e) {
+        }
+        $this->assertNotNull($e);
+    }
+
 }

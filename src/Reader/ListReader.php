@@ -4,141 +4,79 @@ declare(strict_types=1);
 
 namespace KunicMarko\SonataAnnotationBundle\Reader;
 
+use Doctrine\Common\Annotations\Reader;
 use KunicMarko\SonataAnnotationBundle\Annotation\ListAction;
-use KunicMarko\SonataAnnotationBundle\Annotation\ListAssociationField;
 use KunicMarko\SonataAnnotationBundle\Annotation\ListField;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use ReflectionClass;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Mapper\MapperInterface;
 
 /**
+ * List configuration reader.
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class ListReader
+final class ListReader extends AbstractFieldConfigurationReader
 {
-    use AnnotationReaderTrait;
 
-    public function configureFields(\ReflectionClass $class, ListMapper $listMapper): void
+    /**
+     * {@inheritDoc}
+     */
+    public function __construct(Reader $annotationReader)
     {
-        $propertiesAndMethodsWithPosition = [];
-        $propertiesAndMethodsWithoutPosition = [];
+        parent::__construct($annotationReader, ListField::class);
+    }
 
-        //
-        // Properties
-        //
+    /**
+     * {@inheritDoc}
+     *
+     * @param ListMapper $mapper Admin list mapper.
+     */
+    public function configureFields(
+        ReflectionClass $class,
+        MapperInterface $mapper
+    ): void {
+        parent::configureFields($class, $mapper);
 
-        foreach ($class->getProperties() as $property) {
-            foreach ($this->getPropertyAnnotations($property) as $annotation) {
-                if (!$annotation instanceof ListField && !$annotation instanceof ListAssociationField) {
-                    continue;
-                }
-
-                // the name property changes for ListAssociationField
-                $name = $property->getName();
-                if ($annotation instanceof ListAssociationField) {
-                    $name .= '.'.$annotation->getField();
-                }
-
-                if (!$annotation->hasPosition()) {
-                    $propertiesAndMethodsWithoutPosition[] = [
-                        'name' => $name,
-                        'annotation' => $annotation,
-                    ];
-
-                    continue;
-                }
-
-                if (\array_key_exists($annotation->position, $propertiesAndMethodsWithPosition)) {
-                    throw new \InvalidArgumentException(sprintf(
-                        'Position "%s" is already in use by "%s", try setting a different position for "%s".',
-                        $annotation->position,
-                        $propertiesAndMethodsWithPosition[$annotation->position]['name'],
-                        $property->getName()
-                    ));
-                }
-
-                $propertiesAndMethodsWithPosition[$annotation->position] = [
-                    'name' => $name,
-                    'annotation' => $annotation,
-                ];
+        if ($mapper instanceof ListMapper) {
+            if ($actions = $this->getListActions($class)) {
+                $mapper->add('_action', null, [
+                    'actions' => $actions,
+                ]);
             }
-        }
-
-        //
-        // Methods
-        //
-
-        foreach ($class->getMethods() as $method) {
-            if ($annotation = $this->getMethodAnnotation($method, ListField::class)) {
-                $name = $method->getName();
-
-                if (!$annotation->hasPosition()) {
-                    $propertiesAndMethodsWithoutPosition[] = [
-                        'name' => $name,
-                        'annotation' => $annotation,
-                    ];
-
-                    continue;
-                }
-
-                if (\array_key_exists($annotation->position, $propertiesAndMethodsWithPosition)) {
-                    throw new \InvalidArgumentException(sprintf(
-                        'Position "%s" is already in use by "%s", try setting a different position for "%s".',
-                        $annotation->position,
-                        $propertiesAndMethodsWithPosition[$annotation->position]['name'],
-                        $name
-                    ));
-                }
-
-                $propertiesAndMethodsWithPosition[$annotation->position] = [
-                    'name' => $name,
-                    'annotation' => $annotation,
-                ];
-            }
-        }
-
-        //
-        // Sorting
-        //
-
-        \ksort($propertiesAndMethodsWithPosition);
-
-        $propertiesAndMethods = \array_merge($propertiesAndMethodsWithPosition, $propertiesAndMethodsWithoutPosition);
-
-        foreach ($propertiesAndMethods as $propertyAndMethod) {
-            $this->addField($propertyAndMethod['name'], $propertyAndMethod['annotation'], $listMapper);
-        }
-
-        //
-        // Actions
-        //
-
-        if ($actions = $this->getListActions($this->getClassAnnotations($class))) {
-            $listMapper->add('_action', null, [
-                'actions' => $actions,
-            ]);
         }
     }
 
-    private function addField(string $name, ListField $annotation, ListMapper $listMapper): void
-    {
-        if ($annotation->identifier) {
-            $listMapper->addIdentifier($name, ...$annotation->getSettings());
-
-            return;
-        }
-
-        $listMapper->add($name, ...$annotation->getSettings());
-    }
-
-    private function getListActions(array $annotations): array
+    /**
+     * Get list of actions.
+     *
+     * @param ReflectionClass $class Entity class.
+     *
+     * @return array
+     */
+    private function getListActions(ReflectionClass $class): array
     {
         $actions = [];
+        /** @var array<object|ListAction> $annotations */
+        $annotations = $this->annotationReader->getClassAnnotations($class);
 
         foreach ($annotations as $annotation) {
             if ($annotation instanceof ListAction) {
-                $actions[$annotation->getName()] = $annotation->options;
+                if (!isset($annotation->name)) {
+                    throw new MissingAnnotationArgumentException(
+                        $annotation,
+                        'name',
+                        $class
+                    );
+                }
+
+                $actions[$annotation->name] = $annotation->options;
             }
         }
 
         return $actions;
     }
+
 }

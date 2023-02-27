@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+{% import "@SonataAdmin/CRUD/base_edit_form_macro.html.twig" as form_helper %}
+{% set formtabs = admin.getformtabs() %}
+
+<edit>
+    {% for name, field in form %}
+        <field name="{{ name }}">{{ field.vars.value }}</field>
+    {% endfor %}
+</edit>

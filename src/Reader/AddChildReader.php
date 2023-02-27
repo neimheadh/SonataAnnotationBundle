@@ -5,26 +5,55 @@ declare(strict_types=1);
 namespace KunicMarko\SonataAnnotationBundle\Reader;
 
 use KunicMarko\SonataAnnotationBundle\Annotation\AddChild;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use ReflectionClass;
 
 /**
+ * AddChild annotation reader.
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class AddChildReader
+final class AddChildReader extends AbstractReader
 {
-    use AnnotationReaderTrait;
 
-    public function getChildren(\ReflectionClass $class): array
+    /**
+     * Get admin children.
+     *
+     * @param ReflectionClass $class Entity class.
+     *
+     * @return array<string, string> Children model class => field list.
+     */
+    public function getChildren(ReflectionClass $class): array
     {
         $children = [];
 
-        foreach ($this->getClassAnnotations($class) as $annotation) {
-            if (!$annotation instanceof AddChild) {
-                continue;
+        foreach (
+            $this->getClassAnnotations(
+                $class,
+                AddChild::class
+            ) as $annotation
+        ) {
+            if (!isset($annotation->class)) {
+                throw new MissingAnnotationArgumentException(
+                    $annotation,
+                    'class',
+                    $class
+                );
             }
 
-            $children[$annotation->getClass()] = $annotation->getField();
+            if (!isset($annotation->field)) {
+                throw new MissingAnnotationArgumentException(
+                    $annotation,
+                    'field',
+                    $class
+                );
+            }
+
+            $children[$annotation->class] = $annotation->field;
         }
 
         return $children;
     }
+
 }

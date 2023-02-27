@@ -1,101 +1,257 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Exception;
+use InvalidArgumentException;
+use KunicMarko\SonataAnnotationBundle\Annotation\ShowAssociationField;
+use KunicMarko\SonataAnnotationBundle\Annotation\ShowField;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use KunicMarko\SonataAnnotationBundle\Reader\ShowReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass3;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
-use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
+use KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
+use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Author;
+use ReflectionClass;
+use Sonata\AdminBundle\FieldDescription\FieldDescriptionCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\DoctrineORMAdminBundle\Builder\ShowBuilder;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * ShowReader test suite.
  */
-final class ShowReaderTest extends TestCase
+class ShowReaderTest extends KernelTestCase
 {
-    /**
-     * @var ShowReader
-     */
-    private $showReader;
-    private $showMapper;
 
-    protected function setUp(): void
-    {
-        $this->showMapper = $this->prophesize(ShowMapper::class);
-        $this->showReader = new ShowReader(new AnnotationReader());
-    }
-
-    public function testConfigureFieldsNoAnnotation(): void
-    {
-        $this->showMapper->add()->shouldNotBeCalled();
-        $this->showReader->configureFields(
-            new \ReflectionClass(EmptyClass::class),
-            $this->showMapper->reveal()
-        );
-    }
-
-    public function testConfigureFieldsAnnotationPresent(): void
-    {
-        $this->showMapper->add('field', Argument::cetera())->shouldBeCalled();
-        $this->showMapper->add('method', Argument::cetera())->shouldBeCalled();
-        $this->showMapper->add('parent.name', Argument::cetera())->shouldBeCalled();
-        $this->showMapper->add('additionalField2', Argument::cetera())->shouldBeCalled();
-
-        $this->showReader->configureFields(
-            new \ReflectionClass(AnnotationClass::class),
-            $this->showMapper->reveal()
-        );
-    }
+    use CreateNewAnnotationAdminTrait;
 
     /**
-     * @group legacy
-     * @expectedDeprecation The "KunicMarko\SonataAnnotationBundle\Annotation\ParentAssociationMapping" annotation is deprecated since 1.1, to be removed in 2.0. Use KunicMarko\SonataAnnotationBundle\Annotation\AddChild instead.
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "field" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\ShowAssociationField" annotation.
+     * Test show annotations are well-supported.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
      */
-    public function testConfigureFieldsAnnotationException(): void
+    public function shouldSupportAnnotations(): void
     {
-        $this->showReader->configureFields(
-            new \ReflectionClass(AnnotationExceptionClass::class),
-            $this->showMapper->reveal()
+        $reader = new ShowReader(new AnnotationReader());
+        $showMapper = $this->createNewShowMapper();
+
+        $reader->configureFields(
+          new ReflectionClass(ShowReaderTestCase::class),
+          $showMapper,
         );
-    }
 
-    public function testConfigureFieldsAnnotationPresentPosition(): void
-    {
-        $mock = $this->createMock(ShowMapper::class);
-
-        $propertiesAndMethods = ['parent.name', 'method', 'additionalField2', 'field'];
-        $mock->expects($this->exactly(4))
-            ->method('add')
-            ->with($this->callback(static function (string $field) use (&$propertiesAndMethods): bool {
-                $propertyAndMethod = array_shift($propertiesAndMethods);
-
-                return $field === $propertyAndMethod;
-            }));
-
-        $this->showReader->configureFields(
-            new \ReflectionClass(AnnotationClass::class),
-            $mock
+        $this->assertTrue($showMapper->has('name'));
+        $this->assertEquals(
+          [
+            'sex',
+            'getString',
+            'name',
+            'author.genre',
+            'getStringEnd',
+          ],
+          $showMapper->keys()
         );
     }
 
     /**
-     * @group legacy
+     * Test that the ShowAssociationField field attribute is mandatory.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
      */
-    public function testPositionShouldBeUnique(): void
+    public function shouldAssociationAnnotationFieldMandatory(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Position "1" is already in use by "field", try setting a different position for "field2".');
-        $this->showReader->configureFields(
-            new \ReflectionClass(AnnotationExceptionClass3::class),
-            $this->showMapper->reveal()
+        $reader = new ShowReader(new AnnotationReader());
+
+        $e = null;
+        try {
+            $reader->configureFields(
+              new ReflectionClass(ShowReaderTestInvalidCase1::class),
+              $this->createNewShowMapper(),
+            );
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Argument "field" is mandatory for annotation %s.',
+            ShowAssociationField::class
+          ),
+          $e->getMessage(),
         );
     }
+
+    /**
+     * Test class cannot have duplicated position.
+     *
+     * @test
+     * @function
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldNotHaveDuplicatePosition(): void
+    {
+        $reader = new ShowReader(new AnnotationReader());
+
+        $e = null;
+        try {
+            $reader->configureFields(
+              new ReflectionClass(ShowReaderTestInvalidCase2::class),
+              $this->createNewShowMapper()
+            );
+        } catch (InvalidArgumentException $e) {
+        }
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          'Position "1" is already in use by "name", try setting a different position for "email".',
+          $e->getMessage(),
+        );
+
+        $reader = new ShowReader(new AnnotationReader());
+
+        $e = null;
+        try {
+            $reader->configureFields(
+              new ReflectionClass(ShowReaderTestInvalidCase3::class),
+              $this->createNewShowMapper()
+            );
+        } catch (InvalidArgumentException $e) {
+        }
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          'Position "1" is already in use by "name", try setting a different position for "getEmail".',
+          $e->getMessage(),
+        );
+    }
+
+    /**
+     * Create a new show mapper.
+     *
+     * @return ShowMapper
+     * @throws Exception
+     */
+    private function createNewShowMapper(): ShowMapper
+    {
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+        /** @var ShowBuilder $showBuilder */
+        $showBuilder = $container->get('sonata.admin.builder.orm_show');
+
+        return new ShowMapper(
+          $showBuilder,
+          new FieldDescriptionCollection(),
+          $this->createNewAnnotationAdmin(),
+        );
+    }
+
+}
+
+class ShowReaderTestCase
+{
+
+    /**
+     * @ShowField()
+     *
+     * @var string
+     */
+    private string $name = '';
+
+    /**
+     * @ShowAssociationField(field="genre")
+     *
+     * @var Author|null
+     */
+    private ?Author $author = null;
+
+    /**
+     * @ShowField(position=1)
+     *
+     * @var string|null
+     */
+    private ?string $sex = null;
+
+    /**
+     * @ShowField(position=2)
+     *
+     * @return string
+     */
+    public function getString(): string
+    {
+        return '';
+    }
+
+    /**
+     * @ShowField()
+     *
+     * @return string
+     */
+    public function getStringEnd(): string
+    {
+        return '';
+    }
+
+}
+
+class ShowReaderTestInvalidCase1
+{
+
+    /**
+     * @ShowAssociationField()
+     *
+     * @var Author|null
+     */
+    private ?Author $author = null;
+
+}
+
+class ShowReaderTestInvalidCase2
+{
+
+    /**
+     * @ShowField(position=1)
+     *
+     * @var string
+     */
+    private string $name = '';
+
+    /**
+     * @ShowField(position=1)
+     * @var string
+     */
+    private string $email = '';
+
+}
+
+class ShowReaderTestInvalidCase3
+{
+
+    /**
+     * @ShowField(position=1)
+     *
+     * @var string
+     */
+    private string $name = '';
+
+    /**
+     * @ShowField(position=1)
+     *
+     * @return  string
+     */
+    public function getEmail(): string
+    {
+        return '';
+    }
+
 }

@@ -1,41 +1,94 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Exception;
+use KunicMarko\SonataAnnotationBundle\Annotation\DashboardAction;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use KunicMarko\SonataAnnotationBundle\Reader\DashboardActionReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * DashboardActionReader test suite.
  */
-final class DashboardActionReaderTest extends TestCase
+class DashboardActionReaderTest extends TestCase
 {
+
     /**
-     * @var DashboardActionReader
+     * Test the reader support the annotation.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
      */
-    private $dashboardActionReader;
-
-    protected function setUp(): void
+    public function shouldSupportAnnotation(): void
     {
-        $this->dashboardActionReader = new DashboardActionReader(new AnnotationReader());
+        $reader = new DashboardActionReader(new AnnotationReader());
+
+        $actions = $reader->getActions(
+          new ReflectionClass(DashboardActionReaderTestCase::class),
+          []
+        );
+        $this->assertCount(1, $actions);
+        $this->assertEquals(['template' => 'test.html.twig'],
+                            current($actions));
     }
 
-    public function testGetActionsPresentAnnotation(): void
+    /**
+     * Test the template is mandatory.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldTemplateAttributeMandatory(): void
     {
-        $actions = $this->dashboardActionReader->getActions(new \ReflectionClass(AnnotationClass::class), []);
+        $reader = new DashboardActionReader(new AnnotationReader());
 
-        $this->assertContains('fake_template.html.twig', reset($actions));
+        $e = null;
+        try {
+            $reader->getActions(
+              new ReflectionClass(
+                NoTemplateDashboardActionReaderTestCase::class
+              ),
+              []
+            );
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Argument "%s" is mandatory for annotation %s on %s.',
+            'template',
+            DashboardAction::class,
+            NoTemplateDashboardActionReaderTestCase::class,
+          ),
+          $e->getMessage(),
+        );
     }
 
-    public function testGetActionsNoAnnotation(): void
-    {
-        $actions = $this->dashboardActionReader->getActions(new \ReflectionClass(EmptyClass::class), []);
+}
 
-        $this->assertEmpty($actions);
-    }
+
+/**
+ * @DashboardAction(template="test.html.twig")
+ */
+class DashboardActionReaderTestCase
+{
+
+}
+
+/**
+ * @DashboardAction()
+ */
+class NoTemplateDashboardActionReaderTestCase
+{
+
 }

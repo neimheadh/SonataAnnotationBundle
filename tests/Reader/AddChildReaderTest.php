@@ -1,70 +1,76 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use KunicMarko\SonataAnnotationBundle\Annotation\AddChild;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use KunicMarko\SonataAnnotationBundle\Reader\AddChildReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass2;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
+use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Book;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * AddChildReader test suite.
  */
-final class AddChildReaderTest extends TestCase
+class AddChildReaderTest extends TestCase
 {
-    /**
-     * @var AddChildReader
-     */
-    private $addChildReader;
-
-    protected function setUp(): void
-    {
-        $this->addChildReader = new AddChildReader(new AnnotationReader());
-    }
-
-    public function testGetChildrenNoAnnotation(): void
-    {
-        $children = $this->addChildReader->getChildren(
-            new \ReflectionClass(EmptyClass::class)
-        );
-
-        $this->assertEmpty($children);
-    }
-
-    public function testGetChildrenAnnotationPresent(): void
-    {
-        $children = $this->addChildReader->getChildren(
-            new \ReflectionClass(AnnotationClass::class)
-        );
-
-        $this->assertSame(EmptyClass::class, key($children));
-        $this->assertSame('test', reset($children));
-    }
 
     /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "class" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\AddChild" annotation.
+     * Test AddChild annotation argument controls.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
      */
-    public function testGetChildrenAnnotationException(): void
+    public function shouldHaveCorrectArguments(): void
     {
-        $this->addChildReader->getChildren(
-            new \ReflectionClass(AnnotationExceptionClass::class)
+        $reader = new AddChildReader(new AnnotationReader());
+        $msg = sprintf(
+          'Argument "%%s" is mandatory for annotation %s on %%s.',
+          AddChild::class,
+        );
+
+        $class = new ReflectionClass(TestInvalidClassArgument::class);
+        $e = null;
+        try {
+            $reader->getChildren($class);
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf($msg, 'class', TestInvalidClassArgument::class),
+          $e->getMessage(),
+        );
+
+        $class = new ReflectionClass(TestInvalidFieldArgument::class);
+        $e = null;
+        try {
+            $reader->getChildren($class);
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf($msg, 'field', TestInvalidFieldArgument::class),
+          $e->getMessage(),
         );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "field" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\AddChild" annotation.
-     */
-    public function testGetChildrenAnnotationException2(): void
-    {
-        $this->addChildReader->getChildren(
-            new \ReflectionClass(AnnotationExceptionClass2::class)
-        );
-    }
+}
+
+/**
+ * @AddChild()
+ */
+class TestInvalidClassArgument
+{
+
+}
+
+/**
+ * @AddChild(class=Book::class)
+ */
+class TestInvalidFieldArgument
+{
+
 }

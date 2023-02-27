@@ -1,0 +1,17 @@
+services:
+  admin.bad:
+    class: KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin
+    public: true
+    arguments:
+      - '@sonata.annotation.reader.action_button'
+      - '@sonata.annotation.reader.datagrid'
+      - '@sonata.annotation.reader.datagrid_values'
+      - '@sonata.annotation.reader.dashboard_action'
+      - '@sonata.annotation.reader.export'
+      - '@sonata.annotation.reader.form'
+      - '@sonata.annotation.reader.list'
+      - '@sonata.annotation.reader.route'
+      - '@sonata.annotation.reader.show'
+
+    tags:
+      - { name: sonata.admin, manager_type: orm, model_class: '%%model.class.bad%%' }

@@ -8,15 +8,15 @@ that don't do anything else should be avoided. Add annotations to your models
 and you are done. If you need something that is not covered by this bundle,
 create admin class instead.
 
-This bundle was greatly inspired by [IbrowsSonataAdminAnnotationBundle](https://github.com/ibrows/IbrowsSonataAdminAnnotationBundle)
+This bundle is a fork of the archived [KunicMarko\SonataAnnotationBundle](https://github.com/kunicmarko20/SonataAnnotationBundle).
 
-[![PHP Version](https://img.shields.io/badge/php-%5E7.1-blue.svg)](https://img.shields.io/badge/php-%5E7.1-blue.svg)
-[![Latest Stable Version](https://poser.pugx.org/kunicmarko/sonata-annotation-bundle/v/stable)](https://packagist.org/packages/kunicmarko/sonata-annotation-bundle)
-[![Latest Unstable Version](https://poser.pugx.org/kunicmarko/sonata-annotation-bundle/v/unstable)](https://packagist.org/packages/kunicmarko/sonata-annotation-bundle)
+[![PHP Version](https://img.shields.io/badge/php-%5E7.4|%5E8.0-blue.svg)](https://circleci.com/gh/neimheadh/SonataAnnotationBundle)
+[![Latest Stable Version](https://poser.pugx.org/neimheadh/sonata-annotation-bundle/v/stable)](https://packagist.org/packages/neimheadh/sonata-annotation-bundle)
+[![Latest Unstable Version](https://poser.pugx.org/neimheadh/sonata-annotation-bundle/v/unstable)](https://packagist.org/packages/neimheadh/sonata-annotation-bundle)
 
-[![Build Status](https://travis-ci.org/kunicmarko20/SonataAnnotationBundle.svg?branch=master)](https://travis-ci.org/kunicmarko20/SonataAnnotationBundle)
-[![Coverage Status](https://coveralls.io/repos/github/kunicmarko20/SonataAnnotationBundle/badge.svg?branch=master)](https://coveralls.io/github/kunicmarko20/SonataAnnotationBundle?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/kunicmarko20/SonataAnnotationBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/kunicmarko20/SonataAnnotationBundle/?branch=master)
+[![Build Status](https://circleci.com/gh/neimheadh/SonataAnnotationBundle/tree/master.svg?style=shield)](https://circleci.com/gh/neimheadh/SonataAnnotationBundle)
+[![Coverage Status](https://coveralls.io/repos/github/neimheadh/SonataAnnotationBundle/badge.svg?branch=master)](https://coveralls.io/github/neimheadh/SonataAnnotationBundle?branch=master)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/neimheadh/SonataAnnotationBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/neimheadh/SonataAnnotationBundle/?branch=master)
 
 Documentation
 -------------
@@ -51,7 +51,7 @@ Documentation
 **1.**  Add dependency with composer
 
 ```bash
-composer require kunicmarko/sonata-annotation-bundle
+composer require neimheadh/sonata-annotation-bundle
 ```
 
 **2.** Register the bundle in your Kernel
@@ -187,7 +187,7 @@ class Category
 
 ### AddChild
 
-You can read more about this [here](https://sonata-project.org/bundles/admin/master/doc/reference/child_admin.html).
+You can read more about this [here](https://docs.sonata-project.org/projects/SonataAdminBundle/en/4.x/reference/child_admin/).
 
 >This annotation can be used without Admin annotation present. If you have an admin class for your entity
 you can still use this annotation.

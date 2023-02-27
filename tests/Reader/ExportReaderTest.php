@@ -1,64 +1,151 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use KunicMarko\SonataAnnotationBundle\Annotation\ExportAssociationField;
+use KunicMarko\SonataAnnotationBundle\Annotation\ExportField;
+use KunicMarko\SonataAnnotationBundle\Annotation\ExportFormats;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use KunicMarko\SonataAnnotationBundle\Reader\ExportReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
+use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Author;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * ExportReader test suite.
  */
-final class ExportReaderTest extends TestCase
+class ExportReaderTest extends TestCase
 {
-    /**
-     * @var ExportReader
-     */
-    private $exportReader;
 
-    protected function setUp(): void
+    /**
+     * Test ExportReader annotations are well-supported.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     */
+    public function shouldSupportAnnotation(): void
     {
-        $this->exportReader = new ExportReader(new AnnotationReader());
+        $reader = new ExportReader(new AnnotationReader());
+        $class = new ReflectionClass(ExportReaderTestCase::class);
+
+        $fields = $reader->getFields($class);
+        $formats = $reader->getFormats($class);
+
+        $this->assertEquals(['json'], $formats);
+        $this->assertEquals(
+          [
+            'name' => 'name',
+            'Custom name' => 'tag',
+            'Author' => 'author.name',
+            'author.genre' => 'author.genre',
+            'exportedMethod' => 'exportedMethod',
+          ],
+          $fields,
+        );
     }
 
-    public function testGetFormatsNoAnnotation(): void
+    /**
+     * Test the reader doesn't get any format by default.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     */
+    public function shouldDefaultNotHaveFormat(): void
     {
-        $formats = $this->exportReader->getFormats(new \ReflectionClass(EmptyClass::class));
+        $reader = new ExportReader(new AnnotationReader());
+        $formats = $reader->getFormats(new ReflectionClass(self::class));
 
         $this->assertEmpty($formats);
     }
 
-    public function testGetFieldsAnnotationPresent(): void
+    /**
+     * Test the ExportAssociationField should have a field set.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     */
+    public function shouldAssociationAnnotationHaveField(): void
     {
-        $fields = $this->exportReader->getFields(new \ReflectionClass(AnnotationClass::class));
+        $reader = new ExportReader(new AnnotationReader());
 
-        $this->assertCount(4, $fields);
-        $this->assertSame('field', $fields['field']);
-        $this->assertSame('additionalField', $fields['label']);
-        $this->assertSame('method', $fields['method']);
-        $this->assertSame('parent.name', $fields['parent.name']);
+        $e = null;
+        try {
+            $reader->getFields(
+              new ReflectionClass(
+                ExportReaderTestAssociationNoFieldSetCase::class
+              )
+            );
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Argument "field" is mandatory for annotation %s.',
+            ExportAssociationField::class,
+          ),
+          $e->getMessage(),
+        );
     }
+
+}
+
+/**
+ * @ExportFormats({"json"})
+ */
+class ExportReaderTestCase
+{
 
     /**
-     * @group legacy
-     * @expectedDeprecation The "KunicMarko\SonataAnnotationBundle\Annotation\ParentAssociationMapping" annotation is deprecated since 1.1, to be removed in 2.0. Use KunicMarko\SonataAnnotationBundle\Annotation\AddChild instead.
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "field" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\ExportAssociationField" annotation.
+     * @ExportField()
+     *
+     * @var string
      */
-    public function testGetFieldsAnnotationException(): void
+    private string $name = '';
+
+    /**
+     * @ExportField("Custom name")
+     *
+     * @var string
+     */
+    private string $tag = '';
+
+    /**
+     * @ExportAssociationField(field="name", label="Author")
+     * @ExportAssociationField(field="genre")
+     *
+     *
+     * @var Author|null
+     */
+    private ?Author $author = null;
+
+    /**
+     * @ExportField()
+     *
+     * @return string
+     */
+    public function exportedMethod(): string
     {
-        $this->exportReader->getFields(new \ReflectionClass(AnnotationExceptionClass::class));
+        return '';
     }
 
-    public function testGetFieldsNoAnnotation(): void
-    {
-        $fields = $this->exportReader->getFields(new \ReflectionClass(EmptyClass::class));
+}
 
-        $this->assertEmpty($fields);
-    }
+class ExportReaderTestAssociationNoFieldSetCase
+{
+
+    /**
+     * @ExportAssociationField()
+     *
+     * @var Author|null
+     */
+    private ?Author $author = null;
+
 }

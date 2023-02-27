@@ -1,41 +1,50 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use KunicMarko\SonataAnnotationBundle\Annotation\DatagridValues;
 use KunicMarko\SonataAnnotationBundle\Reader\DatagridValuesReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * DatagridValuesReader test suite.
  */
-final class DatagridValuesReaderTest extends TestCase
+class DatagridValuesReaderTest extends TestCase
 {
+
     /**
-     * @var DatagridValuesReader
+     * Test DatagridValuesAnnotation support.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
      */
-    private $datagridValuesReader;
-
-    protected function setUp(): void
+    public function shouldSupportDatagridValuesAnnotation(): void
     {
-        $this->datagridValuesReader = new DatagridValuesReader(new AnnotationReader());
+        $reader = new DatagridValuesReader(new AnnotationReader());
+
+        $values = $reader->getDatagridValues(
+          new ReflectionClass(DatagridValuesReaderTestCase::class)
+        );
+
+        $this->assertCount(1, $values);
+        $this->assertEquals(['_sort_by' => 'p.name'], $values);
+
+        // Also test without annotation.
+
+        $this->assertCount(0, $reader->getDatagridValues(
+          new ReflectionClass(self::class),
+        ));
     }
+}
 
-    public function testGetFormatsAnnotationPresent(): void
-    {
-        $values = $this->datagridValuesReader->getDatagridValues(new \ReflectionClass(AnnotationClass::class));
+/**
+ * @DatagridValues(values={"_sort_by": "p.name"})
+ */
+class DatagridValuesReaderTestCase
+{
 
-        $this->assertSame(['test' => 'value'], $values);
-    }
-
-    public function testGetFormatsNoAnnotation(): void
-    {
-        $values = $this->datagridValuesReader->getDatagridValues(new \ReflectionClass(EmptyClass::class));
-
-        $this->assertEmpty($values);
-    }
 }

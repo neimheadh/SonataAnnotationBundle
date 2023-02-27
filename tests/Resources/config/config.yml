@@ -1,0 +1,96 @@
+parameters:
+  kernel.secret: '!ItIsNotASecret!'
+  security.role_hierarchy.roles: [ ]
+  model.class.person: 'KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Person'
+
+services:
+  annotation_reader:
+    class: Doctrine\Common\Annotations\AnnotationReader
+    public: true
+
+  admin.person:
+    class: KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin
+    public: true
+    arguments:
+      - '@sonata.annotation.reader.action_button'
+      - '@sonata.annotation.reader.datagrid'
+      - '@sonata.annotation.reader.datagrid_values'
+      - '@sonata.annotation.reader.dashboard_action'
+      - '@sonata.annotation.reader.export'
+      - '@sonata.annotation.reader.form'
+      - '@sonata.annotation.reader.list'
+      - '@sonata.annotation.reader.route'
+      - '@sonata.annotation.reader.show'
+    tags:
+      - { name: sonata.admin, manager_type: orm, model_class: '%model.class.person%' }
+
+doctrine:
+  dbal:
+    driver: pdo_sqlite
+    path: '%kernel.cache_dir%/test.sqlite'
+  orm:
+    auto_generate_proxy_classes: true
+    entity_managers:
+      default:
+        auto_mapping: true
+        mappings:
+          KunicMarko\SonataAnnotationBundle:
+            is_bundle: false
+            type: annotation
+            dir: '%kernel.project_dir%/Resources/Model'
+            prefix: 'KunicMarko\SonataAnnotationBundle\Tests\Resources\Model'
+            alias: 'SonataAnnotationBundle'
+
+framework:
+  default_locale: en
+  test: true
+  http_method_override: false
+  http_client:
+    default_options:
+      verify_host: false
+      verify_peer: false
+      headers:
+        Cookie: 'test-suite-country=fr'
+  router:
+    utf8: true
+    resource: 'kernel::loadRoutes'
+  translator:
+    default_path: '%kernel.project_dir%/translations'
+
+security:
+  password_hashers:
+    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+  providers:
+    users_in_memory:
+      memory:
+        users:
+          test:
+            password: test
+            roles: 'ROLE_USER'
+  firewalls:
+    main: ~
+
+  access_control: ~
+
+sonata_annotation:
+  directory: '%kernel.project_dir%/Resources/Model/'
+
+monolog:
+  channels: [doctrine_channel]
+  handlers:
+    main:
+      type: stream
+      path: "%kernel.project_dir%/../var/log/%kernel.environment%.log"
+      level: info
+
+twig:
+  paths: ['%kernel.project_dir%/Resources/view']
+
+sonata_admin:
+  templates:
+    dashboard: 'dashboard.xml.twig'
+    edit: 'edit.xml.twig'
+    layout: 'layout.html.twig'
+    list: 'list.xml.twig'
+    list_block: 'list_block.xml.twig'
+    show: 'show.xml.twig'

@@ -1,3 +1,10 @@
 /vendor
-composer.lock
-.php_cs.*
+/composer.lock
+/.php_cs.*
+/.phpunit.result.cache
+/var
+/build
+/.idea
+/composer-setup.php
+/bin/composer
+/bin/phpunit

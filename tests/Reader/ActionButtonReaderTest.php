@@ -1,43 +1,90 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Exception;
+use KunicMarko\SonataAnnotationBundle\Annotation\ActionButton;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use KunicMarko\SonataAnnotationBundle\Reader\ActionButtonReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * ActionButtonReader test suite.
  */
-final class ActionButtonReaderTest extends TestCase
+class ActionButtonReaderTest extends TestCase
 {
-    /**
-     * @var ActionButtonReader
-     */
-    private $actionButtonReader;
-
-    protected function setUp(): void
-    {
-        $this->actionButtonReader = new ActionButtonReader(new AnnotationReader());
-    }
 
     /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "template" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\ActionButton" annotation.
+     * Test the reader support the annotation.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
      */
-    public function testGetActionsException(): void
+    public function shouldSupportAnnotation(): void
     {
-        $this->actionButtonReader->getActions(new \ReflectionClass(AnnotationExceptionClass::class), []);
+        $reader = new ActionButtonReader(new AnnotationReader());
+
+        $actions = $reader->getActions(
+          new ReflectionClass(ActionButtonTestCase::class),
+          []
+        );
+        $this->assertCount(1, $actions);
+        $this->assertEquals(['template' => 'test.html.twig'],
+                            current($actions));
     }
 
-    public function testGetActionsNoAnnotation(): void
+    /**
+     * Test the template is mandatory.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldTemplateAttributeMandatory(): void
     {
-        $actions = $this->actionButtonReader->getActions(new \ReflectionClass(EmptyClass::class), []);
+        $reader = new ActionButtonReader(new AnnotationReader());
 
-        $this->assertEmpty($actions);
+        $e = null;
+        try {
+            $reader->getActions(
+              new ReflectionClass(NoTemplateActionButtonTestCase::class),
+              []
+            );
+        } catch (MissingAnnotationArgumentException $e) {}
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Argument "%s" is mandatory for annotation %s on %s.',
+            'template',
+            ActionButton::class,
+            NoTemplateActionButtonTestCase::class,
+          ),
+          $e->getMessage(),
+        );
     }
+
+}
+
+/**
+ * @ActionButton(template="test.html.twig")
+ */
+class ActionButtonTestCase
+{
+
+}
+
+/**
+ * @ActionButton()
+ */
+class NoTemplateActionButtonTestCase
+{
+
 }

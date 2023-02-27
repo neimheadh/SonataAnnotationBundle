@@ -1,76 +1,74 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler\AddChildCompilerPass;
-use KunicMarko\SonataAnnotationBundle\Reader\AddChildReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
+use InvalidArgumentException;
+use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use KunicMarko\SonataAnnotationBundle\Tests\TestKernel;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * Add child annotation compiler pass test suite.
+ *
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class AddChildCompilerPassTest extends TestCase
+class AddChildCompilerPassTest extends KernelTestCase
 {
+
     /**
-     * @var ContainerBuilder
+     * Test author admin has book as children.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
      */
-    private $container;
-
-    protected function setUp(): void
+    public function shouldAuthorHasBookChildren(): void
     {
-        $this->container =  new ContainerBuilder();
-        $this->container->set('sonata.annotation.reader.add_child', new AddChildReader(new AnnotationReader()));
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+
+        /** @var AnnotationAdmin $admin */
+        $admin = $container->get('app.admin.Author');
+        $children = $admin->getChildren();
+
+        $this->assertArrayHasKey('app.admin.Book', $children);
     }
 
-    public function testProcess(): void
+    /**
+     * Test the compiler should throw an exception if we set a class which is
+     * not an administrated model.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     */
+    public function shouldThrowExceptionOnBadAdminClass(): void
     {
-        $this->initAdminClasses();
+        $kernel = new TestKernel('test', false);
 
-        $accessCompilerPass = new AddChildCompilerPass();
-        $accessCompilerPass->process($this->container);
+        $model = __DIR__ . '/../../Resources/Model/BadChildAdminClass.php.dist';
+        $file = __DIR__ . '/../../Resources/Model/BadChildAdminClass.php';
 
-        $calls = $this->container->getDefinition('app.admin.AnnotationClass')->getMethodCalls();
-
-        $this->assertContains('addChild', $calls[0][0]);
-        $this->assertContains('test', $calls[0][1][1]);
-    }
-
-    private function initAdminClasses(
-        $classes = [AnnotationClass::class, EmptyClass::class, null]
-    ) {
-        foreach ($classes as $key => $class) {
-            $definition = new Definition(
-                'test',
-                [null, $class, null]
-            );
-
-            $definition->addTag('sonata.admin', []);
-
-            $className = explode("\\", $class ?? '');
-
-            $this->container->setDefinition(
-                'app.admin.' . end($className),
-                $definition
-            );
+        if (is_file($file)) {
+            unlink($file);
         }
+
+        copy($model, $file);
+        $e = null;
+        try {
+            $kernel->boot();
+        } catch (InvalidArgumentException $e) {
+        }
+        unlink($file);
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          'Unknown is missing Admin Class.',
+          $e->getMessage()
+        );
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass is missing Admin Class.
-     */
-    public function testProcessExceptionParamNotFound(): void
-    {
-        $this->initAdminClasses([AnnotationClass::class]);
-
-        $accessCompilerPass = new AddChildCompilerPass();
-        $accessCompilerPass->process($this->container);
-    }
 }

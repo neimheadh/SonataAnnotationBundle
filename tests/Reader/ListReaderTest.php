@@ -1,148 +1,274 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Exception;
+use InvalidArgumentException;
+use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use KunicMarko\SonataAnnotationBundle\Annotation\ListAction;
+use KunicMarko\SonataAnnotationBundle\Annotation\ListAssociationField;
+use KunicMarko\SonataAnnotationBundle\Annotation\ListField;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use KunicMarko\SonataAnnotationBundle\Reader\ListReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass2;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass4;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
-use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
+use KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
+use ReflectionClass;
+use Sonata\AdminBundle\Builder\ListBuilderInterface;
 use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\FieldDescription\FieldDescriptionCollection;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * ListReader test suite.
  */
-final class ListReaderTest extends TestCase
+class ListReaderTest extends KernelTestCase
 {
-    /**
-     * @var ListReader
-     */
-    private $listReader;
-    private $listMapper;
 
-    protected function setUp(): void
-    {
-        $this->listMapper = $this->prophesize(ListMapper::class);
-        $this->listReader = new ListReader(new AnnotationReader());
-    }
-
-    public function testConfigureFieldsNoAnnotation(): void
-    {
-        $this->listMapper->add()->shouldNotBeCalled();
-        $this->listReader->configureFields(
-            new \ReflectionClass(EmptyClass::class),
-            $this->listMapper->reveal()
-        );
-    }
-
-    public function testConfigureFieldsAnnotationPresent(): void
-    {
-        $this->listMapper->addIdentifier('field', Argument::cetera())->shouldBeCalled();
-        $this->listMapper->add('method', Argument::cetera())->shouldBeCalled();
-        $this->listMapper->add('parent.name', Argument::cetera())->shouldBeCalled();
-        $this->listMapper->add('additionalField', Argument::cetera())->shouldBeCalled();
-        $this->listMapper->add(
-            '_action',
-            Argument::any(),
-            [
-                'actions' => [
-                    'edit' => null,
-                    'delete' => null,
-                ],
-            ]
-        )->shouldBeCalled();
-
-        $this->listReader->configureFields(
-            new \ReflectionClass(AnnotationClass::class),
-            $this->listMapper->reveal()
-        );
-    }
+    use CreateNewAnnotationAdminTrait;
 
     /**
-     * @group legacy
-     * @expectedDeprecation The "KunicMarko\SonataAnnotationBundle\Annotation\ParentAssociationMapping" annotation is deprecated since 1.1, to be removed in 2.0. Use KunicMarko\SonataAnnotationBundle\Annotation\AddChild instead.
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "field" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\ListAssociationField" annotation.
+     * Test book admin list should have author, book title and cover title.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
      */
-    public function testConfigureFieldsAnnotationException(): void
+    public function shouldBookListHaveAuthorAndTitles(): void
     {
-        $this->listReader->configureFields(
-            new \ReflectionClass(AnnotationExceptionClass::class),
-            $this->listMapper->reveal()
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+        /** @var AnnotationAdmin $admin */
+        $admin = $container->get('app.admin.Book');
+
+        $list = $admin->getList();
+        $this->assertTrue($list->has('author.name'), 'Missing author column.');
+        $this->assertTrue($list->has('title'), 'Missing title column.');
+        $this->assertTrue(
+          $list->has('getCoverTitle'),
+          'Missing cover title column.'
+        );
+
+        $this->assertTrue(
+          $list->get('id')->isIdentifier(),
+          'Id should be an identifier.'
+        );
+        $this->assertFalse(
+          $list->get('author.name')->isIdentifier(),
+          'Author should not be an identifier.'
+        );
+        $this->assertFalse(
+          $list->get('title')->isIdentifier(),
+          'Title should not be an identifier.'
+        );
+        $this->assertFalse(
+          $list->get('getCoverTitle')->isIdentifier(),
+          'Cover title should not be an identifier.'
         );
     }
 
     /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "name" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\ListAction" annotation.
+     * Test book admin list should have import action.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
      */
-    public function testConfigureFieldsAnnotationActionException(): void
+    public function shouldBookListHaveImportAction(): void
     {
-        $this->listReader->configureFields(
-            new \ReflectionClass(AnnotationExceptionClass2::class),
-            $this->listMapper->reveal()
-        );
+        $container = static::getContainer();
+        /** @var AnnotationAdmin $admin */
+        $admin = $container->get('app.admin.Book');
+
+        $list = $admin->getList();
+        $actions = $list->get('_action');
+        $this->assertArrayHasKey('import', $actions->getOption('actions'));
+        $this->assertEquals(['template' => 'import_list_button.html.twig'],
+                            $actions->getOption('actions')['import']);
     }
 
-    public function testConfigureFieldsAnnotationPresentPosition(): void
+    /**
+     * Test list association field has field set.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     */
+    public function shouldAssociationHaveFieldAttribute(): void
     {
-        //
-        // Without identifier
-        //
+        $reader = new ListReader(new AnnotationReader());
+        $listMapper = $this->createNewListMapper();
 
-        $mock = $this->createMock(ListMapper::class);
+        $e = null;
+        try {
+            $reader->configureFields(
+              new ReflectionClass(MissingListAssociationField::class),
+              $listMapper,
+            );
+        } catch (MissingAnnotationArgumentException $e) {
+        }
 
-        $propertiesAndMethods = ['parent.name', 'additionalField', 'method', '_action'];
-        $mock->expects($this->exactly(4))
-            ->method('add')
-            ->with($this->callback(static function(string $field) use (&$propertiesAndMethods): bool {
-                $propertyAndMethod = array_shift($propertiesAndMethods);
-
-                return $field === $propertyAndMethod;
-            }));
-
-        $this->listReader->configureFields(
-            new \ReflectionClass(AnnotationClass::class),
-            $mock
-        );
-
-        //
-        // Identifier
-        //
-
-        $mock = $this->createMock(ListMapper::class);
-
-        $propertiesAndMethods = ['field'];
-        $mock->expects($this->exactly(1))
-            ->method('addIdentifier')
-            ->with($this->callback(static function(string $field) use (&$propertiesAndMethods): bool {
-                $propertyAndMethod = array_shift($propertiesAndMethods);
-
-                return $field === $propertyAndMethod;
-            }));
-
-        $this->listReader->configureFields(
-            new \ReflectionClass(AnnotationClass::class),
-            $mock
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Argument "%s" is mandatory for annotation %s.',
+            'field',
+            ListAssociationField::class
+          ),
+          $e->getMessage(),
         );
     }
 
     /**
-     * @group legacy
+     * Test configured list fields doesn't have duplicated positions.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
      */
-    public function testPositionShouldBeUnique(): void
+    public function shouldNotHaveDuplicatedPosition(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Position "1" is already in use by "field", try setting a different position for "field2".');
-        $this->listReader->configureFields(
-            new \ReflectionClass(AnnotationExceptionClass4::class),
-            $this->listMapper->reveal()
+        $reader = new ListReader(new AnnotationReader());
+        $listMapper = $this->createNewListMapper();
+
+        $e = null;
+        try {
+            $reader->configureFields(
+              new ReflectionClass(DuplicatedListFieldPosition::class),
+              $listMapper,
+            );
+        } catch (InvalidArgumentException $e) {
+        }
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          'Position "1" is already in use by "field1", try setting a different position for "field2".',
+          $e->getMessage()
+        );
+
+        $e = null;
+        try {
+            $reader->configureFields(
+              new ReflectionClass(DuplicatedListMethodPosition::class),
+              $listMapper,
+            );
+        } catch (InvalidArgumentException $e) {
+        }
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          'Position "1" is already in use by "getField1", try setting a different position for "getField2".',
+          $e->getMessage()
         );
     }
+
+    /**
+     * Test list action name control.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     */
+    public function shouldListActionHaveName(): void
+    {
+        $reader = new ListReader(new AnnotationReader());
+        $listMapper = $this->createNewListMapper();
+        
+        $e = null;
+        try {
+            $reader->configureFields(
+              new ReflectionClass(BadListAction::class),
+              $listMapper
+            );
+        } catch (MissingAnnotationArgumentException $e) {}
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Argument "name" is mandatory for annotation %s on %s.',
+            ListAction::class,
+            BadListAction::class
+          ),
+          $e->getMessage()
+        );
+    }
+
+    /**
+     * Create new empty list mapper.
+     *
+     * @return ListMapper
+     */
+    private function createNewListMapper(): ListMapper
+    {
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+        /** @var ListBuilderInterface $listBuilder */
+        $listBuilder = $container->get('sonata.admin.builder.orm_list');
+
+        return new ListMapper(
+          $listBuilder,
+          new FieldDescriptionCollection(),
+          $this->createNewAnnotationAdmin(),
+        );
+    }
+
+}
+
+class MissingListAssociationField
+{
+
+    /**
+     * @ListAssociationField
+     */
+    public string $test = '';
+
+}
+
+class DuplicatedListFieldPosition
+{
+
+    /**
+     * @ListField(position=1)
+     */
+    public string $field1 = '';
+
+    /**
+     * @ListField(position=1)
+     */
+    public string $field2 = '';
+
+}
+
+class DuplicatedListMethodPosition
+{
+
+    /**
+     * @ListField(position=1)
+     */
+    public function getField1(): string
+    {
+        return '';
+    }
+
+    /**
+     * @ListField(position=1)
+     */
+    public function getField2(): string
+    {
+        return '';
+    }
+
+}
+
+/**
+ * @ListAction()
+ */
+class BadListAction
+{
+
 }

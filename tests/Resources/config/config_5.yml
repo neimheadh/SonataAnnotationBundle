@@ -1,0 +1,10 @@
+security:
+  enable_authenticator_manager: true
+
+framework:
+  session:
+    storage_id: session.storage.mock_file
+
+services:
+  sonata.doctrine.model.adapter.chain:
+    class: Sonata\Doctrine\Adapter\AdapterChain

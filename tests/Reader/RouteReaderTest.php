@@ -1,73 +1,155 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use KunicMarko\SonataAnnotationBundle\Annotation\AddRoute;
+use KunicMarko\SonataAnnotationBundle\Annotation\RemoveRoute;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use KunicMarko\SonataAnnotationBundle\Reader\RouteReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass2;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
-use PHPUnit\Framework\TestCase;
+use ReflectionClass;
+use Sonata\AdminBundle\Route\RouteCollection;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * RouteReader test suite.
  */
-final class RouteReaderTest extends TestCase
+class RouteReaderTest extends KernelTestCase
 {
-    /**
-     * @var RouteReader
-     */
-    private $routeReader;
-
-    protected function setUp(): void
-    {
-        $this->routeReader = new RouteReader(new AnnotationReader());
-    }
-
-    public function testGetRoutesNoAnnotation(): void
-    {
-        [$addRoutes, $removeRoutes] = $this->routeReader->getRoutes(
-            new \ReflectionClass(EmptyClass::class)
-        );
-
-        $this->assertEmpty($addRoutes);
-        $this->assertEmpty($removeRoutes);
-    }
-
-    public function testGetRoutesAnnotationPresent(): void
-    {
-        [$addRoutes, $removeRoutes] = $this->routeReader->getRoutes(
-            new \ReflectionClass(AnnotationClass::class)
-        );
-
-        $this->assertSame('import', $addRoutes['import']->getName());
-        $this->assertNull($addRoutes['import']->path);
-        $this->assertSame('{id}/send_mail', $addRoutes['send_mail']->path);
-        $this->assertSame('edit', $removeRoutes['edit']->getName());
-    }
 
     /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "name" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\AddRoute" annotation.
+     * Test the reader support AddRoute & RemoveRoute annotation.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
      */
-    public function testGetRoutesAnnotationException(): void
+    public function shouldSupportAnnotation(): void
     {
-        $this->routeReader->getRoutes(
-            new \ReflectionClass(AnnotationExceptionClass::class)
+        $reader = new RouteReader(new AnnotationReader());
+
+        $routes = $reader->getRoutes(
+          new ReflectionClass(RouteReaderTestCase::class)
+        );
+
+        $added = new AddRoute();
+        $removed = new RemoveRoute();
+
+        $added->name = 'custom_route';
+        $added->path = '/custom/route';
+        $removed->name = 'app_show';
+
+        $this->assertCount(2, $routes);
+        $this->assertCount(1, $routes[0]);
+        $this->assertCount(1, $routes[1]);
+        $this->assertEquals(
+          ['custom_route' => $added],
+          $routes[0]
+        );
+        $this->assertEquals(
+          ['app_show' => $removed],
+          $routes[1]
         );
     }
 
     /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "name" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\RemoveRoute" annotation.
+     * Test the route name is mandatory.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
      */
-    public function testGetRoutesAnnotationException2(): void
+    public function shouldRouteNameMandatory(): void
     {
-        $this->routeReader->getRoutes(
-            new \ReflectionClass(AnnotationExceptionClass2::class)
+        $reader = new RouteReader(new AnnotationReader());
+
+        $e = null;
+        try {
+            $reader->getRoutes(
+              new ReflectionClass(NoNameAddRouteReaderTestCase::class)
+            );
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Argument "%s" is mandatory for annotation %s on %s.',
+            'name',
+            AddRoute::class,
+            NoNameAddRouteReaderTestCase::class,
+          ),
+          $e->getMessage(),
+        );
+
+        $e = null;
+        try {
+            $reader->getRoutes(
+              new ReflectionClass(NoNameRemoveRouteReaderTestCase::class)
+            );
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Argument "%s" is mandatory for annotation %s on %s.',
+            'name',
+            RemoveRoute::class,
+            NoNameRemoveRouteReaderTestCase::class,
+          ),
+          $e->getMessage(),
         );
     }
+
+    /**
+     * Test the reader modify admin routes.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     */
+    public function shouldModifyRoutes(): void
+    {
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+        /** @var AnnotationAdmin $admin */
+        $admin = $container->get('app.admin.Book');
+        /** @var RouteCollection $routes */
+        $routes = $admin->getRoutes();
+        
+        $this->assertTrue($routes->has('custom'));
+        $this->assertFalse($routes->has('batch'));
+    }
+}
+
+/**
+ * @AddRoute(name="custom_route", path="/custom/route")
+ * @RemoveRoute(name="app_show")
+ */
+class RouteReaderTestCase
+{
+
+}
+
+/**
+ * @AddRoute()
+ */
+class NoNameAddRouteReaderTestCase
+{
+
+}
+
+/**
+ * @RemoveRoute()
+ */
+class NoNameRemoveRouteReaderTestCase
+{
+
 }

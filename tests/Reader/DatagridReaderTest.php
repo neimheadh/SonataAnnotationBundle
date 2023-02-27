@@ -1,100 +1,157 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use InvalidArgumentException;
+use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use KunicMarko\SonataAnnotationBundle\Annotation\DatagridAssociationField;
+use KunicMarko\SonataAnnotationBundle\Annotation\DatagridField;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use KunicMarko\SonataAnnotationBundle\Reader\DatagridReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass3;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\EmptyClass;
-use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
+use KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
+use ReflectionClass;
+use Sonata\AdminBundle\Datagrid\Datagrid;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\DoctrineORMAdminBundle\Builder\DatagridBuilder;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * DatagridReader test suite.
  */
-final class DatagridReaderTest extends TestCase
+class DatagridReaderTest extends KernelTestCase
 {
+
+    use CreateNewAnnotationAdminTrait;
+
     /**
-     * @var DatagridReader
+     * Test book datagrid fields.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
      */
-    private $datagridReader;
-    private $datagridMapper;
-
-    protected function setUp(): void
+    public function shouldBookHaveCorrectDatagridFields(): void
     {
-        $this->datagridMapper = $this->prophesize(DatagridMapper::class);
-        $this->datagridReader = new DatagridReader(new AnnotationReader());
-    }
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+        /** @var AnnotationAdmin $admin */
+        $admin = $container->get('app.admin.Book');
 
-    public function testConfigureFieldsNoAnnotation(): void
-    {
-        $this->datagridMapper->add()->shouldNotBeCalled();
-        $this->datagridReader->configureFields(
-            new \ReflectionClass(EmptyClass::class),
-            $this->datagridMapper->reveal()
-        );
-    }
-
-    public function testConfigureFieldsAnnotationPresent(): void
-    {
-        $this->datagridMapper->add('parent.name', Argument::cetera())->shouldBeCalled();
-        $this->datagridMapper->add('additionalField', Argument::cetera())->shouldBeCalled();
-        $this->datagridMapper->add('field', Argument::cetera())->shouldBeCalled();
-
-        $this->datagridReader->configureFields(
-            new \ReflectionClass(AnnotationClass::class),
-            $this->datagridMapper->reveal()
-        );
+        /** @var Datagrid $datagrid */
+        $datagrid = $admin->getDatagrid();
+        $this->assertTrue($datagrid->hasFilter('id'));
+        $this->assertTrue($datagrid->hasFilter('title'));
+        $this->assertTrue($datagrid->hasFilter('author.name'));
     }
 
     /**
-     * @group legacy
-     * @expectedDeprecation The "KunicMarko\SonataAnnotationBundle\Annotation\ParentAssociationMapping" annotation is deprecated since 1.1, to be removed in 2.0. Use KunicMarko\SonataAnnotationBundle\Annotation\AddChild instead.
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "field" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\DatagridAssociationField" annotation.
+     * Test DatagridFieldAssociation name control.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
      */
-    public function testConfigureFieldsAnnotationException(): void
+    public function shouldDatagridAssociationFieldHaveName(): void
     {
-        $this->datagridReader->configureFields(
-            new \ReflectionClass(AnnotationExceptionClass::class),
-            $this->datagridMapper->reveal()
-        );
-    }
+        $reader = new DatagridReader(new AnnotationReader());
 
-    public function testConfigureFieldsAnnotationPresentPosition(): void
-    {
-        $mock = $this->createMock(DatagridMapper::class);
-
-        $propertiesAndMethods = ['parent.name', 'additionalField', 'field'];
-        $mock->expects($this->exactly(3))
-            ->method('add')
-            ->with($this->callback(static function (string $field) use (&$propertiesAndMethods): bool {
-                $propertyAndMethod = array_shift($propertiesAndMethods);
-
-                return $field === $propertyAndMethod;
-            }));
-
-        $this->datagridReader->configureFields(
-            new \ReflectionClass(AnnotationClass::class),
-            $mock
+        $e = null;
+        try {
+            $reader->configureFields(
+              new ReflectionClass(DatagridAssociationWithoutName::class),
+              $this->createNewDatagridMapper(),
+            );
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Argument "field" is mandatory for annotation %s.',
+            DatagridAssociationField::class
+          ),
+          $e->getMessage(),
         );
     }
 
     /**
-     * @group legacy
+     * Datagrid field should not have duplicated position.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
      */
-    public function testPositionShouldBeUnique(): void
+    public function shouldDatagridNotHaveDuplicatedPosition(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Position "1" is already in use by "field.name", try setting a different position for "field2".');
-        $this->datagridReader->configureFields(
-            new \ReflectionClass(AnnotationExceptionClass3::class),
-            $this->datagridMapper->reveal()
+        $reader = new DatagridReader(new AnnotationReader());
+
+        $e = null;
+        try {
+            $reader->configureFields(
+              new ReflectionClass(DatagridDuplicatedPosition::class),
+              $this->createNewDatagridMapper(),
+            );
+        } catch (InvalidArgumentException $e) {
+        }
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Position "1" is already in use by "%s", try setting a different position for "%s".',
+            'field1',
+            'field2',
+          ),
+          $e->getMessage(),
         );
     }
+
+    /**
+     * Create new empty list mapper.
+     *
+     * @return DatagridMapper
+     */
+    private function createNewDatagridMapper(): DatagridMapper
+    {
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+        /** @var DatagridBuilder $datagridBuilder */
+        $datagridBuilder = $container->get('sonata.admin.builder.orm_datagrid');
+        $admin = $this->createNewAnnotationAdmin();
+        $datagrid = $datagridBuilder->getBaseDatagrid($admin);
+
+        return new DatagridMapper(
+          $datagridBuilder,
+          $datagrid,
+          $admin,
+        );
+    }
+
+}
+
+class DatagridAssociationWithoutName
+{
+
+    /**
+     * @DatagridAssociationField()
+     */
+    public string $field = '';
+
+}
+
+class DatagridDuplicatedPosition
+{
+
+    /**
+     * @DatagridField(position=1)
+     */
+    public string $field1;
+
+    /**
+     * @DatagridField(position=1)
+     */
+    public string $field2;
+
 }

@@ -1,88 +1,76 @@
 <?php
 
-declare(strict_types=1);
-
 namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler\AccessCompilerPass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AccessExceptionClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationClass;
-use KunicMarko\SonataAnnotationBundle\Tests\Fixtures\AnnotationExceptionClass;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
+use KunicMarko\SonataAnnotationBundle\Annotation\Access;
+use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use KunicMarko\SonataAnnotationBundle\Tests\TestKernel;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 
 /**
- * @author Marko Kunic <kunicmarko20@gmail.com>
+ * Access compiler pass test suite.
+ *
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-final class AccessCompilerPassTest extends TestCase
+class AccessCompilerPassTest extends KernelTestCase
 {
+
     /**
-     * @var ContainerBuilder
+     * Test book admin permission roles.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
      */
-    private $container;
-
-    protected function setUp(): void
+    public function shouldContainerHaveBookPermissionRoles(): void
     {
-        $this->container =  new ContainerBuilder();
-        $this->container->set('annotation_reader', new AnnotationReader());
-        $this->container->setParameter('security.role_hierarchy.roles', []);
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+
+        $this->assertSame(
+          ['ROLE_USER' => ['ROLE_APP_ADMIN_BOOK_READ']],
+          $container->getParameter('security.role_hierarchy.roles'),
+        );
     }
 
-    public function testProcess(): void
+    /**
+     * Test the compiler should throw an exception if we don't set the access
+     * annotation role.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     */
+    public function shouldThrowExceptionOnBadAccessClass(): void
     {
-        $this->initAdminClasses();
+        $kernel = new TestKernel('test', false);
 
-        $accessCompilerPass = new AccessCompilerPass();
-        $accessCompilerPass->process($this->container);
+        $model = __DIR__ . '/../../Resources/Model/BadAccessAdminClass.php.dist';
+        $file = __DIR__ . '/../../Resources/Model/BadAccessAdminClass.php';
 
-        $this->assertArrayHasKey('ROLE_VENDOR', $roles = $this->container->getParameter('security.role_hierarchy.roles'));
-        $this->assertContains('ROLE_APP_ADMIN_ANNOTATIONCLASS_LIST', $roles['ROLE_VENDOR']);
-        $this->assertContains('ROLE_APP_ADMIN_ANNOTATIONEXCEPTIONCLASS_ALL', $roles['ROLE_VENDOR']);
-    }
-
-    private function initAdminClasses(
-        $classes = [AnnotationClass::class, AnnotationExceptionClass::class, null]
-    ) {
-        foreach ($classes as $key => $class) {
-            $definition = new Definition(
-                'test',
-                [null, $class, null]
-            );
-
-            $definition->addTag('sonata.admin', []);
-
-            $className = explode("\\", $class ?? '');
-
-            $this->container->setDefinition(
-                'app.admin.' . end($className),
-                $definition
-            );
+        if (is_file($file)) {
+            unlink($file);
         }
-    }
 
-    /**
-     * @expectedException \LogicException
-     * @expectedExceptionMessage Service "app.admin.%class%" has a parameter "class" as an argument but it is not found.
-     */
-    public function testProcessExceptionParamNotFound(): void
-    {
-        $this->initAdminClasses(['%class%']);
+        copy($model, $file);
+        $e = null;
+        try {
+            $kernel->boot();
+        } catch (MissingAnnotationArgumentException $e) {
+        }
+        unlink($file);
 
-        $accessCompilerPass = new AccessCompilerPass();
-        $accessCompilerPass->process($this->container);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Argument "role" is mandatory in "KunicMarko\SonataAnnotationBundle\Annotation\Access" annotation.
-     */
-    public function testProcessExceptionAnnotation(): void
-    {
-        $this->initAdminClasses([AccessExceptionClass::class]);
-
-        $accessCompilerPass = new AccessCompilerPass();
-        $accessCompilerPass->process($this->container);
+        $this->assertNotNull($e);
+        $this->assertEquals(
+          sprintf(
+            'Argument "role" is mandatory for annotation %s on %s.',
+            Access::class,
+            'KunicMarko\\SonataAnnotationBundle\\Tests\\Resources\\Model\\BadAccessAdminClass'
+          ),
+          $e->getMessage()
+        );
     }
 }

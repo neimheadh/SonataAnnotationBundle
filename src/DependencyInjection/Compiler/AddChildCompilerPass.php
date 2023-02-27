@@ -4,17 +4,29 @@ declare(strict_types=1);
 
 namespace KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler;
 
+use InvalidArgumentException;
 use KunicMarko\SonataAnnotationBundle\Reader\AddChildReader;
+use ReflectionClass;
+use ReflectionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
+ * Add admin annotated @KunicMarko\SonataAnnotationBundle\Annotation\AddChild as
+ * admin children.
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
+ * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class AddChildCompilerPass implements CompilerPassInterface
 {
     use FindClassTrait;
 
+    /**
+     * {@inheritDoc}
+     *
+     * @throws ReflectionException
+     */
     public function process(ContainerBuilder $container): void
     {
         /** @var AddChildReader $annotationReader */
@@ -25,13 +37,10 @@ final class AddChildCompilerPass implements CompilerPassInterface
         $adminChildren = [];
 
         foreach ($container->findTaggedServiceIds('sonata.admin') as $id => $tag) {
-            if (!($class = $this->getClass($container, $id))) {
-                continue;
-            }
-
+            $class = $this->getClass($container, $id);
             $admins[$class] = $id;
 
-            if ($children = $annotationReader->getChildren(new \ReflectionClass($class))) {
+            if ($children = $annotationReader->getChildren(new ReflectionClass($class))) {
                 $adminChildren[$id] = $children;
             }
         }
@@ -39,7 +48,7 @@ final class AddChildCompilerPass implements CompilerPassInterface
         foreach ($adminChildren as $id => $children) {
             foreach ($children as $class => $field) {
                 if (!isset($admins[$class])) {
-                    throw new \InvalidArgumentException(sprintf(
+                    throw new InvalidArgumentException(sprintf(
                         '%s is missing Admin Class.',
                         $class
                     ));
