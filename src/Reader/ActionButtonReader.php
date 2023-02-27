@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Reader;
 
 use Doctrine\Common\Annotations\Reader;
-use KunicMarko\SonataAnnotationBundle\Annotation\ActionButton;
+use Neimheadh\SonataAnnotationBundle\Annotation\ActionButton;
 
 /**
  * ActionButton annotation reader.

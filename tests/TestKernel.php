@@ -1,10 +1,10 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests;
+namespace Neimheadh\SonataAnnotationBundle\Tests;
 
 use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
 use Knp\Bundle\MenuBundle\KnpMenuBundle;
-use KunicMarko\SonataAnnotationBundle\SonataAnnotationBundle;
+use Neimheadh\SonataAnnotationBundle\SonataAnnotationBundle;
 use Sonata\AdminBundle\SonataAdminBundle;
 use Sonata\BlockBundle\SonataBlockBundle;
 use Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle;
@@ -52,19 +52,19 @@ class TestKernel extends Kernel
     public function registerBundles(): iterable
     {
         return [
-          new DoctrineBundle(),
-          new FrameworkBundle(),
-          new KnpMenuBundle(),
-          new MonologBundle(),
-          new SecurityBundle(),
-          new SonataAdminBundle(),
-          new SonataAnnotationBundle(),
-          new SonataBlockBundle(),
-          new SonataDoctrineORMAdminBundle(),
-          new SonataExporterBundle(),
-          new SonataFormBundle(),
-          new SonataTwigBundle(),
-          new TwigBundle(),
+            new DoctrineBundle(),
+            new FrameworkBundle(),
+            new KnpMenuBundle(),
+            new MonologBundle(),
+            new SecurityBundle(),
+            new SonataAdminBundle(),
+            new SonataAnnotationBundle(),
+            new SonataBlockBundle(),
+            new SonataDoctrineORMAdminBundle(),
+            new SonataExporterBundle(),
+            new SonataFormBundle(),
+            new SonataTwigBundle(),
+            new TwigBundle(),
         ];
     }
 
@@ -77,19 +77,22 @@ class TestKernel extends Kernel
 
         $loader->load(function (ContainerBuilder $container) use ($loader) {
             $container->setParameter('kernel.project_dir', __DIR__);
-            $container->setParameter('kernel.cache_dir', dirname(__DIR__). '/var/cache');
+            $container->setParameter(
+                'kernel.cache_dir',
+                dirname(__DIR__) . '/var/cache'
+            );
 
             $container->register('kernel', self::class)
-              ->addTag('controller.service_arguments')
-              ->setAutoconfigured(true)
-              ->setSynthetic(true)
-              ->setPublic(true);
+                ->addTag('controller.service_arguments')
+                ->setAutoconfigured(true)
+                ->setSynthetic(true)
+                ->setPublic(true);
 
             $container->loadFromExtension('framework', [
-              'router' => [
-                'resource' => 'kernel::loadRoutes',
-                'type' => 'service',
-              ],
+                'router' => [
+                    'resource' => 'kernel::loadRoutes',
+                    'type' => 'service',
+                ],
             ]);
             $container->getDefinition('kernel')->addTag('routing.route_loader');
         });

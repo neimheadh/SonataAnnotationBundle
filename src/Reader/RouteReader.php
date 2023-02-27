@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Reader;
 
-use KunicMarko\SonataAnnotationBundle\Annotation\AddRoute;
-use KunicMarko\SonataAnnotationBundle\Annotation\RemoveRoute;
-use KunicMarko\SonataAnnotationBundle\Annotation\RouteAnnotationInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\AddRoute;
+use Neimheadh\SonataAnnotationBundle\Annotation\RemoveRoute;
+use Neimheadh\SonataAnnotationBundle\Annotation\RouteAnnotationInterface;
 use ReflectionClass;
 
 /**

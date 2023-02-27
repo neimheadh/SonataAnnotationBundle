@@ -1,7 +1,7 @@
 parameters:
   kernel.secret: '!ItIsNotASecret!'
   security.role_hierarchy.roles: [ ]
-  model.class.person: 'KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Person'
+  model.class.person: 'Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Person'
 
 services:
   annotation_reader:
@@ -9,7 +9,7 @@ services:
     public: true
 
   admin.person:
-    class: KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin
+    class: Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin
     public: true
     arguments:
       - '@sonata.annotation.reader.action_button'
@@ -34,11 +34,11 @@ doctrine:
       default:
         auto_mapping: true
         mappings:
-          KunicMarko\SonataAnnotationBundle:
+          Neimheadh\SonataAnnotationBundle:
             is_bundle: false
             type: annotation
             dir: '%kernel.project_dir%/Resources/Model'
-            prefix: 'KunicMarko\SonataAnnotationBundle\Tests\Resources\Model'
+            prefix: 'Neimheadh\SonataAnnotationBundle\Tests\Resources\Model'
             alias: 'SonataAnnotationBundle'
 
 framework:

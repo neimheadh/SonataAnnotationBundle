@@ -1,8 +1,8 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
+namespace Neimheadh\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 
-use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 

@@ -1,13 +1,13 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use KunicMarko\SonataAnnotationBundle\Annotation\AddRoute;
-use KunicMarko\SonataAnnotationBundle\Annotation\RemoveRoute;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
-use KunicMarko\SonataAnnotationBundle\Reader\RouteReader;
+use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use Neimheadh\SonataAnnotationBundle\Annotation\AddRoute;
+use Neimheadh\SonataAnnotationBundle\Annotation\RemoveRoute;
+use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Reader\RouteReader;
 use ReflectionClass;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

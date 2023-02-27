@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Reader;
 
 use Doctrine\Common\Annotations\Reader;
 use Exception;
-use KunicMarko\SonataAnnotationBundle\Annotation\AbstractAction;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Annotation\AbstractAction;
+use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
 
 /**

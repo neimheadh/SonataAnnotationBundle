@@ -1,6 +1,6 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Admin;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Admin;
 
 use Doctrine\ORM\EntityManager;
 use DOMDocument;
@@ -8,11 +8,11 @@ use DOMElement;
 use DOMNode;
 use DOMNodeList;
 use Exception;
-use KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension\SessionHelperTrait;
-use KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension\UseDatabaseTrait;
-use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Author;
-use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Book;
-use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Person;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\SessionHelperTrait;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\UseDatabaseTrait;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Author;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Book;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Person;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;

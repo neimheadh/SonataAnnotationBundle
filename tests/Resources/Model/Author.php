@@ -1,9 +1,9 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Resources\Model;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model;
 
 use Doctrine\ORM\Mapping as ORM;
-use KunicMarko\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
 use Stringable;
 
 /**

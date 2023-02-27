@@ -1,15 +1,14 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
 use InvalidArgumentException;
-use KunicMarko\SonataAnnotationBundle\Annotation\FormField;
-use KunicMarko\SonataAnnotationBundle\Annotation\ListField;
-use KunicMarko\SonataAnnotationBundle\Reader\FormReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
-use PHPUnit\Framework\TestCase;
+use Neimheadh\SonataAnnotationBundle\Annotation\FormField;
+use Neimheadh\SonataAnnotationBundle\Annotation\ListField;
+use Neimheadh\SonataAnnotationBundle\Reader\FormReader;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
 use ReflectionClass;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\DoctrineORMAdminBundle\Builder\FormContractor;
@@ -49,8 +48,8 @@ class FormReaderTest extends KernelTestCase
         $this->assertFalse($formMapper->has('id'));
         $this->assertFalse($formMapper->has('phone'));
         $this->assertInstanceOf(
-          TextType::class,
-          $formMapper->get('name')->getType()->getInnerType()
+            TextType::class,
+            $formMapper->get('name')->getType()->getInnerType()
         );
         $this->assertEquals(['sex', 'name', 'email'], $formMapper->keys());
 
@@ -61,8 +60,8 @@ class FormReaderTest extends KernelTestCase
         $this->assertFalse($formMapper->has('id'));
         $this->assertFalse($formMapper->has('email'));
         $this->assertInstanceOf(
-          TextType::class,
-          $formMapper->get('name')->getType()->getInnerType()
+            TextType::class,
+            $formMapper->get('name')->getType()->getInnerType()
         );
         $this->assertEquals(['sex', 'name', 'phone'], $formMapper->keys());
     }
@@ -84,16 +83,16 @@ class FormReaderTest extends KernelTestCase
         $e = null;
         try {
             $reader->configureEditFields(
-              new ReflectionClass(FormReaderTestDuplicatePositionCase::class),
-              $formMapper
+                new ReflectionClass(FormReaderTestDuplicatePositionCase::class),
+                $formMapper
             );
         } catch (InvalidArgumentException $e) {
         }
 
         $this->assertNotNull($e);
         $this->assertEquals(
-          'Position "1" is already in use by "name", try setting a different position for "email".',
-          $e->getMessage(),
+            'Position "1" is already in use by "name", try setting a different position for "email".',
+            $e->getMessage(),
         );
     }
 
@@ -115,9 +114,9 @@ class FormReaderTest extends KernelTestCase
         $factory = $container->get('form.factory');
 
         return new FormMapper(
-          $formContractor,
-          new FormBuilder(null, null, $dispatcher, $factory),
-          $this->createNewAnnotationAdmin(),
+            $formContractor,
+            new FormBuilder(null, null, $dispatcher, $factory),
+            $this->createNewAnnotationAdmin(),
         );
     }
 

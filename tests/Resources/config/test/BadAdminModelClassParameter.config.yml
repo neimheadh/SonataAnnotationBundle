@@ -1,6 +1,6 @@
 services:
   admin.bad:
-    class: KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin
+    class: Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin
     public: true
     arguments:
       - '@sonata.annotation.reader.action_button'

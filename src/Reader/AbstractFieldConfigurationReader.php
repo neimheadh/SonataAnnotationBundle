@@ -1,11 +1,11 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Reader;
 
 use Doctrine\Common\Annotations\Reader;
 use InvalidArgumentException;
-use KunicMarko\SonataAnnotationBundle\Annotation\ActionAnnotationInterface;
-use KunicMarko\SonataAnnotationBundle\Annotation\PositionAnnotationInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\ActionAnnotationInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\PositionAnnotationInterface;
 use ReflectionClass;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;

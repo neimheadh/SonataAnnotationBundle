@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Reader;
 
-use KunicMarko\SonataAnnotationBundle\Annotation\DatagridValues;
+use Neimheadh\SonataAnnotationBundle\Annotation\DatagridValues;
 use ReflectionClass;
 
 /**

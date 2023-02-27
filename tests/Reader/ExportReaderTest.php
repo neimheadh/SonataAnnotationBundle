@@ -1,14 +1,14 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use KunicMarko\SonataAnnotationBundle\Annotation\ExportAssociationField;
-use KunicMarko\SonataAnnotationBundle\Annotation\ExportField;
-use KunicMarko\SonataAnnotationBundle\Annotation\ExportFormats;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
-use KunicMarko\SonataAnnotationBundle\Reader\ExportReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Author;
+use Neimheadh\SonataAnnotationBundle\Annotation\ExportAssociationField;
+use Neimheadh\SonataAnnotationBundle\Annotation\ExportField;
+use Neimheadh\SonataAnnotationBundle\Annotation\ExportFormats;
+use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Reader\ExportReader;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Author;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 

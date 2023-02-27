@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle;
+namespace Neimheadh\SonataAnnotationBundle;
 
-use KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler\AccessCompilerPass;
-use KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler\AddChildCompilerPass;
-use KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler\AutoRegisterCompilerPass;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AccessCompilerPass;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AddChildCompilerPass;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AutoRegisterCompilerPass;
 use Symfony\Component\DependencyInjection\Compiler\PassConfig;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;

@@ -1,6 +1,6 @@
 <?php
 
-use KunicMarko\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
 
 /**
  * Test model without namespace.

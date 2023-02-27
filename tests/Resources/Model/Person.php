@@ -1,6 +1,6 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Resources\Model;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model;
 
 /**
  * Person test model.

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\Annotation;
+namespace Neimheadh\SonataAnnotationBundle\Annotation;
 
-use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 
 /**
  * Admin annotation.

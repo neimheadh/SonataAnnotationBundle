@@ -23,7 +23,7 @@
     </exclude>
   </coverage>
   <php>
-    <env name="KERNEL_CLASS" value="KunicMarko\SonataAnnotationBundle\Tests\TestKernel" force="true" />
+    <env name="KERNEL_CLASS" value="Neimheadh\SonataAnnotationBundle\Tests\TestKernel" force="true" />
   </php>
   <testsuites>
     <testsuite name="SonataAnnotationBundle Test Suite">

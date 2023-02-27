@@ -1,10 +1,10 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use KunicMarko\SonataAnnotationBundle\Annotation\DatagridValues;
-use KunicMarko\SonataAnnotationBundle\Reader\DatagridValuesReader;
+use Neimheadh\SonataAnnotationBundle\Annotation\DatagridValues;
+use Neimheadh\SonataAnnotationBundle\Reader\DatagridValuesReader;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 

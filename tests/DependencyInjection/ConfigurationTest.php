@@ -1,9 +1,9 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection;
+namespace Neimheadh\SonataAnnotationBundle\Tests\DependencyInjection;
 
-use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use KunicMarko\SonataAnnotationBundle\Tests\TestKernel;
+use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use Neimheadh\SonataAnnotationBundle\Tests\TestKernel;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;

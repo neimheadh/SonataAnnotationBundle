@@ -1,12 +1,12 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
-use KunicMarko\SonataAnnotationBundle\Annotation\DashboardAction;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
-use KunicMarko\SonataAnnotationBundle\Reader\DashboardActionReader;
+use Neimheadh\SonataAnnotationBundle\Annotation\DashboardAction;
+use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Reader\DashboardActionReader;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 

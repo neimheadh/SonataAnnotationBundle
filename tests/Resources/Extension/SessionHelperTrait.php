@@ -1,6 +1,6 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension;
 
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\BrowserKit\Cookie;
