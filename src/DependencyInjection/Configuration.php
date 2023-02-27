@@ -23,7 +23,7 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('directory')->defaultNull()->end()
+                ->scalarNode('directory')->end()
             ->end();
 
         return $treeBuilder;

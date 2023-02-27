@@ -2,14 +2,40 @@
 
 set -e
 
-rm -Rf vendor
+TEST_PHP=1
+TEST_INTEGRATION=1
+while [ $# -gt 0 ]; do
+    case $1 in
+        --no-php)
+            TEST_PHP=0
+            ;;
+        --no-integration)
+            TEST_INTEGRATION=0
+            ;;
+    esac
+    shift
+done
+
 mkdir -p bin
 php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
 php composer-setup.php
 rm composer-setup.php
 mv composer.phar bin/composer
-php -r "copy('https://phar.phpunit.de/phpunit-9.5.27.phar', 'bin/phpunit');"
-php bin/composer install --prefer-dist --no-interaction
-rm -Rf var/cache/test.sqlite var/cache/test
-php bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
-php vendor/bin/php-coveralls
+COMPOSER="$(pwd)/bin/composer"
+
+if [ "$TEST_PHP" -eq 1 ]; then
+  rm -Rf vendor
+  php -r "copy('https://phar.phpunit.de/phpunit-9.5.27.phar', 'bin/phpunit');"
+  php bin/composer install --prefer-dist --no-interaction
+  rm -Rf var/cache/test.sqlite var/cache/test
+  php bin/phpunit -c phpunit.xml.dist --coverage-clover build/logs/clover.xml
+  php vendor/bin/php-coveralls
+fi
+
+if [ "$TEST_INTEGRATION" -eq 1 ]; then
+  cd build
+  rm -Rf test-project
+  $COMPOSER create-project symfony/skeleton test-project
+  cd test-project
+  $COMPOSER --no-interaction require neimheadh/sonata-annotation-bundle:dev-develop
+fi
