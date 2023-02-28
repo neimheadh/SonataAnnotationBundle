@@ -6,13 +6,13 @@ namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
-use IteratorAggregate;
 use Neimheadh\SonataAnnotationBundle\Annotation\Admin;
 use ReflectionClass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
+use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -94,14 +94,19 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
      *
      * @param string $directory Directory path.
      *
-     * @return IteratorAggregate
+     * @return iterable
      */
-    private function findFiles(string $directory): IteratorAggregate
+    private function findFiles(string $directory): iterable
     {
-        return Finder::create()
-            ->in($directory)
-            ->files()
-            ->name('*.php');
+        try {
+            return Finder::create()
+                ->in($directory)
+                ->files()
+                ->name('*.php');
+        } catch (DirectoryNotFoundException $e) {
+        }
+
+        return [];
     }
 
     /**
