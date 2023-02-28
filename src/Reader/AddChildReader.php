@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Reader;
 
-use KunicMarko\SonataAnnotationBundle\Annotation\AddChild;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Annotation\AddChild;
+use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
 
 /**

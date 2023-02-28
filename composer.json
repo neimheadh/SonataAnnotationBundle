@@ -38,20 +38,18 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-master": "2.x-dev",
-      "dev-develop": "4.x-dev"
+      "dev-develop": "2.x-dev"
     }
   },
   "autoload": {
     "psr-4": {
-      "KunicMarko\\SonataAnnotationBundle\\": "src/"
+      "Neimheadh\\SonataAnnotationBundle\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "KunicMarko\\SonataAnnotationBundle\\Tests\\": "tests/",
-      "KunicMarko\\SonataAnnotationBundle\\Features\\Fixtures\\Project\\": "features/Fixtures/Project/src",
-      "KunicMarko\\SonataAnnotationBundle\\Features\\": "features/"
+      "Neimheadh\\SonataAnnotationBundle\\Tests\\": "tests/",
+      "Neimheadh\\SonataAnnotationBundle\\Features\\Fixtures\\Project\\": "features/Fixtures/Project/src"
     }
   },
   "require-dev": {

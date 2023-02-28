@@ -4,16 +4,16 @@
         <defaults public="true">
             <bind key="$annotationReader" type="service" id="annotation_reader" />
         </defaults>
-        <service id="sonata.annotation.reader.form" class="KunicMarko\SonataAnnotationBundle\Reader\FormReader" />
-        <service id="sonata.annotation.reader.list" class="KunicMarko\SonataAnnotationBundle\Reader\ListReader" />
-        <service id="sonata.annotation.reader.show" class="KunicMarko\SonataAnnotationBundle\Reader\ShowReader" />
-        <service id="sonata.annotation.reader.datagrid" class="KunicMarko\SonataAnnotationBundle\Reader\DatagridReader" />
-        <service id="sonata.annotation.reader.route" class="KunicMarko\SonataAnnotationBundle\Reader\RouteReader" />
-        <service id="sonata.annotation.reader.action_button" class="KunicMarko\SonataAnnotationBundle\Reader\ActionButtonReader" />
-        <service id="sonata.annotation.reader.dashboard_action" class="KunicMarko\SonataAnnotationBundle\Reader\DashboardActionReader" />
-        <service id="sonata.annotation.reader.export" class="KunicMarko\SonataAnnotationBundle\Reader\ExportReader" />
-        <service id="sonata.annotation.reader.datagrid_values" class="KunicMarko\SonataAnnotationBundle\Reader\DatagridValuesReader" />
-        <service id="sonata.annotation.reader.add_child" class="KunicMarko\SonataAnnotationBundle\Reader\AddChildReader">
+        <service id="sonata.annotation.reader.form" class="Neimheadh\SonataAnnotationBundle\Reader\FormReader" />
+        <service id="sonata.annotation.reader.list" class="Neimheadh\SonataAnnotationBundle\Reader\ListReader" />
+        <service id="sonata.annotation.reader.show" class="Neimheadh\SonataAnnotationBundle\Reader\ShowReader" />
+        <service id="sonata.annotation.reader.datagrid" class="Neimheadh\SonataAnnotationBundle\Reader\DatagridReader" />
+        <service id="sonata.annotation.reader.route" class="Neimheadh\SonataAnnotationBundle\Reader\RouteReader" />
+        <service id="sonata.annotation.reader.action_button" class="Neimheadh\SonataAnnotationBundle\Reader\ActionButtonReader" />
+        <service id="sonata.annotation.reader.dashboard_action" class="Neimheadh\SonataAnnotationBundle\Reader\DashboardActionReader" />
+        <service id="sonata.annotation.reader.export" class="Neimheadh\SonataAnnotationBundle\Reader\ExportReader" />
+        <service id="sonata.annotation.reader.datagrid_values" class="Neimheadh\SonataAnnotationBundle\Reader\DatagridValuesReader" />
+        <service id="sonata.annotation.reader.add_child" class="Neimheadh\SonataAnnotationBundle\Reader\AddChildReader">
             <argument type="service" id="annotation_reader" />
         </service>
     </services>

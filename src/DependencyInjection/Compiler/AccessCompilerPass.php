@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler;
+namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\Reader;
-use InvalidArgumentException;
-use KunicMarko\SonataAnnotationBundle\Annotation\Access;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Annotation\Access;
+use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;

@@ -1,10 +1,10 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Resources\Model;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model;
 
-use KunicMarko\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
 
-if (!class_exists('KunicMarko\\SonataAnnotationBundle\\Tests\\Resources\\Model\\IHaveABadClassName')) {
+if (!class_exists('Neimheadh\\SonataAnnotationBundle\\Tests\\Resources\\Model\\IHaveABadClassName')) {
     /**
      * Test model with bad class name.
      *

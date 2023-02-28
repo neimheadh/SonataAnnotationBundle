@@ -1,10 +1,10 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
+namespace Neimheadh\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 
 use InvalidArgumentException;
-use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use KunicMarko\SonataAnnotationBundle\Tests\TestKernel;
+use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use Neimheadh\SonataAnnotationBundle\Tests\TestKernel;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 

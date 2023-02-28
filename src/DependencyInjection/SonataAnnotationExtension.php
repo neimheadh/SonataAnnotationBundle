@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\DependencyInjection;
+namespace Neimheadh\SonataAnnotationBundle\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -10,12 +10,17 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 
 /**
+ * SonataAnnotationBundle extension.
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 final class SonataAnnotationExtension extends Extension
 {
 
+    /**
+     * {@inheritDoc}
+     */
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();

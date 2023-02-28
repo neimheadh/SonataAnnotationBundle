@@ -1,6 +1,6 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Annotation;
+namespace Neimheadh\SonataAnnotationBundle\Annotation;
 
 /**
  * Annotation for specified action.

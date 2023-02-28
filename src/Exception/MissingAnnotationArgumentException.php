@@ -1,9 +1,9 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Exception;
+namespace Neimheadh\SonataAnnotationBundle\Exception;
 
 use InvalidArgumentException;
-use KunicMarko\SonataAnnotationBundle\Annotation\AnnotationInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\AnnotationInterface;
 use ReflectionClass;
 
 /**

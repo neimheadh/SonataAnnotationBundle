@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler;
+namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use InvalidArgumentException;
-use KunicMarko\SonataAnnotationBundle\Reader\AddChildReader;
+use Neimheadh\SonataAnnotationBundle\Reader\AddChildReader;
 use ReflectionClass;
 use ReflectionException;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
- * Add admin annotated @KunicMarko\SonataAnnotationBundle\Annotation\AddChild as
+ * Add admin annotated @Neimheadh\SonataAnnotationBundle\Annotation\AddChild as
  * admin children.
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>

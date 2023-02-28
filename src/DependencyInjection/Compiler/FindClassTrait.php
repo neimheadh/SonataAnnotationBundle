@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler;
+namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use LogicException;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

@@ -1,10 +1,10 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
+namespace Neimheadh\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 
-use KunicMarko\SonataAnnotationBundle\Annotation\Access;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
-use KunicMarko\SonataAnnotationBundle\Tests\TestKernel;
+use Neimheadh\SonataAnnotationBundle\Annotation\Access;
+use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Tests\TestKernel;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 
@@ -68,7 +68,7 @@ class AccessCompilerPassTest extends KernelTestCase
           sprintf(
             'Argument "role" is mandatory for annotation %s on %s.',
             Access::class,
-            'KunicMarko\\SonataAnnotationBundle\\Tests\\Resources\\Model\\BadAccessAdminClass'
+            'Neimheadh\\SonataAnnotationBundle\\Tests\\Resources\\Model\\BadAccessAdminClass'
           ),
           $e->getMessage()
         );

@@ -1,12 +1,12 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Reader;
 
 use Doctrine\Common\Annotations\Reader;
-use KunicMarko\SonataAnnotationBundle\Annotation\AnnotationInterface;
-use KunicMarko\SonataAnnotationBundle\Annotation\AssociationFieldInterface;
-use KunicMarko\SonataAnnotationBundle\Annotation\RouteAnnotationInterface;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Annotation\AnnotationInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\AssociationFieldInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\RouteAnnotationInterface;
+use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;

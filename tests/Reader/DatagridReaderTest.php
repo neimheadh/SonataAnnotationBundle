@@ -1,15 +1,15 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use InvalidArgumentException;
-use KunicMarko\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use KunicMarko\SonataAnnotationBundle\Annotation\DatagridAssociationField;
-use KunicMarko\SonataAnnotationBundle\Annotation\DatagridField;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
-use KunicMarko\SonataAnnotationBundle\Reader\DatagridReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
+use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use Neimheadh\SonataAnnotationBundle\Annotation\DatagridAssociationField;
+use Neimheadh\SonataAnnotationBundle\Annotation\DatagridField;
+use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Reader\DatagridReader;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
 use ReflectionClass;
 use Sonata\AdminBundle\Datagrid\Datagrid;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;

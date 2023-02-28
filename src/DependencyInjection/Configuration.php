@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\DependencyInjection;
+namespace Neimheadh\SonataAnnotationBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -23,7 +23,7 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('directory')->defaultNull()->end()
+                ->scalarNode('directory')->end()
             ->end();
 
         return $treeBuilder;

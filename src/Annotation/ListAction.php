@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\Annotation;
+namespace Neimheadh\SonataAnnotationBundle\Annotation;
 
 /**
  * List action annotation.

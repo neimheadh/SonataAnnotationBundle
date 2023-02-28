@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\DependencyInjection\Compiler;
+namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
 use IteratorAggregate;
-use KunicMarko\SonataAnnotationBundle\Annotation\Admin;
+use Neimheadh\SonataAnnotationBundle\Annotation\Admin;
 use ReflectionClass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;

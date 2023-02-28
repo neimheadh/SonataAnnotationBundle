@@ -1,16 +1,16 @@
 <?php
 
-namespace KunicMarko\SonataAnnotationBundle\Tests\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
 use InvalidArgumentException;
-use KunicMarko\SonataAnnotationBundle\Annotation\ShowAssociationField;
-use KunicMarko\SonataAnnotationBundle\Annotation\ShowField;
-use KunicMarko\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
-use KunicMarko\SonataAnnotationBundle\Reader\ShowReader;
-use KunicMarko\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
-use KunicMarko\SonataAnnotationBundle\Tests\Resources\Model\Author;
+use Neimheadh\SonataAnnotationBundle\Annotation\ShowAssociationField;
+use Neimheadh\SonataAnnotationBundle\Annotation\ShowField;
+use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Reader\ShowReader;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Author;
 use ReflectionClass;
 use Sonata\AdminBundle\FieldDescription\FieldDescriptionCollection;
 use Sonata\AdminBundle\Show\ShowMapper;

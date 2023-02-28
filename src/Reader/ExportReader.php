@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace KunicMarko\SonataAnnotationBundle\Reader;
+namespace Neimheadh\SonataAnnotationBundle\Reader;
 
-use KunicMarko\SonataAnnotationBundle\Annotation\ExportAssociationField;
-use KunicMarko\SonataAnnotationBundle\Annotation\ExportField;
-use KunicMarko\SonataAnnotationBundle\Annotation\ExportFormats;
+use Neimheadh\SonataAnnotationBundle\Annotation\ExportAssociationField;
+use Neimheadh\SonataAnnotationBundle\Annotation\ExportField;
+use Neimheadh\SonataAnnotationBundle\Annotation\ExportFormats;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
