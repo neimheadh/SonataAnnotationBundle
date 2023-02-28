@@ -1,9 +1,12 @@
 #!/bin/bash
 
 set -e
+set -x
 
 TEST_PHP=1
 TEST_INTEGRATION=1
+RECIPE_PR=""
+_VERSION="dev-develop"
 while [ $# -gt 0 ]; do
     case $1 in
         --no-php)
@@ -11,6 +14,14 @@ while [ $# -gt 0 ]; do
             ;;
         --no-integration)
             TEST_INTEGRATION=0
+            ;;
+        --recipe-pr)
+            shift
+            RECIPE_PR=$1
+            ;;
+        --version)
+            shift
+            _VERSION=$1
             ;;
     esac
     shift
@@ -34,8 +45,22 @@ fi
 
 if [ "$TEST_INTEGRATION" -eq 1 ]; then
   cd build
-  rm -Rf test-project
-  $COMPOSER create-project symfony/skeleton test-project
-  cd test-project
-  $COMPOSER --no-interaction require neimheadh/sonata-annotation-bundle:dev-develop
+  rm -Rf v5 v6
+  $COMPOSER create-project --ansi 'symfony/skeleton:^5' v5
+  $COMPOSER create-project --ansi 'symfony/skeleton:^5' v6
+
+  for v in v5 v6; do
+    cd $v
+    $COMPOSER config extra.symfony.allow-contrib true
+    $COMPOSER config minimum-stability dev
+
+    if [ "$RECIPE_PR" == "" ]; then
+      $COMPOSER --no-interaction require -W --ansi "neimheadh/sonata-annotation-bundle:$_VERSION"
+    else
+      export SYMFONY_ENDPOINT="https://raw.githubusercontent.com/symfony/recipes-contrib/flex/pull-${RECIPE_PR}/index.json"
+      $COMPOSER --no-interaction require -W --ansi "neimheadh/sonata-annotation-bundle:$_VERSION"
+      unset SYMFONY_ENDPOINT
+    fi
+    cd ..
+  done
 fi
