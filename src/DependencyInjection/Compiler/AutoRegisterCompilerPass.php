@@ -75,12 +75,10 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
                 ]
             );
 
-            $options = $annotation->getTagOptions();
-            $options['label'] = $options['label'] ?: $class->getShortName();
             $definition->addTag(
                 'sonata.admin',
                 array_merge(
-                    $options,
+                    $this->getAdminAnnotationOptions($class, $annotation),
                     ['model_class' => $className],
                 )
             );
@@ -110,6 +108,32 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
         }
 
         return [];
+    }
+
+    /**
+     * Get admin annotation options with default option set.
+     *
+     * @param ReflectionClass $class      Annotated class.
+     * @param Admin           $annotation Admin annotation.
+     *
+     * @return array
+     */
+    private function getAdminAnnotationOptions(
+        ReflectionClass $class,
+        Admin $annotation
+    ): array {
+        $options = $annotation->getTagOptions();
+        $options['label'] = $options['label'] ?: $class->getShortName();
+        if ($options['group'] === null) {
+            $namespace = explode('\\', $class->getNamespaceName());
+
+            if (count($namespace) > 2) {
+                $group = array_pop($namespace);
+                $options['group'] = $group !== 'Entity' ? $group : null;
+            }
+        }
+
+        return $options;
     }
 
     /**
