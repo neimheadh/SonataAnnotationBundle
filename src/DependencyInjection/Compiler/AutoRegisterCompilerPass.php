@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Exception;
 use Neimheadh\SonataAnnotationBundle\Annotation\Admin;
 use ReflectionClass;
@@ -36,7 +36,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        /** @var AnnotationReader $annotationReader */
+        /** @var Reader $annotationReader */
         $annotationReader = $container->get('annotation_reader');
 
         $files = $this->findFiles(

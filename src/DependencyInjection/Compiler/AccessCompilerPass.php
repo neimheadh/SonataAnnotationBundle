@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Doctrine\Common\Annotations\Reader;
 use Neimheadh\SonataAnnotationBundle\Annotation\Access;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
@@ -31,7 +31,7 @@ final class AccessCompilerPass implements CompilerPassInterface
     public function process(ContainerBuilder $container): void
     {
         /**
-         * @var AnnotationReader $annotationReader
+         * @var Reader $annotationReader
          */
         $annotationReader = $container->get('annotation_reader');
         $roles = $container->getParameter('security.role_hierarchy.roles');
@@ -67,7 +67,7 @@ final class AccessCompilerPass implements CompilerPassInterface
     /**
      * Get the list of permissions associated roles.
      *
-     * @param AnnotationReader $annotationReader Doctrine annotation reader.
+     * @param Reader           $annotationReader Doctrine annotation reader.
      * @param ReflectionClass  $class            Service class.
      * @param string           $prefix           Service role name (permission
      *                                           roles prefix).
@@ -75,7 +75,7 @@ final class AccessCompilerPass implements CompilerPassInterface
      * @return array
      */
     private function getRoles(
-        AnnotationReader $annotationReader,
+        Reader $annotationReader,
         ReflectionClass $class,
         string $prefix
     ): array {
