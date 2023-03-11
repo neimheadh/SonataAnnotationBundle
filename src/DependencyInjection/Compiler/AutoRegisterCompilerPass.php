@@ -52,8 +52,9 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
                 continue;
             }
 
+            $class = new ReflectionClass($className);
             if (!($annotation = $annotationReader->getClassAnnotation(
-                new ReflectionClass($className),
+                $class,
                 Admin::class
             ))) {
                 continue;
@@ -74,10 +75,12 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
                 ]
             );
 
+            $options = $annotation->getTagOptions();
+            $options['label'] = $options['label'] ?: $class->getShortName();
             $definition->addTag(
                 'sonata.admin',
                 array_merge(
-                    $annotation->getTagOptions(),
+                    $options,
                     ['model_class' => $className],
                 )
             );
