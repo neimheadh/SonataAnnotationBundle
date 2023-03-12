@@ -2,12 +2,9 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\DependencyInjection;
 
-use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use Neimheadh\SonataAnnotationBundle\Tests\TestKernel;
-use LogicException;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Config\Definition\Processor;
 
 /**
  * Kernel configuration test suite.
@@ -18,73 +15,29 @@ class ConfigurationTest extends TestCase
 {
 
     /**
-     * Test kernel.
-     *
-     * @var Kernel|null
-     */
-    private ?Kernel $kernel = null;
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function setUp(): void
-    {
-        $this->kernel = new TestKernel('test', false);
-        $this->kernel->boot();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function tearDown(): void
-    {
-        if (file_exists($this->kernel->getCacheDir())) {
-            $filesystem = new Filesystem();
-            $filesystem->remove($this->kernel->getCacheDir());
-        }
-    }
-
-    /**
-     * Test admin.person service implementation is well-built.
+     * Configuration should have default values.
      *
      * @test
      * @functional
      *
      * @return void
      */
-    public function shouldPersonAdminWellConfigured(): void
+    public function shouldHasDefaultValues(): void
     {
-        $this->assertInstanceOf(
-          AnnotationAdmin::class,
-          $this->kernel->getContainer()->get('admin.person'),
-        );
-    }
+        $configuration = new Configuration();
+        $processor = new Processor();
 
-    /**
-     * Test a wrongly configured with parameter admin class throw a logic
-     * exception.
-     *
-     * @test
-     * @functional
-     *
-     * @return void
-     */
-    public function shouldBadAdminClassNameThrowLogicException(): void
-    {
-        $kernel = new TestKernel('test', true);
-        $kernel->additionalConfigFiles[] = 'test/BadAdminModelClassParameter.config.yml';
+        $config = $processor->processConfiguration($configuration, []);
 
-        $e = null;
-        try {
-            $kernel->boot();
-        } catch (LogicException $e) {
-        }
+        $this->assertArrayHasKey('entity', $config);
+        $this->assertArrayHasKey('menu', $config);
+        $this->assertArrayHasKey('namespace', $config['entity']);
+        $this->assertArrayHasKey('namespace_as_group', $config['menu']);
 
-        $this->assertNotNull($e);
-        $this->assertEquals(
-          'Service "admin.bad" has a parameter "model.class.bad" as an argument but it is not found.',
-          $e->getMessage()
-        );
+        $this->assertEquals(['App\\Entity\\'], $config['entity']['namespace']);
+        $this->assertTrue($config['menu']['namespace_as_group']);
+
+        $this->assertArrayNotHasKey('directory', $config);
     }
 
 }

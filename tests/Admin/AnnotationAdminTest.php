@@ -117,17 +117,25 @@ class AnnotationAdminTest extends WebTestCase
         );
         /** @var DOMElement $groups */
         $groups = $left->getElementsByTagName('groups')->item(0);
-        $this->assertEquals(1, $groups->getElementsByTagName('group')->length);
+        $this->assertEquals(2, $groups->getElementsByTagName('group')->length);
         /** @var DOMElement $group */
         $group = $groups->getElementsByTagName('group')->item(0);
         /** @var DOMNodeList|DOMElement[] $items */
         $items = $group->getElementsByTagName('item');
-        $this->assertEquals(3, $items->length);
+        $this->assertEquals('default', $group->getAttribute('label'));
+        $this->assertEquals(1, $items->length);
+        $this->assertEquals(Person::class, $items[0]->getAttribute('class'));
+
+        /** @var DOMElement $group */
+        $group = $groups->getElementsByTagName('group')->item(1);
+        /** @var DOMNodeList|DOMElement[] $items */
+        $items = $group->getElementsByTagName('item');
+        $this->assertEquals('Model', $group->getAttribute('label'));
+        $this->assertEquals(2, $items->length);
 
         $classes = [];
         foreach ($items as $item) $classes[] = $item->getAttribute('class');
 
-        $this->assertContains(Person::class, $classes);
         $this->assertContains(Book::class, $classes);
         $this->assertContains(Author::class, $classes);
 

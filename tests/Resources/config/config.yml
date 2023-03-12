@@ -73,7 +73,8 @@ security:
   access_control: ~
 
 sonata_annotation:
-  directory: '%kernel.project_dir%/Resources/Model/'
+  entity:
+    namespace: 'Neimheadh\SonataAnnotationBundle\Tests\Resources'
 
 monolog:
   channels: [doctrine_channel]

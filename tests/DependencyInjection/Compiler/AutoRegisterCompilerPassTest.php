@@ -2,14 +2,13 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 
+use Doctrine\Common\Annotations\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AutoRegisterCompilerPass;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
-use Throwable;
 
 /**
  * Dependency injection auto-register test suite
@@ -83,25 +82,29 @@ class AutoRegisterCompilerPassTest extends KernelTestCase
     }
 
     /**
-     * Test no exception send when entity directory does not exist.
+     * Test an error is thrown if you define a bad PSR4 namespace for entities.
      *
      * @test
      * @functional
+     *
+     * @return void
      */
-    public function shouldNotThrowExceptionWhenEntityDirectoryDoesNotExist(
-    ): void {
+    public function shouldThrowErrorOnInvalidNamespace(): void
+    {
         $container = new ContainerBuilder();
+        $container->set('annotation_reader', new AnnotationReader());
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE,
+            ['NonExisting\\Namespace'],
+        );
+        $register = new AutoRegisterCompilerPass();
 
-        $container->setParameter('sonata_annotation.directory', 'unknown');
-        $container->set('annotation_reader', static::getContainer()->get('annotation_reader'));
-
-        $compiler = new AutoRegisterCompilerPass();
         $e = null;
-
         try {
-            $compiler->process($container);
-        } catch (Throwable $e) {}
-        $this->assertNull($e);
-    }
+            $register->process($container);
+        } catch (\LogicException $e) {}
 
+        $this->assertNotNull($e);
+        $this->assertEquals('Cannot find PS4 for namespace NonExisting\\Namespace', $e->getMessage());
+    }
 }
