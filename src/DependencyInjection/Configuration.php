@@ -23,7 +23,32 @@ final class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->scalarNode('directory')->end()
+                ->arrayNode('entity')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('namespace')
+                            ->defaultValue(['App\\Entity\\'])
+                            ->beforeNormalization()
+                                ->castToArray()
+                            ->end()
+                            ->scalarPrototype()->end()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode('menu')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode('namespace_as_group')
+                            ->defaultValue(true)
+                        ->end()
+                    ->end()
+                ->end()
+                ->scalarNode('directory')
+                    ->setDeprecated(
+                        'neimheadh/sonata-annotation-bundle',
+                        '2.0.5'
+                    )
+                ->end()
             ->end();
 
         return $treeBuilder;

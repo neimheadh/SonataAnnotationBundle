@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
+use Composer\Autoload\ClassLoader;
 use Doctrine\Common\Annotations\Reader;
 use Exception;
+use LogicException;
 use Neimheadh\SonataAnnotationBundle\Annotation\Admin;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;
 use ReflectionClass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
-use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -40,7 +42,9 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
         $annotationReader = $container->get('annotation_reader');
 
         $files = $this->findFiles(
-            $container->getParameter('sonata_annotation.directory')
+            $container->getParameter(
+                SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE
+            )
         );
 
         foreach ($files as $file) {
@@ -78,7 +82,11 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
             $definition->addTag(
                 'sonata.admin',
                 array_merge(
-                    $this->getAdminAnnotationOptions($class, $annotation),
+                    $this->getAdminAnnotationOptions(
+                        $container,
+                        $class,
+                        $annotation
+                    ),
                     ['model_class' => $className],
                 )
             );
@@ -93,43 +101,99 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     /**
      * List PHP files in given directory.
      *
-     * @param string $directory Directory path.
+     * @param string[] $namespaces Entity namespaces.
      *
      * @return iterable
      */
-    private function findFiles(string $directory): iterable
+    private function findFiles(array $namespaces): iterable
     {
-        try {
-            return Finder::create()
-                ->in($directory)
-                ->files()
-                ->name('*.php');
-        } catch (DirectoryNotFoundException $e) {
+        $files = [];
+
+        foreach ($namespaces as $namespace) {
+            foreach ($this->findPsr4Directories($namespace) as $directory) {
+                $files = array_merge(
+                    $files,
+                    array_values(
+                        iterator_to_array(
+                            Finder::create()
+                                ->in($directory)
+                                ->files()
+                                ->name('*.php')
+                                ->getIterator()
+                        )
+                    )
+                );
+            }
         }
 
-        return [];
+        return $files;
+    }
+
+
+    private function findPsr4Directories(string $namespace): iterable
+    {
+        $loader = current(ClassLoader::getRegisteredLoaders());
+        $psr4 = $loader->getPrefixesPsr4();
+        $entitiesPsr4 = '';
+
+        foreach ($psr4 as $ns => $dirs) {
+            if (str_starts_with($namespace, $ns)
+                && strlen($ns) > strlen($entitiesPsr4)
+            ) {
+                $entitiesPsr4 = $ns;
+            }
+        }
+
+        if ($entitiesPsr4 === '') {
+            throw new LogicException(
+                sprintf(
+                    'Cannot find PS4 for namespace %s',
+                    $namespace
+                )
+            );
+        }
+
+        return $psr4[$entitiesPsr4];
     }
 
     /**
      * Get admin annotation options with default option set.
      *
-     * @param ReflectionClass $class      Annotated class.
-     * @param Admin           $annotation Admin annotation.
+     * @param ContainerBuilder $container  Container builder.
+     * @param ReflectionClass  $class      Annotated class.
+     * @param Admin            $annotation Admin annotation.
      *
      * @return array
      */
     private function getAdminAnnotationOptions(
+        ContainerBuilder $container,
         ReflectionClass $class,
         Admin $annotation
     ): array {
         $options = $annotation->getTagOptions();
         $options['label'] = $options['label'] ?: $class->getShortName();
-        if ($options['group'] === null) {
-            $namespace = explode('\\', $class->getNamespaceName());
 
-            if (count($namespace) > 2) {
-                $group = array_pop($namespace);
-                $options['group'] = $group !== 'Entity' ? $group : null;
+        if (
+            $options['group'] === null
+            && $container->getParameter(
+                SonataAnnotationExtension::PARAM_MENU_USE_NAMESPACE
+            )
+        ) {
+            $current = $class->getNamespaceName();
+
+            foreach (
+                $container->getParameter(
+                    SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE
+                ) as $namespace
+            ) {
+                if (str_starts_with($current, $namespace)) {
+                    $options['group'] = str_replace(
+                        '\\',
+                        ' ',
+                        substr($current, strlen($namespace))
+                    );
+                    break;
+                }
             }
         }
 
