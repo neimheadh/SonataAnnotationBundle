@@ -42,7 +42,7 @@ final class ListReader extends AbstractFieldConfigurationReader
 
         if ($mapper instanceof ListMapper) {
             if ($actions = $this->getListActions($class)) {
-                $mapper->add('_action', null, [
+                $mapper->add(ListMapper::NAME_ACTIONS, null, [
                     'actions' => $actions,
                 ]);
             }
