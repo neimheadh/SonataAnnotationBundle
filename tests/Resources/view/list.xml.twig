@@ -16,14 +16,14 @@
             <item>
                 <fields>
                     {% for field_description in admin.list.getElements() %}
-                        {% if field_description.name != '_action' %}
+                        {% if field_description.name != '_actions' %}
                             <field name="{{ field_description.name }}">{{ field_description.value(item) }}</field>
                         {% endif %}
                     {% endfor %}
                 </fields>
                 <actions>
                     {% for field_description in admin.list.getElements() %}
-                        {% if field_description.name == '_action' %}
+                        {% if field_description.name == '_actions' %}
                             {% for name,action in field_description.option('actions') %}
                                 <action template="{{ action.template }}">{{ name }}</action>
                             {% endfor %}

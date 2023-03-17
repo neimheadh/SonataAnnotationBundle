@@ -85,7 +85,7 @@ class ListReaderTest extends KernelTestCase
         $admin = $container->get('app.admin.Book');
 
         $list = $admin->getList();
-        $actions = $list->get('_action');
+        $actions = $list->get('_actions');
         $this->assertArrayHasKey('import', $actions->getOption('actions'));
         $this->assertEquals(['template' => 'import_list_button.html.twig'],
                             $actions->getOption('actions')['import']);

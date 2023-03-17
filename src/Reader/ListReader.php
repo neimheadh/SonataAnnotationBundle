@@ -22,6 +22,15 @@ final class ListReader extends AbstractFieldConfigurationReader
 {
 
     /**
+     * List default actions.
+     */
+    public const DEFAULT_ACTIONS = [
+        'show' => [],
+        'edit' => [],
+        'delete' => [],
+    ];
+
+    /**
      * {@inheritDoc}
      */
     public function __construct(Reader $annotationReader)
@@ -76,7 +85,7 @@ final class ListReader extends AbstractFieldConfigurationReader
             }
         }
 
-        return $actions;
+        return empty($actions) ? self::DEFAULT_ACTIONS : $actions;
     }
 
 }

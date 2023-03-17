@@ -352,7 +352,8 @@ class AnnotationAdminTest extends WebTestCase
         );
 
         $dom = new DOMDocument();
-        $dom->loadXML($client->getResponse()->getContent());
+        $xml = $client->getResponse()->getContent();
+        $dom->loadXML($xml);
 
         /** @var DOMElement $list */
         $list = $dom->getElementsByTagName('list')->item(0);
@@ -563,4 +564,54 @@ class AnnotationAdminTest extends WebTestCase
         );
     }
 
+    /**
+     * Test all actions are available in list by default.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldHaveAllListActionByDefault(): void
+    {
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+
+        /** @var KernelBrowser $client */
+        $client = $container->get('test.client');
+
+        $client->request(
+            'GET',
+            $container->get('router')->generate(
+                'admin_tests_resources_author_list'
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        file_put_contents(
+            "$this->logDir/list.author.xml",
+            $client->getResponse()->getContent()
+        );
+
+        $dom = new DOMDocument();
+        $xml = $client->getResponse()->getContent();
+        $dom->loadXML($xml);
+
+        /** @var DOMElement $list */
+        $list = $dom->getElementsByTagName('list')->item(0);
+        /** @var DOMElement $items */
+        $items = $list->getElementsByTagName('items')->item(0);
+
+        /** @var DOMElement $item */
+        $item = $items->getElementsByTagName('item')->item(0);
+        /** @var DOMElement $fields */
+        $actions = $item->getElementsByTagName('actions')->item(0);
+        /** @var DOMNodeList|DOMElement[] $fieldList */
+        $actionList = $actions->getElementsByTagName('action');
+
+        $this->assertEquals(3, $actionList->length);
+        $this->assertEquals('show', $actionList->item(0)->nodeValue);
+        $this->assertEquals('edit', $actionList->item(1)->nodeValue);
+        $this->assertEquals('delete', $actionList->item(2)->nodeValue);
+    }
 }
