@@ -614,4 +614,118 @@ class AnnotationAdminTest extends WebTestCase
         $this->assertEquals('edit', $actionList->item(1)->nodeValue);
         $this->assertEquals('delete', $actionList->item(2)->nodeValue);
     }
+
+    /**
+     * Test all fields are available by default.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldHaveAllFieldActivateByDefault(): void
+    {
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+
+        /** @var KernelBrowser $client */
+        $client = $container->get('test.client');
+
+        $client->request(
+            'GET',
+            $container->get('router')->generate(
+                'admin_tests_resources_author_list'
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        file_put_contents(
+            "$this->logDir/list.author.xml",
+            $client->getResponse()->getContent()
+        );
+
+        $dom = new DOMDocument();
+        $xml = $client->getResponse()->getContent();
+        $dom->loadXML($xml);
+
+        /** @var DOMElement $root */
+        $root = $dom->getElementsByTagName('list')->item(0);
+        /** @var DOMElement $items */
+        $items = $root->getElementsByTagName('items')->item(0);
+        /** @var DOMElement $filters */
+        $filters = $root->getElementsByTagName('filters')->item(0);
+
+        /** @var DOMNodeList|DOMElement[] $filterList */
+        $filterList = $filters->getElementsByTagName('filter');
+
+        $this->assertEquals(3, $filterList->length);
+        $this->assertEquals('id', $filterList[0]->nodeValue);
+        $this->assertEquals('name', $filterList[1]->nodeValue);
+        $this->assertEquals('genre', $filterList[2]->nodeValue);
+
+        /** @var DOMElement $item */
+        $item = $items->getElementsByTagName('item')->item(0);
+        /** @var DOMElement $fields */
+        $fields = $item->getElementsByTagName('fields')->item(0);
+        /** @var DOMNodeList|DOMElement[] $fieldList */
+        $fieldList = $fields->getElementsByTagName('field');
+
+        $this->assertEquals(3, $fieldList->length);
+        $this->assertEquals('id', $fieldList->item(0)->getAttribute('name'));
+        $this->assertEquals('name', $fieldList->item(1)->getAttribute('name'));
+        $this->assertEquals('genre', $fieldList->item(2)->getAttribute('name'));
+
+        $client->request(
+            'GET',
+            $container->get('router')->generate(
+                'admin_tests_resources_author_show',
+                ['id' => 1]
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        file_put_contents(
+            "$this->logDir/show.author.xml",
+            $client->getResponse()->getContent()
+        );
+
+        $dom = new DOMDocument();
+        $xml = $client->getResponse()->getContent();
+        $dom->loadXML($xml);
+
+        /** @var DOMElement $root */
+        $root = $dom->getElementsByTagName('show')->item(0);
+        /** @var DOMNodeList|DOMElement[] $fieldList */
+        $fieldList = $root->getElementsByTagName('field');
+
+        $this->assertEquals(3, $fieldList->length);
+        $this->assertEquals('id', $fieldList[0]->getElementsByTagName('label')[0]->nodeValue);
+        $this->assertEquals('name', $fieldList[1]->getElementsByTagName('label')[0]->nodeValue);
+        $this->assertEquals('genre', $fieldList[2]->getElementsByTagName('label')[0]->nodeValue);
+
+        $client->request(
+            'GET',
+            $container->get('router')->generate(
+                'admin_tests_resources_author_create'
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        file_put_contents(
+            "$this->logDir/create.author.xml",
+            $client->getResponse()->getContent()
+        );
+
+        $dom = new DOMDocument();
+        $xml = $client->getResponse()->getContent();
+        $dom->loadXML($xml);
+
+        /** @var DOMElement $root */
+        $root = $dom->getElementsByTagName('edit')->item(0);
+        /** @var DOMNodeList|DOMElement[] $fieldList */
+        $fieldList = $root->getElementsByTagName('field');
+
+        $this->assertEquals(3, $fieldList->length);
+        $this->assertEquals('name', $fieldList->item(0)->getAttribute('name'));
+        $this->assertEquals('genre', $fieldList->item(1)->getAttribute('name'));
+        $this->assertEquals('_token', $fieldList->item(2)->getAttribute('name'));
+    }
 }

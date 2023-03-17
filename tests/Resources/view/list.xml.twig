@@ -16,7 +16,7 @@
             <item>
                 <fields>
                     {% for field_description in admin.list.getElements() %}
-                        {% if field_description.name != '_actions' %}
+                        {% if field_description.name != '_actions' and field_description.name != '_batch' %}
                             <field name="{{ field_description.name }}">{{ field_description.value(item) }}</field>
                         {% endif %}
                     {% endfor %}

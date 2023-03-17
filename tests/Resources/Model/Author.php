@@ -20,6 +20,7 @@ class Author implements Stringable
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     public ?int $id = null;
 

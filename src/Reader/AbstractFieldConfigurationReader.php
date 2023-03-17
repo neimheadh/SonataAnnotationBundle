@@ -7,11 +7,13 @@ use InvalidArgumentException;
 use Neimheadh\SonataAnnotationBundle\Annotation\ActionAnnotationInterface;
 use Neimheadh\SonataAnnotationBundle\Annotation\PositionAnnotationInterface;
 use ReflectionClass;
+use ReflectionProperty;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Mapper\MapperInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * Field configuration reader.
@@ -78,6 +80,11 @@ class AbstractFieldConfigurationReader extends AbstractReader
             $annotationClass,
             $action
         );
+
+        if (empty($fields) && $annotationClass !== null) {
+            $fields = $this->loadDefaultFields($class, $annotationClass);
+        }
+
         array_walk(
             $fields,
             fn(array $field) => $this->addMapperProperty($mapper, $field)
@@ -98,6 +105,124 @@ class AbstractFieldConfigurationReader extends AbstractReader
             || $action === null
             || !isset($annotation->action)
             || $annotation->action === $action;
+    }
+
+    /**
+     * Load default fields.
+     *
+     * @param ReflectionClass $class  Entity class.
+     * @param string|null     $annotationClass Reader annotation class.
+     *
+     * @return array
+     */
+    protected function loadDefaultFields(
+        ReflectionClass $class,
+        string $annotationClass
+    ): array {
+        $properties = [];
+
+        foreach ($class->getProperties() as $property) {
+            $properties[] = [
+                'name' => $property->getName(),
+                'annotation' => new $annotationClass(),
+            ];
+        }
+
+        return $properties;
+    }
+
+    /**
+     * Load class properties with position annotation.
+     *
+     * @param ReflectionClass $class           Entity class.
+     * @param string|null     $annotationClass Reader annotation class.
+     * @param string|null     $action          Current action.
+     *
+     * @return array
+     */
+    protected function loadPositionAnnotationFields(
+        ReflectionClass $class,
+        ?string $annotationClass,
+        ?string $action
+    ): array {
+        $propertiesAndMethods = array_merge(
+            $this->getClassPropertiesAnnotations($class, $annotationClass),
+            $this->getClassMethodsAnnotations($class, $annotationClass)
+        );
+
+        $propertiesWithPosition = [];
+        $propertiesWithoutPosition = [];
+
+        foreach ($propertiesAndMethods as $name => $annotations) {
+            /** @var PositionAnnotationInterface $annotation */
+            foreach ($annotations as $annotation) {
+                if (!$this->isSupported($annotation, $action)) {
+                    continue;
+                }
+
+                $name = $this->getAnnotationFieldName($name, $annotation);
+
+                $this->stackProperty(
+                    $name,
+                    $annotation,
+                    $propertiesWithPosition,
+                    $propertiesWithoutPosition
+                );
+            }
+        }
+
+        ksort($propertiesWithPosition);
+
+        return array_merge(
+            $propertiesWithPosition,
+            $propertiesWithoutPosition
+        );
+    }
+
+    /**
+     * Stack given annotation as a property with or without position.
+     *
+     * @param string $name                      Property name.
+     * @param object $annotation                Annotation.
+     * @param array  $propertiesWithPosition    Properties with position stack.
+     * @param array  $propertiesWithoutPosition Properties without position
+     *                                          stack.
+     *
+     * @return void
+     */
+    protected function stackProperty(
+        string $name,
+        object $annotation,
+        array &$propertiesWithPosition,
+        array &$propertiesWithoutPosition
+    ): void {
+        if (!isset($annotation->position)) {
+            $propertiesWithoutPosition[] = [
+                'name' => $name,
+                'annotation' => $annotation,
+            ];
+
+            return;
+        }
+
+        if (array_key_exists(
+            $annotation->position,
+            $propertiesWithPosition
+        )) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Position "%s" is already in use by "%s", try setting a different position for "%s".',
+                    $annotation->position,
+                    $propertiesWithPosition[$annotation->position]['name'],
+                    $name
+                )
+            );
+        }
+
+        $propertiesWithPosition[$annotation->position] = [
+            'name' => $name,
+            'annotation' => $annotation,
+        ];
     }
 
     /**
@@ -210,99 +335,4 @@ class AbstractFieldConfigurationReader extends AbstractReader
             $settings[1] ?? [],
         );
     }
-
-    /**
-     * Load class properties with position annotation.
-     *
-     * @param ReflectionClass $class           Entity class.
-     * @param string|null     $annotationClass Reader annotation class.
-     * @param string|null     $action          Current action.
-     *
-     * @return array
-     */
-    private function loadPositionAnnotationFields(
-        ReflectionClass $class,
-        ?string $annotationClass,
-        ?string $action
-    ): array {
-        $propertiesAndMethods = array_merge(
-            $this->getClassPropertiesAnnotations($class, $annotationClass),
-            $this->getClassMethodsAnnotations($class, $annotationClass)
-        );
-
-        $propertiesWithPosition = [];
-        $propertiesWithoutPosition = [];
-
-        foreach ($propertiesAndMethods as $name => $annotations) {
-            /** @var PositionAnnotationInterface $annotation */
-            foreach ($annotations as $annotation) {
-                if (!$this->isSupported($annotation, $action)) {
-                    continue;
-                }
-
-                $name = $this->getAnnotationFieldName($name, $annotation);
-
-                $this->stackProperty(
-                    $name,
-                    $annotation,
-                    $propertiesWithPosition,
-                    $propertiesWithoutPosition
-                );
-            }
-        }
-
-        ksort($propertiesWithPosition);
-
-        return array_merge(
-            $propertiesWithPosition,
-            $propertiesWithoutPosition
-        );
-    }
-
-    /**
-     * Stack given annotation as a property with or without position.
-     *
-     * @param string $name                      Property name.
-     * @param object $annotation                Annotation.
-     * @param array  $propertiesWithPosition    Properties with position stack.
-     * @param array  $propertiesWithoutPosition Properties without position
-     *                                          stack.
-     *
-     * @return void
-     */
-    protected function stackProperty(
-        string $name,
-        object $annotation,
-        array &$propertiesWithPosition,
-        array &$propertiesWithoutPosition
-    ): void {
-        if (!isset($annotation->position)) {
-            $propertiesWithoutPosition[] = [
-                'name' => $name,
-                'annotation' => $annotation,
-            ];
-
-            return;
-        }
-
-        if (array_key_exists(
-            $annotation->position,
-            $propertiesWithPosition
-        )) {
-            throw new InvalidArgumentException(
-                sprintf(
-                    'Position "%s" is already in use by "%s", try setting a different position for "%s".',
-                    $annotation->position,
-                    $propertiesWithPosition[$annotation->position]['name'],
-                    $name
-                )
-            );
-        }
-
-        $propertiesWithPosition[$annotation->position] = [
-            'name' => $name,
-            'annotation' => $annotation,
-        ];
-    }
-
 }
