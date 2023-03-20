@@ -2,8 +2,11 @@
 <container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
         <defaults public="true">
-            <bind key="$annotationReader" type="service" id="annotation_reader" />
+            <bind key="$annotationReader" type="service" id="sonata.annotation.reader" />
         </defaults>
+        <service id="sonata.annotation.reader" class="Neimheadh\SonataAnnotationBundle\AnnotationReader">
+            <argument type="service" id="annotation_reader" />
+        </service>
         <service id="sonata.annotation.reader.form" class="Neimheadh\SonataAnnotationBundle\Reader\FormReader" />
         <service id="sonata.annotation.reader.list" class="Neimheadh\SonataAnnotationBundle\Reader\ListReader" />
         <service id="sonata.annotation.reader.show" class="Neimheadh\SonataAnnotationBundle\Reader\ShowReader" />
@@ -14,7 +17,7 @@
         <service id="sonata.annotation.reader.export" class="Neimheadh\SonataAnnotationBundle\Reader\ExportReader" />
         <service id="sonata.annotation.reader.datagrid_values" class="Neimheadh\SonataAnnotationBundle\Reader\DatagridValuesReader" />
         <service id="sonata.annotation.reader.add_child" class="Neimheadh\SonataAnnotationBundle\Reader\AddChildReader">
-            <argument type="service" id="annotation_reader" />
+            <argument type="service" id="sonata.annotation.reader" />
         </service>
     </services>
 </container>

@@ -2,7 +2,7 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Annotation\DatagridValues;
 use Neimheadh\SonataAnnotationBundle\Reader\DatagridValuesReader;
 use PHPUnit\Framework\TestCase;

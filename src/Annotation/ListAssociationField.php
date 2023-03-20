@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\Annotation;
 
+use Attribute;
+
 /**
  * List association field annotation.
  *
@@ -15,6 +17,7 @@ namespace Neimheadh\SonataAnnotationBundle\Annotation;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class ListAssociationField extends ListField implements
     AssociationFieldInterface
 {

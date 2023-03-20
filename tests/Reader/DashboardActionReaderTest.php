@@ -2,7 +2,7 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Exception;
 use Neimheadh\SonataAnnotationBundle\Annotation\DashboardAction;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;

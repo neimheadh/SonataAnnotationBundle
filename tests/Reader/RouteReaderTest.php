@@ -2,17 +2,16 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Neimheadh\SonataAnnotationBundle\Annotation\AddRoute;
 use Neimheadh\SonataAnnotationBundle\Annotation\RemoveRoute;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use Neimheadh\SonataAnnotationBundle\Reader\RouteReader;
 use ReflectionClass;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 /**
  * RouteReader test suite.
@@ -33,7 +32,7 @@ class RouteReaderTest extends KernelTestCase
         $reader = new RouteReader(new AnnotationReader());
 
         $routes = $reader->getRoutes(
-          new ReflectionClass(RouteReaderTestCase::class)
+            new ReflectionClass(RouteReaderTestCase::class)
         );
 
         $added = new AddRoute();
@@ -47,12 +46,12 @@ class RouteReaderTest extends KernelTestCase
         $this->assertCount(1, $routes[0]);
         $this->assertCount(1, $routes[1]);
         $this->assertEquals(
-          ['custom_route' => $added],
-          $routes[0]
+            ['custom_route' => $added],
+            $routes[0]
         );
         $this->assertEquals(
-          ['app_show' => $removed],
-          $routes[1]
+            ['app_show' => $removed],
+            $routes[1]
         );
     }
 
@@ -71,39 +70,39 @@ class RouteReaderTest extends KernelTestCase
         $e = null;
         try {
             $reader->getRoutes(
-              new ReflectionClass(NoNameAddRouteReaderTestCase::class)
+                new ReflectionClass(NoNameAddRouteReaderTestCase::class)
             );
         } catch (MissingAnnotationArgumentException $e) {
         }
 
         $this->assertNotNull($e);
         $this->assertEquals(
-          sprintf(
-            'Argument "%s" is mandatory for annotation %s on %s.',
-            'name',
-            AddRoute::class,
-            NoNameAddRouteReaderTestCase::class,
-          ),
-          $e->getMessage(),
+            sprintf(
+                'Argument "%s" is mandatory for annotation %s on %s.',
+                'name',
+                AddRoute::class,
+                NoNameAddRouteReaderTestCase::class,
+            ),
+            $e->getMessage(),
         );
 
         $e = null;
         try {
             $reader->getRoutes(
-              new ReflectionClass(NoNameRemoveRouteReaderTestCase::class)
+                new ReflectionClass(NoNameRemoveRouteReaderTestCase::class)
             );
         } catch (MissingAnnotationArgumentException $e) {
         }
 
         $this->assertNotNull($e);
         $this->assertEquals(
-          sprintf(
-            'Argument "%s" is mandatory for annotation %s on %s.',
-            'name',
-            RemoveRoute::class,
-            NoNameRemoveRouteReaderTestCase::class,
-          ),
-          $e->getMessage(),
+            sprintf(
+                'Argument "%s" is mandatory for annotation %s on %s.',
+                'name',
+                RemoveRoute::class,
+                NoNameRemoveRouteReaderTestCase::class,
+            ),
+            $e->getMessage(),
         );
     }
 
@@ -123,10 +122,11 @@ class RouteReaderTest extends KernelTestCase
         $admin = $container->get('app.admin.Book');
         /** @var RouteCollection $routes */
         $routes = $admin->getRoutes();
-        
+
         $this->assertTrue($routes->has('custom'));
         $this->assertFalse($routes->has('batch'));
     }
+
 }
 
 /**

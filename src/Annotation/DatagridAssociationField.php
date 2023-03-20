@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\Annotation;
 
+use Attribute;
+
 /**
  * Datagrid association field annotation.
  *
@@ -16,6 +18,7 @@ namespace Neimheadh\SonataAnnotationBundle\Annotation;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
+#[Attribute(Attribute::TARGET_PROPERTY)]
 final class DatagridAssociationField extends DatagridField implements
     AssociationFieldInterface
 {

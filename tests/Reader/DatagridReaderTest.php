@@ -2,7 +2,7 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Doctrine\Common\Annotations\AnnotationReader;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use InvalidArgumentException;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Neimheadh\SonataAnnotationBundle\Annotation\DatagridAssociationField;

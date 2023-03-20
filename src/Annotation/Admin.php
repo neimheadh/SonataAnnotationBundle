@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\Annotation;
 
+use Attribute;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 
 /**
@@ -17,6 +18,7 @@ use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
+#[Attribute(Attribute::TARGET_CLASS)]
 final class Admin implements AnnotationInterface
 {
 
