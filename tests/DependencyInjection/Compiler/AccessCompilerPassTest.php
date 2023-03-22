@@ -3,12 +3,16 @@
 namespace Neimheadh\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\AnnotationReader;
+use Exception;
 use LogicException;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Neimheadh\SonataAnnotationBundle\Annotation\Access;
 use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AccessCompilerPass;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AutoRegisterCompilerPass;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
-use Neimheadh\SonataAnnotationBundle\Tests\TestKernel;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\AccessMissingRole\AccessMissingRole;
+use ReflectionException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -83,41 +87,93 @@ class AccessCompilerPassTest extends KernelTestCase
     }
 
     /**
-     * Test the compiler should throw an exception if we don't set the access
-     * annotation role.
+     * Test access annotation has role mandatory.
      *
      * @test
-     * @functional
+     * @functionnal
      *
      * @return void
+     * @throws ReflectionException
+     * @throws Exception
      */
-    public function shouldThrowExceptionOnBadAccessClass(): void
+    public function shouldHaveRoleMandatory(): void
     {
-        $kernel = new TestKernel('test', false);
+        $container = new ContainerBuilder();
+        $accessCompiler = new AccessCompilerPass();
 
-        $model = __DIR__ . '/../../Resources/Model/BadAccessAdminClass.php.dist';
-        $file = __DIR__ . '/../../Resources/Model/BadAccessAdminClass.php';
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE,
+            ['Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\AccessMissingRole']
+        );
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_MENU_USE_NAMESPACE,
+            true
+        );
+        $container->setParameter(
+            'security.role_hierarchy.roles',
+            static::getContainer()->getParameter(
+                'security.role_hierarchy.roles'
+            )
+        );
 
-        if (is_file($file)) {
-            unlink($file);
-        }
+        (new AutoRegisterCompilerPass())->process($container);
 
-        copy($model, $file);
         $e = null;
         try {
-            $kernel->boot();
+            $accessCompiler->process($container);
         } catch (MissingAnnotationArgumentException $e) {
         }
-        unlink($file);
 
         $this->assertNotNull($e);
         $this->assertEquals(
             sprintf(
                 'Argument "role" is mandatory for annotation %s on %s.',
                 Access::class,
-                'Neimheadh\\SonataAnnotationBundle\\Tests\\Resources\\Model\\BadAccessAdminClass'
+                AccessMissingRole::class
             ),
             $e->getMessage()
+        );
+    }
+
+    /**
+     * Test Access annotation can be used has argument.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldHandleAccessArgument(): void
+    {
+        $container = new ContainerBuilder();
+        $accessCompiler = new AccessCompilerPass();
+
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE,
+            ['Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation']
+        );
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_MENU_USE_NAMESPACE,
+            true
+        );
+        $container->setParameter(
+            'security.role_hierarchy.roles',
+            [],
+        );
+
+        (new AutoRegisterCompilerPass())->process($container);
+        $accessCompiler->process($container);
+
+        $this->assertEquals(
+            [
+                'ROLE_ADMIN' => [
+                    'ROLE_APP_ADMIN_ARGUMENTANNOTATION_LIST',
+                    'ROLE_APP_ADMIN_ARGUMENTANNOTATION_VIEW',
+                    'ROLE_APP_ADMIN_ARGUMENTANNOTATION_EXPORT',
+                ],
+            ],
+            $container->getParameter('security.role_hierarchy.roles')
         );
     }
 

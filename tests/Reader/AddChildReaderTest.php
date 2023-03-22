@@ -2,11 +2,11 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Annotation\AddChild;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use Neimheadh\SonataAnnotationBundle\Reader\AddChildReader;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Book;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Book;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 

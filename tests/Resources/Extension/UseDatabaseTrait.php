@@ -5,10 +5,9 @@ namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Tools\SchemaTool;
-use Doctrine\ORM\Tools\ToolsException;
 use Exception;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Author;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Book;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Author;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Book;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
 
 

@@ -20,12 +20,13 @@ use Attribute;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class Access implements AnnotationInterface
 {
+
     /**
      * Allowed role.
      *
-     * @var string
+     * @var string|null
      */
-    public string $role;
+    public ?string $role = null;
 
     /**
      * Allowed permissions.
@@ -33,4 +34,25 @@ final class Access implements AnnotationInterface
      * @var array
      */
     public array $permissions = [];
+
+    /**
+     * @param array|string|null $role        Allowed role or annotation
+     *                                       parameters.
+     * @param array             $permissions Allowed permissions.
+     */
+    public function __construct(
+        $role = null,
+        array $permissions = []
+    ) {
+        $this->permissions = $permissions;
+
+        if (is_array($role)) {
+            foreach ($role as $name => $value) {
+                $this->$name = $value;
+            }
+        } else {
+            $this->role = $role;
+        }
+    }
+
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book;
 
 use Doctrine\ORM\Mapping as ORM;
 use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
@@ -11,7 +11,7 @@ use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
  * @author Mathieu Wambre <contact@neimheadh.fr>
  *
  * @ORM\Entity
- * @Sonata\Admin()
+ * @Sonata\Admin(label="Book admin")
  * @Sonata\Access(role="ROLE_USER", permissions={"READ"})
  * @Sonata\ListAction(
  *     name="import",

@@ -1,6 +1,6 @@
 <?php
 
-namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book;
 
 use Doctrine\ORM\Mapping as ORM;
 use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;

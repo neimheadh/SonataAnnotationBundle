@@ -2,15 +2,15 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Exception;
 use InvalidArgumentException;
 use Neimheadh\SonataAnnotationBundle\Annotation\ShowAssociationField;
 use Neimheadh\SonataAnnotationBundle\Annotation\ShowField;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use Neimheadh\SonataAnnotationBundle\Reader\ShowReader;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Author;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Author;
 use ReflectionClass;
 use Sonata\AdminBundle\FieldDescription\FieldDescriptionCollection;
 use Sonata\AdminBundle\Show\ShowMapper;

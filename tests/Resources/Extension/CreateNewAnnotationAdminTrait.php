@@ -2,6 +2,7 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension;
 
+use LogicException;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Neimheadh\SonataAnnotationBundle\Reader\ActionButtonReader;
 use Neimheadh\SonataAnnotationBundle\Reader\DashboardActionReader;
@@ -12,8 +13,7 @@ use Neimheadh\SonataAnnotationBundle\Reader\FormReader;
 use Neimheadh\SonataAnnotationBundle\Reader\ListReader;
 use Neimheadh\SonataAnnotationBundle\Reader\RouteReader;
 use Neimheadh\SonataAnnotationBundle\Reader\ShowReader;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Book;
-use LogicException;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Book;
 use Sonata\AdminBundle\Builder\DatagridBuilderInterface;
 use Sonata\AdminBundle\Builder\ListBuilderInterface;
 use Sonata\AdminBundle\Builder\RouteBuilderInterface;

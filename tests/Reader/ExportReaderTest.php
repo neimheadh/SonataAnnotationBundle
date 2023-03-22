@@ -2,13 +2,13 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Annotation\ExportAssociationField;
 use Neimheadh\SonataAnnotationBundle\Annotation\ExportField;
 use Neimheadh\SonataAnnotationBundle\Annotation\ExportFormats;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use Neimheadh\SonataAnnotationBundle\Reader\ExportReader;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Author;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Author;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 

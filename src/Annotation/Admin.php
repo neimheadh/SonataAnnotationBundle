@@ -25,9 +25,9 @@ final class Admin implements AnnotationInterface
     /**
      * Admin label.
      *
-     * @var string
+     * @var string|null
      */
-    public string $label;
+    public ?string $label = null;
 
     /**
      * Admin model manager type.
@@ -39,9 +39,9 @@ final class Admin implements AnnotationInterface
     /**
      * Admin group.
      *
-     * @var string
+     * @var string|null
      */
-    public string $group;
+    public ?string $group = null;
 
     /**
      * Is admin shown in dashboard?
@@ -70,44 +70,44 @@ final class Admin implements AnnotationInterface
     /**
      * Admin link icon.
      *
-     * @var string
+     * @var string|null
      */
-    public string $icon;
+    public ?string $icon = null;
 
     /**
      * Admin label translator strategy.
      *
-     * @var string
+     * @var string|null
      */
-    public string $labelTranslatorStrategy;
+    public ?string $labelTranslatorStrategy = null;
 
     /**
      * Admin label translation catalogue.
      *
-     * @var string
+     * @var string|null
      */
-    public string $labelCatalogue;
+    public ?string $labelCatalogue = null;
 
     /**
      * Admin pager type.
      *
-     * @var string
+     * @var string|null
      */
-    public string $pagerType;
+    public ?string $pagerType = null;
 
     /**
      * Admin controller.
      *
-     * @var string
+     * @var string|null
      */
-    public string $controller;
+    public ?string $controller = null;
 
     /**
      * Admin service id.
      *
-     * @var string
+     * @var string|null
      */
-    public string $serviceId;
+    public ?string $serviceId = null;
 
     /**
      * Admin service class.
@@ -119,9 +119,68 @@ final class Admin implements AnnotationInterface
     /**
      * Admin code.
      *
-     * @var string
+     * @var string|null
      */
-    public string $code;
+    public ?string $code = null;
+
+    /**
+     * @param string|array|null $label                    Label or annotation
+     *                                                    parameters.
+     * @param string            $managerType              Model manager type.
+     * @param string|null       $group                    Admin group.
+     * @param bool              $showInDashboard          Show in dashboard?
+     * @param bool              $keepOpen                 Keep open.
+     * @param bool              $onTop                    Is admin a top menu?
+     * @param string|null       $icon                     Admin link icon.
+     * @param string|null       $labelTranslatorStrategy  Label translator
+     *                                                    strategy.
+     * @param string|null       $labelCatalogue           Admin label
+     *                                                    translation
+     *                                                    catalogue.
+     * @param string|null       $pagerType                Pager type.
+     * @param string|null       $controller               Controller.
+     * @param string|null       $serviceId                Service id.
+     * @param string            $admin                    Service class.
+     * @param string|null       $code                     Code.
+     */
+    public function __construct(
+        $label = null,
+        string $managerType = 'orm',
+        ?string $group = null,
+        bool $showInDashboard = true,
+        bool $keepOpen = true,
+        bool $onTop = false,
+        ?string $icon = null,
+        ?string $labelTranslatorStrategy = null,
+        ?string $labelCatalogue = null,
+        ?string $pagerType = null,
+        ?string $controller = null,
+        ?string $serviceId = null,
+        string $admin = AnnotationAdmin::class,
+        ?string $code = null
+    ) {
+        $this->managerType = $managerType;
+        $this->group = $group;
+        $this->showInDashboard = $showInDashboard;
+        $this->keepOpen = $keepOpen;
+        $this->onTop = $onTop;
+        $this->icon = $icon;
+        $this->labelTranslatorStrategy = $labelTranslatorStrategy;
+        $this->labelCatalogue = $labelCatalogue;
+        $this->pagerType = $pagerType;
+        $this->controller = $controller;
+        $this->serviceId = $serviceId;
+        $this->admin = $admin;
+        $this->code = $code;
+
+        if (is_array($label)) {
+            foreach ($label as $name => $value) {
+                $this->$name = $value;
+            }
+        } else {
+            $this->label = $label;
+        }
+    }
 
     /**
      * Get service "sonata.admin" tag options.
@@ -131,18 +190,18 @@ final class Admin implements AnnotationInterface
     public function getTagOptions(): array
     {
         return [
-            'code' => $this->code ?? null,
-            'controller' => $this->controller ?? null,
+            'code' => $this->code,
+            'controller' => $this->controller,
             'manager_type' => $this->managerType,
-            'group' => $this->group ?? null,
-            'label' => $this->label ?? null,
+            'group' => $this->group,
+            'label' => $this->label,
             'show_in_dashboard' => $this->showInDashboard,
             'keep_open' => $this->keepOpen,
             'on_top' => $this->onTop,
-            'icon' => $this->icon ?? null,
-            'label_translator_strategy' => $this->labelTranslatorStrategy ?? null,
-            'label_catalogue' => $this->labelCatalogue ?? null,
-            'pager_type' => $this->pagerType ?? null,
+            'icon' => $this->icon,
+            'label_translator_strategy' => $this->labelTranslatorStrategy,
+            'label_catalogue' => $this->labelCatalogue,
+            'pager_type' => $this->pagerType,
         ];
     }
 

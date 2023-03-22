@@ -1,6 +1,6 @@
 <?php
 
-namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model;
+namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity;
 
 /**
  * Person test model.

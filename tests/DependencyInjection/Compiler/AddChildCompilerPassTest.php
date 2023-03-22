@@ -2,11 +2,15 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\DependencyInjection\Compiler;
 
+use Exception;
 use InvalidArgumentException;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use Neimheadh\SonataAnnotationBundle\Tests\TestKernel;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AddChildCompilerPass;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AutoRegisterCompilerPass;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Add child annotation compiler pass test suite.
@@ -23,6 +27,7 @@ class AddChildCompilerPassTest extends KernelTestCase
      * @functional
      *
      * @return void
+     * @throws Exception
      */
     public function shouldAuthorHasBookChildren(): void
     {
@@ -37,38 +42,49 @@ class AddChildCompilerPassTest extends KernelTestCase
     }
 
     /**
-     * Test the compiler should throw an exception if we set a class which is
-     * not an administrated model.
+     * Test thrown error when a child admin is misconfigured.
      *
      * @test
-     * @functional
+     * @functionnal
      *
      * @return void
+     * @throws Exception
      */
-    public function shouldThrowExceptionOnBadAdminClass(): void
+    public function shouldThrowErrorOnBadChildAdmin(): void
     {
-        $kernel = new TestKernel('test', false);
+        $container = new ContainerBuilder();
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE,
+            ['Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\BadChildAdmin']
+        );
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_MENU_USE_NAMESPACE,
+            true
+        );
 
-        $model = __DIR__ . '/../../Resources/Model/BadChildAdminClass.php.dist';
-        $file = __DIR__ . '/../../Resources/Model/BadChildAdminClass.php';
-
-        if (is_file($file)) {
-            unlink($file);
+        $services = [
+            'sonata.annotation.reader.add_child',
+        ];
+        foreach ($services as $service) {
+            $container->set(
+                $service,
+                static::getContainer()->get(
+                    $service
+                )
+            );
         }
 
-        copy($model, $file);
+        (new AutoRegisterCompilerPass())->process($container);
+
+        $compiler = new AddChildCompilerPass();
+
         $e = null;
         try {
-            $kernel->boot();
-        } catch (InvalidArgumentException $e) {
-        }
-        unlink($file);
+            $compiler->process($container);
+        } catch (InvalidArgumentException $e) {}
 
         $this->assertNotNull($e);
-        $this->assertEquals(
-          'Unknown is missing Admin Class.',
-          $e->getMessage()
-        );
+        $this->assertEquals('WrongOne is missing admin class.', $e->getMessage());
     }
 
 }

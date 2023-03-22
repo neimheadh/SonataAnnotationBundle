@@ -9,6 +9,7 @@ use Doctrine\Common\Annotations\Reader;
 use Exception;
 use LogicException;
 use Neimheadh\SonataAnnotationBundle\Annotation\Admin;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;
 use ReflectionClass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -38,8 +39,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        /** @var Reader $annotationReader */
-        $annotationReader = $container->get('annotation_reader');
+        $annotationReader = new AnnotationReader();
 
         $files = $this->findFiles(
             $container->getParameter(
@@ -91,8 +91,9 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
                 )
             );
 
+
             $container->setDefinition(
-                $annotation->serviceId ?? $this->getServiceId($file),
+                $annotation->serviceId ?: $this->getServiceId($file),
                 $definition
             );
         }
@@ -129,7 +130,13 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
         return $files;
     }
 
-
+    /**
+     * Get the PSR4 directory for the given namespace.
+     *
+     * @param string $namespace The namespace.
+     *
+     * @return iterable
+     */
     private function findPsr4Directories(string $namespace): iterable
     {
         $loader = current(ClassLoader::getRegisteredLoaders());
@@ -137,7 +144,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
         $entitiesPsr4 = '';
 
         foreach ($psr4 as $ns => $dirs) {
-            if (str_starts_with($namespace, $ns)
+            if (substr($namespace, 0, strlen($ns)) === $ns
                 && strlen($ns) > strlen($entitiesPsr4)
             ) {
                 $entitiesPsr4 = $ns;
@@ -153,14 +160,24 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
             );
         }
 
-        return $psr4[$entitiesPsr4];
+        return array_filter(
+            array_map(
+                fn(string $dir) => $dir . str_replace(
+                        '\\',
+                        '/',
+                        substr($namespace, strlen($entitiesPsr4) - 1)
+                    ),
+                $psr4[$entitiesPsr4]
+            ),
+            fn(string $dir) => is_dir($dir)
+        );
     }
 
     /**
      * Get admin annotation options with default option set.
      *
-     * @param ContainerBuilder $container  Container builder.
-     * @param ReflectionClass  $class      Annotated class.
+     * @param ContainerBuilder $container Container builder.
+     * @param ReflectionClass  $class Annotated class.
      * @param Admin            $annotation Admin annotation.
      *
      * @return array
@@ -186,7 +203,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
                     SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE
                 ) as $namespace
             ) {
-                if (str_starts_with($current, $namespace)) {
+                if (substr($current, 0, strlen($namespace)) === $namespace) {
                     $options['group'] = str_replace(
                         '\\',
                         ' ',
