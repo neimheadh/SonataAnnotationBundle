@@ -15,6 +15,8 @@ use ReflectionException;
  * @Annotation
  * @Target("CLASS")
  *
+ * @property array $formats
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
@@ -23,13 +25,6 @@ final class ExportFormats extends AbstractAnnotation
 {
 
     use ArrayAnnotationTrait;
-
-    /**
-     * Exported formats.
-     *
-     * @var array
-     */
-    private array $formats = [];
 
     /**
      * @param array|string|null $formats Exported formats or annotation

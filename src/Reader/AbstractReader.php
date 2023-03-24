@@ -183,42 +183,26 @@ abstract class AbstractReader
     }
 
     /**
-     * Get a method annotation.
-     *
-     * @param ReflectionMethod $method     Method.
-     * @param string           $annotation Annotation class.
-     *
-     * @return object|AnnotationInterface|null
-     */
-    protected function getMethodAnnotation(
-        ReflectionMethod $method,
-        string $annotation
-    ): ?object {
-        return $this->annotationReader->getMethodAnnotation(
-            $method,
-            $annotation
-        );
-    }
-
-    /**
      * Get the list of annotations for a given method.
      *
      * @param ReflectionMethod $method          Method.
-     * @param string           $annotationClass Filter annotation having the
+     * @param string|null      $annotationClass Filter annotation having the
      *                                          specified class.
      *
      * @return array<object|AnnotationInterface>
      */
     protected function getMethodAnnotations(
         ReflectionMethod $method,
-        string $annotationClass
+        string $annotationClass = null
     ): array {
-        $annotations = array_filter(
-            $this->annotationReader->getMethodAnnotations($method),
-            fn(
-                object $annotation
-            ) => $annotation instanceof $annotationClass
-        );
+        $annotations = $annotationClass === null
+            ? $this->annotationReader->getMethodAnnotations($method)
+            : array_filter(
+                $this->annotationReader->getMethodAnnotations($method),
+                fn(
+                    object $annotation
+                ) => $annotation instanceof $annotationClass
+            );
 
         array_walk(
             $annotations,

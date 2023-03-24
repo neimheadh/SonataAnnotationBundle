@@ -31,32 +31,26 @@ final class ExportReader extends AbstractReader
     {
         $fields = [];
         $allFields = [];
+        $properties = array_merge(
+            $class->getProperties(),
+            $class->getMethods()
+        );
 
-        foreach ($class->getProperties() as $property) {
-            foreach ($this->getPropertyAnnotations($property) as $annotation) {
-                $this->stackExportProperty(
-                    $property,
-                    new ExportField(),
-                    $allFields
-                );
-                if ($annotation instanceof ExportField) {
-                    $this->stackExportProperty($property, $annotation, $fields);
-                }
-            }
-        }
+        foreach ($properties as $property) {
+            $annotations = $property instanceof ReflectionProperty
+                ? $this->getPropertyAnnotations($property)
+                : $this->getMethodAnnotations($property);
 
-        foreach ($class->getMethods() as $method) {
             $this->stackExportProperty(
                 $property,
                 new ExportField(),
                 $allFields
             );
 
-            if ($annotation = $this->getMethodAnnotation(
-                $method,
-                ExportField::class
-            )) {
-                $this->stackExportProperty($method, $annotation, $fields);
+            foreach ($annotations as $annotation) {
+                if ($annotation instanceof ExportField) {
+                    $this->stackExportProperty($property, $annotation, $fields);
+                }
             }
         }
 
@@ -86,9 +80,9 @@ final class ExportReader extends AbstractReader
     /**
      * Stack property or method to exported fields.
      *
-     * @param ReflectionProperty|ReflectionMethod $property Stacked property.
+     * @param ReflectionProperty|ReflectionMethod $property   Stacked property.
      * @param object                              $annotation Annotation.
-     * @param array                               $fields Fields stack.
+     * @param array                               $fields     Fields stack.
      *
      * @return void
      */

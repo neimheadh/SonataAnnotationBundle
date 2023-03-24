@@ -6,7 +6,7 @@ namespace Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 use Attribute;
 use Neimheadh\SonataAnnotationBundle\Annotation\AssociationFieldInterface;
-use Neimheadh\SonataAnnotationBundle\Annotation\AssociationFieldTrait;
+use ReflectionException;
 
 /**
  * Datagrid association field annotation.
@@ -25,12 +25,24 @@ final class DatagridAssociationField extends DatagridField implements
     AssociationFieldInterface
 {
 
-    use AssociationFieldTrait;
+    /**
+     * Association field name.
+     *
+     * @var string|null
+     */
+    public ?string $field = null;
 
     /**
-     * {@inheritDoc}
+     * @param string|array|null $type                    Type or annotation
+     *                                                   parameters.
+     * @param array             $fieldDescriptionOptions Description options.
+     * @param int|null          $position                Position.
+     * @param array             $filterOptions           Filtering options.
+     * @param array             $fieldOptions            Datagrid form field
+     *                                                   type options.
+     * @param string|null       $field                   Associated field name
      *
-     * @param string|null $field Association field name.
+     * @throws ReflectionException
      */
     public function __construct(
         $type = null,

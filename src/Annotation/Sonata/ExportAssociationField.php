@@ -6,7 +6,6 @@ namespace Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 use Attribute;
 use Neimheadh\SonataAnnotationBundle\Annotation\AssociationFieldInterface;
-use Neimheadh\SonataAnnotationBundle\Annotation\AssociationFieldTrait;
 
 /**
  * Export association field annotation.
@@ -25,7 +24,12 @@ final class ExportAssociationField extends ExportField implements
     AssociationFieldInterface
 {
 
-    use AssociationFieldTrait;
+    /**
+     * Association field name.
+     *
+     * @var string|null
+     */
+    public ?string $field = null;
 
     /**
      * {@inheritDoc}

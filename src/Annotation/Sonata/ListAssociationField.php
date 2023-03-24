@@ -6,7 +6,6 @@ namespace Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 use Attribute;
 use Neimheadh\SonataAnnotationBundle\Annotation\AssociationFieldInterface;
-use Neimheadh\SonataAnnotationBundle\Annotation\AssociationFieldTrait;
 
 /**
  * List association field annotation.
@@ -24,5 +23,30 @@ final class ListAssociationField extends ListField implements
     AssociationFieldInterface
 {
 
-    use AssociationFieldTrait;
+    /**
+     * Association field name.
+     *
+     * @var string|null
+     */
+    public ?string $field = null;
+
+    /**
+     * @param string|array|null $type                    Type or annotation
+     *                                                   parameters.
+     * @param array             $fieldDescriptionOptions Description options.
+     * @param int|null          $position                Position.
+     * @param string|null       $field                   Association field name.
+     *
+     * @throws \ReflectionException
+     */
+    public function __construct(
+        $type = null,
+        array $fieldDescriptionOptions = [],
+        ?int $position = null,
+        ?string $field = null
+    ) {
+        $this->field = $field;
+        parent::__construct($type, $fieldDescriptionOptions, $position);
+    }
+
 }

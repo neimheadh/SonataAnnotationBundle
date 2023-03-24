@@ -3,7 +3,6 @@
 namespace Neimheadh\SonataAnnotationBundle;
 
 use Doctrine\Common\Annotations\AnnotationReader as DoctrineAnnotationReader;
-use Doctrine\Common\Annotations\Reader;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -11,19 +10,8 @@ use ReflectionProperty;
 /**
  * Annotation reading trait.
  */
-class AnnotationReader implements Reader
+class AnnotationReader extends DoctrineAnnotationReader
 {
-
-    private Reader $annotationReader;
-
-    /**
-     *
-     */
-    public function __construct()
-    {
-        $this->annotationReader = new DoctrineAnnotationReader();
-    }
-
 
     /**
      * {@inheritDoc}
@@ -32,7 +20,7 @@ class AnnotationReader implements Reader
     {
         return array_merge(
             $this->getAttributeAnnotations($class),
-            $this->annotationReader->getClassAnnotations($class)
+            parent::getClassAnnotations($class)
         );
     }
 
@@ -43,7 +31,7 @@ class AnnotationReader implements Reader
     {
         return current(
             $this->getAttributeAnnotations($class, $annotationName)
-        ) ?: $this->annotationReader->getClassAnnotation(
+        ) ?: parent::getClassAnnotation(
             $class,
             $annotationName
         );
@@ -56,36 +44,18 @@ class AnnotationReader implements Reader
     {
         return array_merge(
             $this->getAttributeAnnotations($method),
-            $this->annotationReader->getMethodAnnotations($method)
+            parent::getMethodAnnotations($method)
         );
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getMethodAnnotation(
-        ReflectionMethod $method,
-        $annotationName
-    ) {
-        return current(
-            $this->getAttributeAnnotations(
-                $method,
-                $annotationName
-            )
-        ) ?: $this->annotationReader->getMethodAnnotation(
-            $method,
-            $annotationName
-        );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getPropertyAnnotations(ReflectionProperty $property)
+    public function getPropertyAnnotations(ReflectionProperty $property): array
     {
         return array_merge(
             $this->getAttributeAnnotations($property),
-            $this->annotationReader->getPropertyAnnotations($property)
+            parent::getPropertyAnnotations($property)
         );
     }
 
@@ -95,10 +65,10 @@ class AnnotationReader implements Reader
     public function getPropertyAnnotation(
         ReflectionProperty $property,
         $annotationName
-    ) {
+    ): ?object {
         return current(
             $this->getAttributeAnnotations($property, $annotationName)
-        ) ?: $this->annotationReader->getPropertyAnnotation(
+        ) ?: parent::getPropertyAnnotation(
             $property,
             $annotationName
         );

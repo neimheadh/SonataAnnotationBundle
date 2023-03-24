@@ -39,10 +39,13 @@ class DatagridField extends AbstractField implements PositionAnnotationInterface
     public array $fieldOptions = [];
 
     /**
-     * {@inheritDoc}
-     *
-     * @param array $filterOptions Filtering options.
-     * @param array $fieldOptions  Datagrid form field type options.
+     * @param string|array|null $type                    Type or annotation
+     *                                                   parameters.
+     * @param array             $fieldDescriptionOptions Description options.
+     * @param int|null          $position                Position.
+     * @param array             $filterOptions           Filtering options.
+     * @param array             $fieldOptions            Datagrid form field
+     *                                                   type options.
      *
      * @throws ReflectionException
      */
@@ -53,7 +56,7 @@ class DatagridField extends AbstractField implements PositionAnnotationInterface
         array $filterOptions = [],
         array $fieldOptions = []
     ) {
-        $this->filterOptions = $fieldOptions;
+        $this->filterOptions = $filterOptions;
         $this->fieldOptions = $fieldOptions;
 
         parent::__construct($type, $fieldDescriptionOptions, $position);

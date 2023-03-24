@@ -15,6 +15,8 @@ use ReflectionException;
  * @Annotation
  * @Target("CLASS")
  *
+ * @property array $values
+ *
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
@@ -23,13 +25,6 @@ final class DatagridValues extends AbstractAnnotation
 {
 
     use ArrayAnnotationTrait;
-
-    /**
-     * Datagrid select values.
-     *
-     * @var array
-     */
-    private array $values = [];
 
     /**
      * @param array|string|null $values Datagrid values or annotation

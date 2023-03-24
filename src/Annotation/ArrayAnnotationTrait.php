@@ -13,11 +13,18 @@ trait ArrayAnnotationTrait
 {
 
     /**
-     * Annotation repository name.
+     * Annotation property name.
      *
-     * @var ReflectionProperty
+     * @var string
      */
-    private ReflectionProperty $property;
+    private string $property;
+
+    /**
+     * Annotation property value.
+     *
+     * @var mixed
+     */
+    private $value;
 
     /**
      * Set the annotation array property.
@@ -30,7 +37,7 @@ trait ArrayAnnotationTrait
      */
     private function setArrayProperty(string $name, $value): void
     {
-        $this->property = new ReflectionProperty($this, $name);
+        $this->property = $name;
         $this->__set($name, $value['value'] ?? $value[$name] ?? $value);
     }
 
@@ -45,7 +52,7 @@ trait ArrayAnnotationTrait
      */
     public function __set(string $name, $value)
     {
-        if ($name !== $this->property->getName()) {
+        if ($name !== $this->property) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Unknown property "%s".',
@@ -55,9 +62,9 @@ trait ArrayAnnotationTrait
         }
 
         if (is_array($value)) {
-            $this->$name = $value;
+            $this->value = $value;
         } else {
-            $this->$name = is_null($value) ? [] : [$value];
+            $this->value = is_null($value) ? [] : [$value];
         }
     }
 
@@ -70,7 +77,7 @@ trait ArrayAnnotationTrait
      */
     public function __get(string $name)
     {
-        if ($name !== $this->property->getName()) {
+        if ($name !== $this->property) {
             throw new InvalidArgumentException(
                 sprintf(
                     'Unknown property "%s".',
@@ -79,7 +86,7 @@ trait ArrayAnnotationTrait
             );
         }
 
-        return $this->$name;
+        return $this->value;
     }
 
 }
