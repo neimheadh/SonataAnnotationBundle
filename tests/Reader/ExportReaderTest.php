@@ -2,13 +2,15 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Neimheadh\SonataAnnotationBundle\Annotation\ExportAssociationField;
-use Neimheadh\SonataAnnotationBundle\Annotation\ExportField;
-use Neimheadh\SonataAnnotationBundle\Annotation\ExportFormats;
+use Exception;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ExportAssociationField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ExportField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ExportFormats;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use Neimheadh\SonataAnnotationBundle\Reader\ExportReader;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Author;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Author;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation\ArgumentAnnotation;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
@@ -95,10 +97,33 @@ class ExportReaderTest extends TestCase
         );
     }
 
+    /**
+     * Test the argument system is handled.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldHandlePHP8Arguments(): void
+    {
+        if (!class_exists('ReflectionArgument')) {
+            $this->assertTrue(true);
+        }
+        $class = new ReflectionClass(ArgumentAnnotation::class);
+        $reader = new ExportReader(new AnnotationReader());
+
+        $fields = $reader->getFields($class);
+        $formats = $reader->getFormats($class);
+
+        $this->assertEquals(['json'], $formats);
+        $this->assertEquals(['Id', 'Book id'], array_keys($fields));
+    }
 }
 
 /**
- * @ExportFormats({"json"})
+ * @ExportFormats("json")
  */
 class ExportReaderTestCase
 {

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Neimheadh\SonataAnnotationBundle\Reader;
 
 use Doctrine\Common\Annotations\Reader;
-use Neimheadh\SonataAnnotationBundle\Annotation\FormField;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\FormField;
 use ReflectionClass;
 use Sonata\AdminBundle\Form\FormMapper;
 
@@ -65,6 +66,30 @@ final class FormReader extends AbstractFieldConfigurationReader
             $this->annotationClass,
             FormField::ACTION_EDIT
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function loadDefaultFields(
+        ReflectionClass $class,
+        string $annotationClass
+    ): array {
+        $properties = [];
+
+        foreach ($class->getProperties() as $property) {
+            if (!$this->annotationReader->getPropertyAnnotation(
+                $property,
+                GeneratedValue::class
+            )) {
+                $properties[] = [
+                    'name' => $property->getName(),
+                    'annotation' => new $annotationClass(),
+                ];
+            }
+        }
+
+        return $properties;
     }
 
 }

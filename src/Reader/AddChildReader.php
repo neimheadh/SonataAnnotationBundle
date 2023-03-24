@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\Reader;
 
-use Neimheadh\SonataAnnotationBundle\Annotation\AddChild;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\AddChild;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
 

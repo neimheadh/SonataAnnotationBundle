@@ -2,17 +2,21 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
 use InvalidArgumentException;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use Neimheadh\SonataAnnotationBundle\Annotation\ListAction;
-use Neimheadh\SonataAnnotationBundle\Annotation\ListAssociationField;
-use Neimheadh\SonataAnnotationBundle\Annotation\ListField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListAction;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListAssociationField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListField;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Reader\FormReader;
 use Neimheadh\SonataAnnotationBundle\Reader\ListReader;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\EmptyEntity;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation\ArgumentAnnotation;
 use ReflectionClass;
+use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\AdminBundle\Builder\ListBuilderInterface;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\FieldDescription\FieldDescriptionCollection;
@@ -47,25 +51,25 @@ class ListReaderTest extends KernelTestCase
         $this->assertTrue($list->has('author.name'), 'Missing author column.');
         $this->assertTrue($list->has('title'), 'Missing title column.');
         $this->assertTrue(
-          $list->has('getCoverTitle'),
-          'Missing cover title column.'
+            $list->has('getCoverTitle'),
+            'Missing cover title column.'
         );
 
         $this->assertTrue(
-          $list->get('id')->isIdentifier(),
-          'Id should be an identifier.'
+            $list->get('id')->isIdentifier(),
+            'Id should be an identifier.'
         );
         $this->assertFalse(
-          $list->get('author.name')->isIdentifier(),
-          'Author should not be an identifier.'
+            $list->get('author.name')->isIdentifier(),
+            'Author should not be an identifier.'
         );
         $this->assertFalse(
-          $list->get('title')->isIdentifier(),
-          'Title should not be an identifier.'
+            $list->get('title')->isIdentifier(),
+            'Title should not be an identifier.'
         );
         $this->assertFalse(
-          $list->get('getCoverTitle')->isIdentifier(),
-          'Cover title should not be an identifier.'
+            $list->get('getCoverTitle')->isIdentifier(),
+            'Cover title should not be an identifier.'
         );
     }
 
@@ -85,10 +89,10 @@ class ListReaderTest extends KernelTestCase
         $admin = $container->get('app.admin.Book');
 
         $list = $admin->getList();
-        $actions = $list->get('_action');
+        $actions = $list->get('_actions');
         $this->assertArrayHasKey('import', $actions->getOption('actions'));
         $this->assertEquals(['template' => 'import_list_button.html.twig'],
-                            $actions->getOption('actions')['import']);
+            $actions->getOption('actions')['import']);
     }
 
     /**
@@ -98,6 +102,7 @@ class ListReaderTest extends KernelTestCase
      * @functional
      *
      * @return void
+     * @throws Exception
      */
     public function shouldAssociationHaveFieldAttribute(): void
     {
@@ -107,20 +112,20 @@ class ListReaderTest extends KernelTestCase
         $e = null;
         try {
             $reader->configureFields(
-              new ReflectionClass(MissingListAssociationField::class),
-              $listMapper,
+                new ReflectionClass(MissingListAssociationField::class),
+                $listMapper,
             );
         } catch (MissingAnnotationArgumentException $e) {
         }
 
         $this->assertNotNull($e);
         $this->assertEquals(
-          sprintf(
-            'Argument "%s" is mandatory for annotation %s.',
-            'field',
-            ListAssociationField::class
-          ),
-          $e->getMessage(),
+            sprintf(
+                'Argument "%s" is mandatory for annotation %s.',
+                'field',
+                ListAssociationField::class
+            ),
+            $e->getMessage(),
         );
     }
 
@@ -131,6 +136,7 @@ class ListReaderTest extends KernelTestCase
      * @functional
      *
      * @return void
+     * @throws Exception
      */
     public function shouldNotHaveDuplicatedPosition(): void
     {
@@ -140,29 +146,29 @@ class ListReaderTest extends KernelTestCase
         $e = null;
         try {
             $reader->configureFields(
-              new ReflectionClass(DuplicatedListFieldPosition::class),
-              $listMapper,
+                new ReflectionClass(DuplicatedListFieldPosition::class),
+                $listMapper,
             );
         } catch (InvalidArgumentException $e) {
         }
         $this->assertNotNull($e);
         $this->assertEquals(
-          'Position "1" is already in use by "field1", try setting a different position for "field2".',
-          $e->getMessage()
+            'Position "1" is already in use by "field1", try setting a different position for "field2".',
+            $e->getMessage()
         );
 
         $e = null;
         try {
             $reader->configureFields(
-              new ReflectionClass(DuplicatedListMethodPosition::class),
-              $listMapper,
+                new ReflectionClass(DuplicatedListMethodPosition::class),
+                $listMapper,
             );
         } catch (InvalidArgumentException $e) {
         }
         $this->assertNotNull($e);
         $this->assertEquals(
-          'Position "1" is already in use by "getField1", try setting a different position for "getField2".',
-          $e->getMessage()
+            'Position "1" is already in use by "getField1", try setting a different position for "getField2".',
+            $e->getMessage()
         );
     }
 
@@ -173,47 +179,85 @@ class ListReaderTest extends KernelTestCase
      * @functional
      *
      * @return void
+     * @throws Exception
      */
     public function shouldListActionHaveName(): void
     {
         $reader = new ListReader(new AnnotationReader());
         $listMapper = $this->createNewListMapper();
-        
+
         $e = null;
         try {
             $reader->configureFields(
-              new ReflectionClass(BadListAction::class),
-              $listMapper
+                new ReflectionClass(BadListAction::class),
+                $listMapper
             );
-        } catch (MissingAnnotationArgumentException $e) {}
+        } catch (MissingAnnotationArgumentException $e) {
+        }
 
         $this->assertNotNull($e);
         $this->assertEquals(
-          sprintf(
-            'Argument "name" is mandatory for annotation %s on %s.',
-            ListAction::class,
-            BadListAction::class
-          ),
-          $e->getMessage()
+            sprintf(
+                'Argument "name" is mandatory for annotation %s on %s.',
+                ListAction::class,
+                BadListAction::class
+            ),
+            $e->getMessage()
         );
+    }
+
+    /**
+     * Test the argument system is handled.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldHandlePHP8Arguments(): void
+    {
+        if (!class_exists('ReflectionArgument')) {
+            $this->assertTrue(true);
+        }
+        $class = new ReflectionClass(ArgumentAnnotation::class);
+        $admin = $this->createNewAnnotationAdmin($class->getName());
+
+        $fields = $admin->getListFieldDescriptions();
+
+        $this->assertEquals([
+            'book.id',
+            'id',
+            '_actions',
+        ], array_keys($fields));
+
+        $this->assertEquals([
+            'test' => [
+                'template' => 'test.action.html.twig'
+            ]
+        ], $fields['_actions']->getOption('actions'));
     }
 
     /**
      * Create new empty list mapper.
      *
+     * @param string $class Entity class.
+     *
      * @return ListMapper
+     * @throws Exception
      */
-    private function createNewListMapper(): ListMapper
-    {
+    private function createNewListMapper(
+        string $class = EmptyEntity::class
+    ): ListMapper {
         /** @var TestContainer $container */
         $container = static::getContainer();
         /** @var ListBuilderInterface $listBuilder */
         $listBuilder = $container->get('sonata.admin.builder.orm_list');
 
         return new ListMapper(
-          $listBuilder,
-          new FieldDescriptionCollection(),
-          $this->createNewAnnotationAdmin(),
+            $listBuilder,
+            new FieldDescriptionCollection(),
+            $this->createNewAnnotationAdmin($class),
         );
     }
 

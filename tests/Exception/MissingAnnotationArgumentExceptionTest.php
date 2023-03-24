@@ -3,7 +3,7 @@
 namespace Neimheadh\SonataAnnotationBundle\Tests\Exception;
 
 use InvalidArgumentException;
-use Neimheadh\SonataAnnotationBundle\Annotation\Access;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Access;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use PHPUnit\Framework\TestCase;
 use stdClass;

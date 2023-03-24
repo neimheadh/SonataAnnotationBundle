@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\Reader;
 
-use Neimheadh\SonataAnnotationBundle\Annotation\DatagridValues;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\DatagridValues;
 use ReflectionClass;
 
 /**

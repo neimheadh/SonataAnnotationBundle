@@ -19,14 +19,6 @@ class AutoRegisterCompilerPassTest extends KernelTestCase
 {
 
     /**
-     * {@inheritDoc}
-     */
-    protected function setUp(): void
-    {
-        $this->bootKernel();
-    }
-
-    /**
      * Test the book admin is created.
      *
      * @test
@@ -34,28 +26,11 @@ class AutoRegisterCompilerPassTest extends KernelTestCase
      */
     public function shouldBookAdminCreated(): void
     {
-        $this->assertInstanceOf(
-            AnnotationAdmin::class,
-            static::getContainer()->get('app.admin.Book')
-        );
-    }
+        $admin = static::getContainer()->get('app.admin.Book');
 
-    /**
-     * Test model without namespace admin are not created.
-     *
-     * @test
-     * @functional
-     */
-    public function shouldNotCreateWithoutNamespace(): void
-    {
-        $e = null;
+        $this->assertInstanceOf(AnnotationAdmin::class, $admin);
 
-        try {
-            static::getContainer()->get('app.admin.NoNamespace');
-        } catch (ServiceNotFoundException $e) {
-        }
-
-        $this->assertNotNull($e);
+        $this->assertEquals('Book admin', $admin->getLabel());
     }
 
     /**
@@ -102,9 +77,102 @@ class AutoRegisterCompilerPassTest extends KernelTestCase
         $e = null;
         try {
             $register->process($container);
-        } catch (\LogicException $e) {}
+        } catch (\LogicException $e) {
+        }
 
         $this->assertNotNull($e);
-        $this->assertEquals('Cannot find PS4 for namespace NonExisting\\Namespace', $e->getMessage());
+        $this->assertEquals(
+            'Cannot find PS4 for namespace NonExisting\\Namespace',
+            $e->getMessage()
+        );
     }
+
+    /**
+     * Test Admin argument admin is created.
+     *
+     * @test
+     * @function
+     *
+     * @return void
+     */
+    public function shouldAddAdminArgument(): void
+    {
+        if (!class_exists('ReflectionAttribute')) {
+            $this->assertTrue(true);
+            return;
+        }
+
+        $compiler = new AutoRegisterCompilerPass();
+        $container = new ContainerBuilder();
+
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE,
+            ['Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation']
+        );
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_MENU_USE_NAMESPACE,
+            true
+        );
+
+        $services = [
+            'sonata.annotation.reader.action_button',
+            'sonata.annotation.reader.datagrid',
+            'sonata.annotation.reader.datagrid_values',
+            'sonata.annotation.reader.dashboard_action',
+            'sonata.annotation.reader.export',
+            'sonata.annotation.reader.form',
+            'sonata.annotation.reader.list',
+            'sonata.annotation.reader.route',
+            'sonata.annotation.reader.show',
+        ];
+        foreach ($services as $service) {
+            $container->set(
+                $service,
+                static::getContainer()->get(
+                    $service
+                )
+            );
+        }
+
+        $compiler->process($container);
+
+        $this->assertEquals(
+            array_values(
+                array_merge(
+                    ['service_container', 'app.admin.ArgumentAnnotation'],
+                    $services
+                ),
+            ),
+            array_values($container->getServiceIds())
+        );
+
+        $admin = $container->getDefinition('app.admin.ArgumentAnnotation');
+        $tag = current($admin->getTag('sonata.admin'));
+
+        $this->assertEquals('Test', $tag['label']);
+    }
+
+    /**
+     * Test bad class name and namespace are handled.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function shouldHandleWrongClass(): void
+    {
+        $compiler = new AutoRegisterCompilerPass();
+
+        $container = new ContainerBuilder();
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE,
+            ['Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\WrongClassname']
+        );
+
+        $compiler->process($container);
+        $this->assertEquals(['service_container'], $container->getServiceIds());
+    }
+
 }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Neimheadh\SonataAnnotationBundle\Reader;
 
 use Doctrine\Common\Annotations\Reader;
-use Neimheadh\SonataAnnotationBundle\Annotation\ListAction;
-use Neimheadh\SonataAnnotationBundle\Annotation\ListField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListAction;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListField;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -20,6 +20,15 @@ use Sonata\AdminBundle\Mapper\MapperInterface;
  */
 final class ListReader extends AbstractFieldConfigurationReader
 {
+
+    /**
+     * List default actions.
+     */
+    public const DEFAULT_ACTIONS = [
+        'show' => [],
+        'edit' => [],
+        'delete' => [],
+    ];
 
     /**
      * {@inheritDoc}
@@ -42,7 +51,7 @@ final class ListReader extends AbstractFieldConfigurationReader
 
         if ($mapper instanceof ListMapper) {
             if ($actions = $this->getListActions($class)) {
-                $mapper->add('_action', null, [
+                $mapper->add(ListMapper::NAME_ACTIONS, null, [
                     'actions' => $actions,
                 ]);
             }
@@ -76,7 +85,7 @@ final class ListReader extends AbstractFieldConfigurationReader
             }
         }
 
-        return $actions;
+        return empty($actions) ? self::DEFAULT_ACTIONS : $actions;
     }
 
 }

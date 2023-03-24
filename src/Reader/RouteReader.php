@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\Reader;
 
-use Neimheadh\SonataAnnotationBundle\Annotation\AddRoute;
-use Neimheadh\SonataAnnotationBundle\Annotation\RemoveRoute;
 use Neimheadh\SonataAnnotationBundle\Annotation\RouteAnnotationInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\AddRoute;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\RemoveRoute;
 use ReflectionClass;
 
 /**

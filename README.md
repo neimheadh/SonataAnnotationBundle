@@ -84,7 +84,7 @@ to your entity.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -114,6 +114,30 @@ bin/console cache:clear
 
 And you will see Admin appear in your sidebar.
 
+Note that if you can also use class attributes:
+
+```php
+<?php
+
+namespace App\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
+
+#[ORM\Table]
+#[ORM\Entity]
+#[Sonata\Admin("Category")]
+class Category
+{
+    #[ORM\Column(name: "name", type: "string", length: 255)]
+    #[Sonata\FormField()]
+    #[Sonata\ListField()]
+    #[Sonata\ShowField()]
+    #[Sonata\DatagridField()]
+    private $name;
+}
+```
+
 ## Annotations
 
 ### Admin
@@ -124,7 +148,7 @@ And you will see Admin appear in your sidebar.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use App\Controller\YourCRUDController;
 use App\Admin\YourAdmin;
 
@@ -169,7 +193,7 @@ you can still use this annotation.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -198,7 +222,7 @@ you can still use this annotation.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -218,7 +242,7 @@ class Category
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Post")
@@ -251,7 +275,7 @@ rendered after all fields with position.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
@@ -317,7 +341,7 @@ will be rendered after all fields with position.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -348,6 +372,8 @@ class Category
 }
 ```
 
+By default, if any field configured, all field will be available.
+
 ### ShowAssociationField
 
 You are able to set the position of the field. Position 1 would be the first
@@ -360,7 +386,7 @@ will be rendered after all fields with position.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -404,7 +430,7 @@ will be rendered after all fields with position.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -445,6 +471,8 @@ class Category
 }
 ```
 
+By default, if any field configured, all field will be available.
+
 ### ListAssociationField
 
 You are able to set the position of the field. Position 1 would be the first
@@ -457,7 +485,7 @@ will be rendered after all fields with position.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -503,7 +531,7 @@ will be rendered after all fields with position.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -529,6 +557,8 @@ class Category
 }
 ```
 
+By default, if any field configured, all field will be available.
+
 ### DatagridAssociationField
 
 You are able to set the position of the field. Position 1 would be the first
@@ -541,7 +571,7 @@ will be rendered after all fields with position.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -589,7 +619,7 @@ label for the field, if left blank field name will be used as label.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -623,6 +653,8 @@ class Category
 }
 ```
 
+By default, if any field configured, all field will be available.
+
 ### ExportAssociationField
 
 ```php
@@ -631,7 +663,7 @@ class Category
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -670,7 +702,7 @@ is not present, all formats are shown.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin("Category")
@@ -701,7 +733,7 @@ Add custom routes to your admin class:
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use App\Controller\YourCRUDController;
 
 /**
@@ -731,7 +763,7 @@ remove already existing routes:
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use App\Controller\YourCRUDController;
 
 /**
@@ -761,7 +793,7 @@ you can find how the template should look like.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use App\Controller\YourCRUDController;
 
 /**
@@ -793,7 +825,7 @@ you can find how the template should look like.
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use App\Controller\YourCRUDController;
 
 /**
@@ -822,7 +854,7 @@ class Category
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use App\Controller\YourCRUDController;
 
 /**
@@ -855,7 +887,7 @@ As explained [here](https://symfony.com/doc/master/bundles/SonataAdminBundle/ref
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use App\Controller\YourCRUDController;
 
 /**
@@ -903,7 +935,7 @@ And then in your entity you just provide that class
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use App\Admin\YourAdmin;
 
 /**

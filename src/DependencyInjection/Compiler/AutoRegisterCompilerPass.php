@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use Composer\Autoload\ClassLoader;
-use Doctrine\Common\Annotations\Reader;
 use Exception;
 use LogicException;
-use Neimheadh\SonataAnnotationBundle\Annotation\Admin;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Admin;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;
 use ReflectionClass;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
@@ -17,8 +17,6 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
-
-use function class_exists;
 
 /**
  * Auto-registering Sonata annotated admin services compiler.
@@ -38,9 +36,6 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        /** @var Reader $annotationReader */
-        $annotationReader = $container->get('annotation_reader');
-
         $files = $this->findFiles(
             $container->getParameter(
                 SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE
@@ -48,53 +43,19 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
         );
 
         foreach ($files as $file) {
-            if (!($className = $this->getFullyQualifiedClassName($file))) {
-                continue;
-            }
+            $class = $this->getFileClass($file);
 
-            if (!class_exists($className)) {
-                continue;
-            }
-
-            $class = new ReflectionClass($className);
-            if (!($annotation = $annotationReader->getClassAnnotation(
-                $class,
-                Admin::class
-            ))) {
-                continue;
-            }
-
-            $definition = new Definition(
-                $annotation->admin,
-                [
-                    new Reference('sonata.annotation.reader.action_button'),
-                    new Reference('sonata.annotation.reader.datagrid'),
-                    new Reference('sonata.annotation.reader.datagrid_values'),
-                    new Reference('sonata.annotation.reader.dashboard_action'),
-                    new Reference('sonata.annotation.reader.export'),
-                    new Reference('sonata.annotation.reader.form'),
-                    new Reference('sonata.annotation.reader.list'),
-                    new Reference('sonata.annotation.reader.route'),
-                    new Reference('sonata.annotation.reader.show'),
-                ]
-            );
-
-            $definition->addTag(
-                'sonata.admin',
-                array_merge(
-                    $this->getAdminAnnotationOptions(
-                        $container,
-                        $class,
-                        $annotation
-                    ),
-                    ['model_class' => $className],
+            if ($class
+                && $annotation = (new AnnotationReader())->getClassAnnotation(
+                    $class,
+                    Admin::class
                 )
-            );
-
-            $container->setDefinition(
-                $annotation->serviceId ?? $this->getServiceId($file),
-                $definition
-            );
+            ) {
+                $container->setDefinition(
+                    $annotation->serviceId ?: $this->getServiceId($file),
+                    $this->getAdminDefinition($class, $annotation, $container)
+                );
+            }
         }
     }
 
@@ -129,7 +90,13 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
         return $files;
     }
 
-
+    /**
+     * Get the PSR4 directory for the given namespace.
+     *
+     * @param string $namespace The namespace.
+     *
+     * @return iterable
+     */
     private function findPsr4Directories(string $namespace): iterable
     {
         $loader = current(ClassLoader::getRegisteredLoaders());
@@ -137,7 +104,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
         $entitiesPsr4 = '';
 
         foreach ($psr4 as $ns => $dirs) {
-            if (str_starts_with($namespace, $ns)
+            if (substr($namespace, 0, strlen($ns)) === $ns
                 && strlen($ns) > strlen($entitiesPsr4)
             ) {
                 $entitiesPsr4 = $ns;
@@ -153,7 +120,17 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
             );
         }
 
-        return $psr4[$entitiesPsr4];
+        return array_filter(
+            array_map(
+                fn(string $dir) => $dir . str_replace(
+                        '\\',
+                        '/',
+                        substr($namespace, strlen($entitiesPsr4) - 1)
+                    ),
+                $psr4[$entitiesPsr4]
+            ),
+            fn(string $dir) => is_dir($dir)
+        );
     }
 
     /**
@@ -186,7 +163,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
                     SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE
                 ) as $namespace
             ) {
-                if (str_starts_with($current, $namespace)) {
+                if (substr($current, 0, strlen($namespace)) === $namespace) {
                     $options['group'] = str_replace(
                         '\\',
                         ' ',
@@ -198,6 +175,50 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
         }
 
         return $options;
+    }
+
+    /**
+     * Get admin definition.
+     *
+     * @param ReflectionClass  $class      Managed object class.
+     * @param Admin            $annotation Admin annotation.
+     * @param ContainerBuilder $container  Built container.
+     *
+     * @return Definition
+     */
+    private function getAdminDefinition(
+        ReflectionClass $class,
+        Admin $annotation,
+        ContainerBuilder $container
+    ): Definition {
+        $definition = new Definition(
+            $annotation->admin,
+            [
+                new Reference('sonata.annotation.reader.action_button'),
+                new Reference('sonata.annotation.reader.datagrid'),
+                new Reference('sonata.annotation.reader.datagrid_values'),
+                new Reference('sonata.annotation.reader.dashboard_action'),
+                new Reference('sonata.annotation.reader.export'),
+                new Reference('sonata.annotation.reader.form'),
+                new Reference('sonata.annotation.reader.list'),
+                new Reference('sonata.annotation.reader.route'),
+                new Reference('sonata.annotation.reader.show'),
+            ]
+        );
+
+        $definition->addTag(
+            'sonata.admin',
+            array_merge(
+                $this->getAdminAnnotationOptions(
+                    $container,
+                    $class,
+                    $annotation
+                ),
+                ['model_class' => $class->getName()],
+            )
+        );
+
+        return $definition;
     }
 
     /**
@@ -246,6 +267,24 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     private function getClassName(string $fileName): string
     {
         return str_replace('.php', '', $fileName);
+    }
+
+    /**
+     * Get file class.
+     *
+     * @param SplFileInfo $file File information object.
+     *
+     * @return ReflectionClass|null
+     */
+    private function getFileClass(SplFileInfo $file): ?ReflectionClass
+    {
+        if (!($className = $this->getFullyQualifiedClassName($file))
+            || !class_exists($className)
+        ) {
+            return null;
+        }
+
+        return new ReflectionClass($className);
     }
 
     /**

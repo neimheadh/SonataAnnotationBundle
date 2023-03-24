@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\Reader;
-use Neimheadh\SonataAnnotationBundle\Annotation\Access;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Access;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
 use ReflectionException;
@@ -30,10 +31,7 @@ final class AccessCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container): void
     {
-        /**
-         * @var Reader $annotationReader
-         */
-        $annotationReader = $container->get('annotation_reader');
+        $annotationReader = new AnnotationReader();
         $roles = $container->getParameter('security.role_hierarchy.roles');
         $services = $container->findTaggedServiceIds('sonata.admin');
 

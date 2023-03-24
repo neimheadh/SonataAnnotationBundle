@@ -10,9 +10,9 @@ use DOMNodeList;
 use Exception;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\SessionHelperTrait;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\UseDatabaseTrait;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Author;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Book;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Person;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Author;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Book;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Person;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -94,15 +94,15 @@ class AnnotationAdminTest extends WebTestCase
         $client = $container->get('test.client');
 
         $client->request(
-          'GET',
-          $container->get('router')->generate(
-            'sonata_admin_dashboard'
-          )
+            'GET',
+            $container->get('router')->generate(
+                'sonata_admin_dashboard'
+            )
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
-          "$this->logDir/dashboard.xml",
-          $client->getResponse()->getContent()
+            "$this->logDir/dashboard.xml",
+            $client->getResponse()->getContent()
         );
 
         $dom = new DOMDocument();
@@ -112,8 +112,8 @@ class AnnotationAdminTest extends WebTestCase
         /** @var DOMElement $left */
         $left = $blocks->getElementsByTagName('left')->item(0);
         $this->assertEquals(
-          'sonata.admin.block.admin_list',
-          $left->getAttribute('type')
+            'sonata.admin.block.admin_list',
+            $left->getAttribute('type')
         );
         /** @var DOMElement $groups */
         $groups = $left->getElementsByTagName('groups')->item(0);
@@ -130,21 +130,26 @@ class AnnotationAdminTest extends WebTestCase
         $group = $groups->getElementsByTagName('group')->item(1);
         /** @var DOMNodeList|DOMElement[] $items */
         $items = $group->getElementsByTagName('item');
-        $this->assertEquals('Model', $group->getAttribute('label'));
+        $this->assertEquals('Book', $group->getAttribute('label'));
         $this->assertEquals(2, $items->length);
 
         $classes = [];
-        foreach ($items as $item) $classes[] = $item->getAttribute('class');
+        foreach ($items as $item) {
+            $classes[] = $item->getAttribute('class');
+        }
 
         $this->assertContains(Book::class, $classes);
         $this->assertContains(Author::class, $classes);
 
         /** @var DOMNodeList|DOMElement[] $actions */
-        $actions = $items[array_search(Book::class, $classes)]->getElementsByTagName('action');
+        $actions = $items[array_search(
+            Book::class,
+            $classes
+        )]->getElementsByTagName('action');
         $this->assertEquals(3, $actions->length);
         $this->assertEquals(
-          'export_book_list.html.twig',
-          $actions[2]->textContent
+            'export_book_list.html.twig',
+            $actions[2]->textContent
         );
     }
 
@@ -163,49 +168,49 @@ class AnnotationAdminTest extends WebTestCase
         $container = static::getContainer();
 
         $this->assertAdminHasRoutes(
-          $container->get('app.admin.Book'),
-          [
-            'list',
-            'create',
-            'edit',
-            'delete',
-            'show',
-            'export',
-            'custom',
-          ]
+            $container->get('app.admin.Book'),
+            [
+                'list',
+                'create',
+                'edit',
+                'delete',
+                'show',
+                'export',
+                'custom',
+            ]
         );
 
         $this->assertAdminHasRoutes(
-          $container->get('app.admin.Author'),
-          [
-            'list',
-            'create',
-            'batch',
-            'edit',
-            'delete',
-            'show',
-            'export',
-            'book_list',
-            'book_create',
-            'book_edit',
-            'book_delete',
-            'book_show',
-            'book_export',
-            'book_custom',
-          ]
+            $container->get('app.admin.Author'),
+            [
+                'list',
+                'create',
+                'batch',
+                'edit',
+                'delete',
+                'show',
+                'export',
+                'entity_book_book_list',
+                'entity_book_book_create',
+                'entity_book_book_edit',
+                'entity_book_book_delete',
+                'entity_book_book_show',
+                'entity_book_book_export',
+                'entity_book_book_custom',
+            ]
         );
 
         $this->assertAdminHasRoutes(
-          $container->get('admin.person'),
-          [
-            'list',
-            'create',
-            'batch',
-            'edit',
-            'delete',
-            'show',
-            'export',
-          ]
+            $container->get('admin.person'),
+            [
+                'list',
+                'create',
+                'batch',
+                'edit',
+                'delete',
+                'show',
+                'export',
+            ]
         );
     }
 
@@ -225,11 +230,13 @@ class AnnotationAdminTest extends WebTestCase
         /** @var KernelBrowser $client */
         $client = $container->get('test.client');
 
-        $client->request('GET', '/tests/resources/book/create');
+        $client->request('GET', $this->generateRoute(
+            'admin_tests_resources_entity_book_book_create'
+        ));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
-          "$this->logDir/create.book.xml",
-          $client->getResponse()->getContent()
+            "$this->logDir/create.book.xml",
+            $client->getResponse()->getContent()
         );
 
         $dom = new DOMDocument();
@@ -261,11 +268,14 @@ class AnnotationAdminTest extends WebTestCase
         /** @var KernelBrowser $client */
         $client = $container->get('test.client');
 
-        $client->request('GET', '/tests/resources/book/1/edit');
+        $client->request('GET', $this->generateRoute(
+            'admin_tests_resources_entity_book_book_edit',
+            ['id' => 1]
+        ));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
-          "$this->logDir/edit.book.xml",
-          $client->getResponse()->getContent()
+            "$this->logDir/edit.book.xml",
+            $client->getResponse()->getContent()
         );
 
 
@@ -299,7 +309,10 @@ class AnnotationAdminTest extends WebTestCase
         $client = $container->get('test.client');
 
         $route = $container->get('router')
-          ->generate('admin_tests_resources_book_export', ['format' => 'json']);
+            ->generate(
+                'admin_tests_resources_entity_book_book_export',
+                ['format' => 'json']
+            );
 
         ob_start();
         $client->request('GET', $route);
@@ -314,11 +327,11 @@ class AnnotationAdminTest extends WebTestCase
 
         $this->assertIsArray($json);
         $this->assertEquals(
-          [
-            ["Author" => "Stephen King", "title" => "The Stand"],
-            ["Author" => null, "title" => "Les furtifs"],
-          ],
-          $json
+            [
+                ["Author" => "Stephen King", "title" => "The Stand"],
+                ["Author" => null, "title" => "Les furtifs"],
+            ],
+            $json
         );
     }
 
@@ -340,19 +353,20 @@ class AnnotationAdminTest extends WebTestCase
         $client = $container->get('test.client');
 
         $client->request(
-          'GET',
-          $container->get('router')->generate(
-            'admin_tests_resources_book_list'
-          )
+            'GET',
+            $container->get('router')->generate(
+                'admin_tests_resources_entity_book_book_list'
+            )
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
-          "$this->logDir/list.book.xml",
-          $client->getResponse()->getContent()
+            "$this->logDir/list.book.xml",
+            $client->getResponse()->getContent()
         );
 
         $dom = new DOMDocument();
-        $dom->loadXML($client->getResponse()->getContent());
+        $xml = $client->getResponse()->getContent();
+        $dom->loadXML($xml);
 
         /** @var DOMElement $list */
         $list = $dom->getElementsByTagName('list')->item(0);
@@ -366,8 +380,8 @@ class AnnotationAdminTest extends WebTestCase
         $actions = $list->getElementsByTagName('actions')->item(0);
 
         $this->assertEquals(
-          2,
-          $actions->getElementsByTagName('action')->length
+            2,
+            $actions->getElementsByTagName('action')->length
         );
         /** @var DOMElement $action */
         $action = $actions->getElementsByTagName('action')->item(1);
@@ -375,12 +389,12 @@ class AnnotationAdminTest extends WebTestCase
 
         $this->assertEquals(2, $items->getElementsByTagName('item')->length);
         $this->assertEquals(
-          3,
-          $filters->getElementsByTagName('filter')->length
+            3,
+            $filters->getElementsByTagName('filter')->length
         );
         $this->assertEquals(
-          1,
-          $exports->getElementsByTagName('format')->length
+            1,
+            $exports->getElementsByTagName('format')->length
         );
 
         /** @var DOMElement $filter */
@@ -400,14 +414,14 @@ class AnnotationAdminTest extends WebTestCase
         /** @var DOMElement $actions */
         $actions = $item->getElementsByTagName('actions')->item(0);
         $this->assertEquals(
-          1,
-          $actions->getElementsByTagName('action')->length
+            1,
+            $actions->getElementsByTagName('action')->length
         );
         /** @var DOMElement $action */
         $action = $actions->getElementsByTagName('action')->item(0);
         $this->assertEquals(
-          'import_list_button.html.twig',
-          $action->getAttribute('template')
+            'import_list_button.html.twig',
+            $action->getAttribute('template')
         );
         $this->assertEquals('import', $action->textContent);
         /** @var DOMElement $fields */
@@ -419,15 +433,15 @@ class AnnotationAdminTest extends WebTestCase
         $this->assertEquals('author.name', $fieldList[1]->getAttribute('name'));
         $this->assertEquals('title', $fieldList[2]->getAttribute('name'));
         $this->assertEquals(
-          'getCoverTitle',
-          $fieldList[3]->getAttribute('name')
+            'getCoverTitle',
+            $fieldList[3]->getAttribute('name')
         );
         $this->assertEquals('1', $fieldList[0]->textContent);
         $this->assertEquals('Stephen King', $fieldList[1]->textContent);
         $this->assertEquals('The Stand', $fieldList[2]->textContent);
         $this->assertEquals(
-          "The Stand\nStephen King",
-          $fieldList[3]->textContent
+            "The Stand\nStephen King",
+            $fieldList[3]->textContent
         );
 
         /** @var DOMElement $item */
@@ -435,14 +449,14 @@ class AnnotationAdminTest extends WebTestCase
         /** @var DOMElement $actions */
         $actions = $item->getElementsByTagName('actions')->item(0);
         $this->assertEquals(
-          1,
-          $actions->getElementsByTagName('action')->length
+            1,
+            $actions->getElementsByTagName('action')->length
         );
         /** @var DOMElement $action */
         $action = $actions->getElementsByTagName('action')->item(0);
         $this->assertEquals(
-          'import_list_button.html.twig',
-          $action->getAttribute('template')
+            'import_list_button.html.twig',
+            $action->getAttribute('template')
         );
         $this->assertEquals('import', $action->textContent);
         /** @var DOMElement $fields */
@@ -454,8 +468,8 @@ class AnnotationAdminTest extends WebTestCase
         $this->assertEquals('author.name', $fieldList[1]->getAttribute('name'));
         $this->assertEquals('title', $fieldList[2]->getAttribute('name'));
         $this->assertEquals(
-          'getCoverTitle',
-          $fieldList[3]->getAttribute('name')
+            'getCoverTitle',
+            $fieldList[3]->getAttribute('name')
         );
         $this->assertEquals('2', $fieldList[0]->textContent);
         $this->assertEquals('', $fieldList[1]->textContent);
@@ -483,11 +497,14 @@ class AnnotationAdminTest extends WebTestCase
         /** @var KernelBrowser $client */
         $client = $container->get('test.client');
 
-        $client->request('GET', '/tests/resources/book/1/show');
+        $client->request('GET', $this->generateRoute(
+            'admin_tests_resources_entity_book_book_show',
+            ['id' => 1]
+        ));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
-          "$this->logDir/show.book.xml",
-          $client->getResponse()->getContent()
+            "$this->logDir/show.book.xml",
+            $client->getResponse()->getContent()
         );
 
         $dom = new DOMDocument();
@@ -510,33 +527,31 @@ class AnnotationAdminTest extends WebTestCase
      * @throws Exception
      */
     private function assertAdminHasRoutes(
-      AbstractAdmin $admin,
-      array $actions
+        AbstractAdmin $admin,
+        array $actions
     ): void {
         /** @var TestContainer $container */
         $container = static::getContainer();
         /** @var Router $router */
         $router = $container->get('router');
-        $routes = $router->getRouteCollection()->all();
-
         $prefix = $admin->getBaseRouteName();
 
-        $names = array_map(
-          fn($suffix) => "{$prefix}_$suffix",
-          $actions,
-        );
-        $this->assertEquals(
-          $names,
-          array_values(
+        $routes = $router->getRouteCollection()->all();
+        $routes = array_values(
             array_filter(
-              array_keys($routes),
-              fn($name) => preg_match(
-                "/^{$prefix}_/",
-                $name
-              )
+                array_keys($routes),
+                fn($name) => preg_match(
+                    "/^{$prefix}_/",
+                    $name
+                )
             )
-          )
         );
+        $names = array_map(
+            fn($suffix) => "{$prefix}_$suffix",
+            $actions,
+        );
+
+        $this->assertEquals($names, $routes);
     }
 
     /**
@@ -549,18 +564,211 @@ class AnnotationAdminTest extends WebTestCase
      * @return void
      */
     private function assertShowField(
-      DOMNode $item,
-      string $label,
-      string $value
+        DOMNode $item,
+        string $label,
+        string $value
     ): void {
         $this->assertEquals(
-          $label,
-          $item->getElementsByTagName('label')->item(0)->textContent,
+            $label,
+            $item->getElementsByTagName('label')->item(0)->textContent,
         );
         $this->assertEquals(
-          $value,
-          $item->getElementsByTagName('value')->item(0)->textContent,
+            $value,
+            $item->getElementsByTagName('value')->item(0)->textContent,
         );
     }
 
+    /**
+     * Test all actions are available in list by default.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldHaveAllListActionByDefault(): void
+    {
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+
+        /** @var KernelBrowser $client */
+        $client = $container->get('test.client');
+
+        $client->request(
+            'GET',
+            $container->get('router')->generate(
+                'admin_tests_resources_entity_book_author_list'
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        file_put_contents(
+            "$this->logDir/list.author.xml",
+            $client->getResponse()->getContent()
+        );
+
+        $dom = new DOMDocument();
+        $xml = $client->getResponse()->getContent();
+        $dom->loadXML($xml);
+
+        /** @var DOMElement $list */
+        $list = $dom->getElementsByTagName('list')->item(0);
+        /** @var DOMElement $items */
+        $items = $list->getElementsByTagName('items')->item(0);
+
+        /** @var DOMElement $item */
+        $item = $items->getElementsByTagName('item')->item(0);
+        /** @var DOMElement $fields */
+        $actions = $item->getElementsByTagName('actions')->item(0);
+        /** @var DOMNodeList|DOMElement[] $fieldList */
+        $actionList = $actions->getElementsByTagName('action');
+
+        $this->assertEquals(3, $actionList->length);
+        $this->assertEquals('show', $actionList->item(0)->nodeValue);
+        $this->assertEquals('edit', $actionList->item(1)->nodeValue);
+        $this->assertEquals('delete', $actionList->item(2)->nodeValue);
+    }
+
+    /**
+     * Test all fields are available by default.
+     *
+     * @test
+     * @functional
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldHaveAllFieldActivateByDefault(): void
+    {
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+
+        /** @var KernelBrowser $client */
+        $client = $container->get('test.client');
+
+        $client->request(
+            'GET',
+            $container->get('router')->generate(
+                'admin_tests_resources_entity_book_author_list'
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        file_put_contents(
+            "$this->logDir/list.author.xml",
+            $client->getResponse()->getContent()
+        );
+
+        $dom = new DOMDocument();
+        $xml = $client->getResponse()->getContent();
+        $dom->loadXML($xml);
+
+        /** @var DOMElement $root */
+        $root = $dom->getElementsByTagName('list')->item(0);
+        /** @var DOMElement $items */
+        $items = $root->getElementsByTagName('items')->item(0);
+        /** @var DOMElement $filters */
+        $filters = $root->getElementsByTagName('filters')->item(0);
+
+        /** @var DOMNodeList|DOMElement[] $filterList */
+        $filterList = $filters->getElementsByTagName('filter');
+
+        $this->assertEquals(3, $filterList->length);
+        $this->assertEquals('id', $filterList[0]->nodeValue);
+        $this->assertEquals('name', $filterList[1]->nodeValue);
+        $this->assertEquals('genre', $filterList[2]->nodeValue);
+
+        /** @var DOMElement $item */
+        $item = $items->getElementsByTagName('item')->item(0);
+        /** @var DOMElement $fields */
+        $fields = $item->getElementsByTagName('fields')->item(0);
+        /** @var DOMNodeList|DOMElement[] $fieldList */
+        $fieldList = $fields->getElementsByTagName('field');
+
+        $this->assertEquals(3, $fieldList->length);
+        $this->assertEquals('id', $fieldList->item(0)->getAttribute('name'));
+        $this->assertEquals('name', $fieldList->item(1)->getAttribute('name'));
+        $this->assertEquals('genre', $fieldList->item(2)->getAttribute('name'));
+
+        $client->request(
+            'GET',
+            $container->get('router')->generate(
+                'admin_tests_resources_entity_book_author_show',
+                ['id' => 1]
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        file_put_contents(
+            "$this->logDir/show.author.xml",
+            $client->getResponse()->getContent()
+        );
+
+        $dom = new DOMDocument();
+        $xml = $client->getResponse()->getContent();
+        $dom->loadXML($xml);
+
+        /** @var DOMElement $root */
+        $root = $dom->getElementsByTagName('show')->item(0);
+        /** @var DOMNodeList|DOMElement[] $fieldList */
+        $fieldList = $root->getElementsByTagName('field');
+
+        $this->assertEquals(3, $fieldList->length);
+        $this->assertEquals(
+            'id',
+            $fieldList[0]->getElementsByTagName('label')[0]->nodeValue
+        );
+        $this->assertEquals(
+            'name',
+            $fieldList[1]->getElementsByTagName('label')[0]->nodeValue
+        );
+        $this->assertEquals(
+            'genre',
+            $fieldList[2]->getElementsByTagName('label')[0]->nodeValue
+        );
+
+        $client->request(
+            'GET',
+            $container->get('router')->generate(
+                'admin_tests_resources_entity_book_author_create'
+            )
+        );
+        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        file_put_contents(
+            "$this->logDir/create.author.xml",
+            $client->getResponse()->getContent()
+        );
+
+        $dom = new DOMDocument();
+        $xml = $client->getResponse()->getContent();
+        $dom->loadXML($xml);
+
+        /** @var DOMElement $root */
+        $root = $dom->getElementsByTagName('edit')->item(0);
+        /** @var DOMNodeList|DOMElement[] $fieldList */
+        $fieldList = $root->getElementsByTagName('field');
+
+        $this->assertEquals(3, $fieldList->length);
+        $this->assertEquals('name', $fieldList->item(0)->getAttribute('name'));
+        $this->assertEquals('genre', $fieldList->item(1)->getAttribute('name'));
+        $this->assertEquals(
+            '_token',
+            $fieldList->item(2)->getAttribute('name')
+        );
+    }
+
+    /**
+     * Generate route.
+     *
+     * @param string $name   Route name.
+     * @param array  $params Route params.
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function generateRoute(string $name, array $params = []): string
+    {
+        return static::getContainer()->get('router')->generate(
+            $name,
+            $params
+        );
+    }
 }

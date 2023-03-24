@@ -2,15 +2,16 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
 use InvalidArgumentException;
-use Neimheadh\SonataAnnotationBundle\Annotation\ShowAssociationField;
-use Neimheadh\SonataAnnotationBundle\Annotation\ShowField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ShowAssociationField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ShowField;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use Neimheadh\SonataAnnotationBundle\Reader\ShowReader;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Author;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Author;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation\ArgumentAnnotation;
 use ReflectionClass;
 use Sonata\AdminBundle\FieldDescription\FieldDescriptionCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
@@ -41,20 +42,20 @@ class ShowReaderTest extends KernelTestCase
         $showMapper = $this->createNewShowMapper();
 
         $reader->configureFields(
-          new ReflectionClass(ShowReaderTestCase::class),
-          $showMapper,
+            new ReflectionClass(ShowReaderTestCase::class),
+            $showMapper,
         );
 
         $this->assertTrue($showMapper->has('name'));
         $this->assertEquals(
-          [
-            'sex',
-            'getString',
-            'name',
-            'author.genre',
-            'getStringEnd',
-          ],
-          $showMapper->keys()
+            [
+                'sex',
+                'getString',
+                'name',
+                'author.genre',
+                'getStringEnd',
+            ],
+            $showMapper->keys()
         );
     }
 
@@ -74,19 +75,19 @@ class ShowReaderTest extends KernelTestCase
         $e = null;
         try {
             $reader->configureFields(
-              new ReflectionClass(ShowReaderTestInvalidCase1::class),
-              $this->createNewShowMapper(),
+                new ReflectionClass(ShowReaderTestInvalidCase1::class),
+                $this->createNewShowMapper(),
             );
         } catch (MissingAnnotationArgumentException $e) {
         }
 
         $this->assertNotNull($e);
         $this->assertEquals(
-          sprintf(
-            'Argument "field" is mandatory for annotation %s.',
-            ShowAssociationField::class
-          ),
-          $e->getMessage(),
+            sprintf(
+                'Argument "field" is mandatory for annotation %s.',
+                ShowAssociationField::class
+            ),
+            $e->getMessage(),
         );
     }
 
@@ -106,16 +107,16 @@ class ShowReaderTest extends KernelTestCase
         $e = null;
         try {
             $reader->configureFields(
-              new ReflectionClass(ShowReaderTestInvalidCase2::class),
-              $this->createNewShowMapper()
+                new ReflectionClass(ShowReaderTestInvalidCase2::class),
+                $this->createNewShowMapper()
             );
         } catch (InvalidArgumentException $e) {
         }
 
         $this->assertNotNull($e);
         $this->assertEquals(
-          'Position "1" is already in use by "name", try setting a different position for "email".',
-          $e->getMessage(),
+            'Position "1" is already in use by "name", try setting a different position for "email".',
+            $e->getMessage(),
         );
 
         $reader = new ShowReader(new AnnotationReader());
@@ -123,16 +124,16 @@ class ShowReaderTest extends KernelTestCase
         $e = null;
         try {
             $reader->configureFields(
-              new ReflectionClass(ShowReaderTestInvalidCase3::class),
-              $this->createNewShowMapper()
+                new ReflectionClass(ShowReaderTestInvalidCase3::class),
+                $this->createNewShowMapper()
             );
         } catch (InvalidArgumentException $e) {
         }
 
         $this->assertNotNull($e);
         $this->assertEquals(
-          'Position "1" is already in use by "name", try setting a different position for "getEmail".',
-          $e->getMessage(),
+            'Position "1" is already in use by "name", try setting a different position for "getEmail".',
+            $e->getMessage(),
         );
     }
 
@@ -150,10 +151,38 @@ class ShowReaderTest extends KernelTestCase
         $showBuilder = $container->get('sonata.admin.builder.orm_show');
 
         return new ShowMapper(
-          $showBuilder,
-          new FieldDescriptionCollection(),
-          $this->createNewAnnotationAdmin(),
+            $showBuilder,
+            new FieldDescriptionCollection(),
+            $this->createNewAnnotationAdmin(),
         );
+    }
+
+    /**
+     * Test the argument system is handled.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldHandlePHP8Arguments(): void
+    {
+        if (!class_exists('ReflectionArgument')) {
+            $this->assertTrue(true);
+        }
+        $class = new ReflectionClass(ArgumentAnnotation::class);
+        $reader = new ShowReader(new AnnotationReader());
+
+        $reader->configureFields(
+            $class,
+            $form = $this->createNewShowMapper()
+        );
+
+        $this->assertEquals([
+            'book.id',
+            'id',
+        ], $form->keys());
     }
 
 }

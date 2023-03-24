@@ -49,7 +49,7 @@ final class AddChildCompilerPass implements CompilerPassInterface
             foreach ($children as $class => $field) {
                 if (!isset($admins[$class])) {
                     throw new InvalidArgumentException(sprintf(
-                        '%s is missing Admin Class.',
+                        '%s is missing admin class.',
                         $class
                     ));
                 }
