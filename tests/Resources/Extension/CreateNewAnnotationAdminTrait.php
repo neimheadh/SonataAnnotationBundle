@@ -2,6 +2,7 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension;
 
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use LogicException;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Neimheadh\SonataAnnotationBundle\Reader\ActionButtonReader;
@@ -13,7 +14,7 @@ use Neimheadh\SonataAnnotationBundle\Reader\FormReader;
 use Neimheadh\SonataAnnotationBundle\Reader\ListReader;
 use Neimheadh\SonataAnnotationBundle\Reader\RouteReader;
 use Neimheadh\SonataAnnotationBundle\Reader\ShowReader;
-use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Book;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\EmptyEntity;
 use Sonata\AdminBundle\Builder\DatagridBuilderInterface;
 use Sonata\AdminBundle\Builder\ListBuilderInterface;
 use Sonata\AdminBundle\Builder\RouteBuilderInterface;
@@ -41,15 +42,15 @@ trait CreateNewAnnotationAdminTrait
      * @return AnnotationAdmin
      */
     private function createNewAnnotationAdmin(
-      string $class = Book::class
+        string $class = EmptyEntity::class
     ): AnnotationAdmin {
         if (!$this instanceof KernelTestCase) {
             throw new LogicException(
-              sprintf(
-                '%s trait can only be used by %s classes.',
-                CreateNewAnnotationAdminTrait::class,
-                KernelTestCase::class,
-              )
+                sprintf(
+                    '%s trait can only be used by %s classes.',
+                    CreateNewAnnotationAdminTrait::class,
+                    KernelTestCase::class,
+                )
             );
         }
 
@@ -58,17 +59,17 @@ trait CreateNewAnnotationAdminTrait
 
         /** @var ActionButtonReader $actionButtonReader */
         $actionButtonReader = $container->get(
-          'sonata.annotation.reader.action_button'
+            'sonata.annotation.reader.action_button'
         );
         /** @var DatagridReader $datagridReader */
         $datagridReader = $container->get('sonata.annotation.reader.datagrid');
         /** @var DatagridValuesReader $datagridValuesReader */
         $datagridValuesReader = $container->get(
-          'sonata.annotation.reader.datagrid_values'
+            'sonata.annotation.reader.datagrid_values'
         );
         /** @var DashboardActionReader $dashboardActionReader */
         $dashboardActionReader = $container->get(
-          'sonata.annotation.reader.dashboard_action'
+            'sonata.annotation.reader.dashboard_action'
         );
         /** @var ExportReader $exportReader */
         $exportReader = $container->get('sonata.annotation.reader.export');
@@ -86,7 +87,7 @@ trait CreateNewAnnotationAdminTrait
         $listBuilder = $container->get('sonata.admin.builder.orm_list');
         /** @var RouteGeneratorInterface $routeGenerator */
         $routeGenerator = $container->get(
-          'sonata.admin.route.default_generator'
+            'sonata.admin.route.default_generator'
         );
         /** @var RouteBuilderInterface $routeBuilder */
         $routeBuilder = $container->get('sonata.admin.route.path_info');
@@ -94,11 +95,11 @@ trait CreateNewAnnotationAdminTrait
         $security = $container->get('sonata.admin.security.handler.noop');
         /** @var FieldDescriptionFactoryInterface $fieldDescriptionFactory */
         $fieldDescriptionFactory = $container->get(
-          'sonata.admin.field_description_factory.orm'
+            'sonata.admin.field_description_factory.orm'
         );
         /** @var LabelTranslatorStrategyInterface $labelTranslationStrategy */
         $labelTranslationStrategy = $container->get(
-          'sonata.admin.label.strategy.native'
+            'sonata.admin.label.strategy.native'
         );
         /** @var DatagridBuilderInterface $datagridBuilder */
         $datagridBuilder = $container->get('sonata.admin.builder.orm_datagrid');
@@ -106,15 +107,15 @@ trait CreateNewAnnotationAdminTrait
         $showBuilder = $container->get('sonata.admin.builder.orm_show');
 
         $admin = new AnnotationAdmin(
-          $actionButtonReader,
-          $datagridReader,
-          $datagridValuesReader,
-          $dashboardActionReader,
-          $exportReader,
-          $formReader,
-          $listReader,
-          $routeReader,
-          $showReader,
+            $actionButtonReader,
+            $datagridReader,
+            $datagridValuesReader,
+            $dashboardActionReader,
+            $exportReader,
+            $formReader,
+            $listReader,
+            $routeReader,
+            $showReader,
         );
 
         $admin->setModelManager($modelManager);

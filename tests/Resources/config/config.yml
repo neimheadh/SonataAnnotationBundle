@@ -37,8 +37,8 @@ doctrine:
           Neimheadh\SonataAnnotationBundle:
             is_bundle: false
             type: annotation
-            dir: '%kernel.project_dir%/Resources/Model/Entity'
-            prefix: 'Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity'
+            dir: '%kernel.project_dir%/Resources/Model'
+            prefix: 'Neimheadh\SonataAnnotationBundle\Tests\Resources\Model'
             alias: 'SonataAnnotationBundle'
 
 framework:

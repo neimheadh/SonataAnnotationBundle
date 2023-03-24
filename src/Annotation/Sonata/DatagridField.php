@@ -2,9 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Neimheadh\SonataAnnotationBundle\Annotation;
+namespace Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 use Attribute;
+use Neimheadh\SonataAnnotationBundle\Annotation\AbstractField;
+use Neimheadh\SonataAnnotationBundle\Annotation\PositionAnnotationInterface;
+use ReflectionException;
 
 /**
  * Datagrid field annotation.
@@ -36,11 +39,25 @@ class DatagridField extends AbstractField implements PositionAnnotationInterface
     public array $fieldOptions = [];
 
     /**
-     * Datagrid field position.
+     * {@inheritDoc}
      *
-     * @var int
+     * @param array $filterOptions Filtering options.
+     * @param array $fieldOptions  Datagrid form field type options.
+     *
+     * @throws ReflectionException
      */
-    public int $position;
+    public function __construct(
+        $type = null,
+        array $fieldDescriptionOptions = [],
+        ?int $position = null,
+        array $filterOptions = [],
+        array $fieldOptions = []
+    ) {
+        $this->filterOptions = $fieldOptions;
+        $this->fieldOptions = $fieldOptions;
+
+        parent::__construct($type, $fieldDescriptionOptions, $position);
+    }
 
     /**
      * Get field settings.
@@ -50,7 +67,7 @@ class DatagridField extends AbstractField implements PositionAnnotationInterface
     public function getSettings(): array
     {
         return [
-            $this->type ?? null,
+            $this->type,
             $this->filterOptions,
             $this->fieldOptions,
             $this->fieldDescriptionOptions,

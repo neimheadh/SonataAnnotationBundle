@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Neimheadh\SonataAnnotationBundle\Annotation;
+namespace Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 use Attribute;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
+use Neimheadh\SonataAnnotationBundle\Annotation\AbstractAnnotation;
+use ReflectionException;
 
 /**
  * Admin annotation.
@@ -19,7 +21,7 @@ use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Admin implements AnnotationInterface
+final class Admin extends AbstractAnnotation
 {
 
     /**
@@ -142,6 +144,8 @@ final class Admin implements AnnotationInterface
      * @param string|null       $serviceId                Service id.
      * @param string            $admin                    Service class.
      * @param string|null       $code                     Code.
+     *
+     * @throws ReflectionException
      */
     public function __construct(
         $label = null,
@@ -174,9 +178,7 @@ final class Admin implements AnnotationInterface
         $this->code = $code;
 
         if (is_array($label)) {
-            foreach ($label as $name => $value) {
-                $this->$name = $value;
-            }
+            $this->initAnnotation($label);
         } else {
             $this->label = $label;
         }

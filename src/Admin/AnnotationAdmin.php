@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Neimheadh\SonataAnnotationBundle\Admin;
 
 use Exception;
-use Neimheadh\SonataAnnotationBundle\Annotation\AddRoute;
-use Neimheadh\SonataAnnotationBundle\Annotation\RemoveRoute;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\AddRoute;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\RemoveRoute;
 use Neimheadh\SonataAnnotationBundle\Reader\ActionButtonReader;
 use Neimheadh\SonataAnnotationBundle\Reader\DashboardActionReader;
 use Neimheadh\SonataAnnotationBundle\Reader\DatagridReader;

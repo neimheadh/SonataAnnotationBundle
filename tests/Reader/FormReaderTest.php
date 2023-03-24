@@ -2,18 +2,21 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
-use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Exception;
 use InvalidArgumentException;
-use Neimheadh\SonataAnnotationBundle\Annotation\FormField;
-use Neimheadh\SonataAnnotationBundle\Annotation\ListField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\FormField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListField;
+use Neimheadh\SonataAnnotationBundle\AnnotationReader;
+use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;
 use Neimheadh\SonataAnnotationBundle\Reader\FormReader;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation\ArgumentAnnotation;
 use ReflectionClass;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\DoctrineORMAdminBundle\Builder\FormContractor;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilder;
@@ -94,6 +97,34 @@ class FormReaderTest extends KernelTestCase
             'Position "1" is already in use by "name", try setting a different position for "email".',
             $e->getMessage(),
         );
+    }
+
+    /**
+     * Test the argument system is handled.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldHandlePHP8Arguments(): void
+    {
+        if (!class_exists('ReflectionArgument')) {
+            $this->assertTrue(true);
+        }
+        $class = new ReflectionClass(ArgumentAnnotation::class);
+        $reader = new FormReader(new AnnotationReader());
+
+        $reader->configureFields(
+            $class,
+            $form = $this->createNewFormMapper()
+        );
+
+        $this->assertEquals([
+            'book',
+            'id',
+        ], $form->keys());
     }
 
     /**

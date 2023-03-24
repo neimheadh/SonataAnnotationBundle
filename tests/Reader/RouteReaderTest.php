@@ -2,12 +2,14 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
+use Exception;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use Neimheadh\SonataAnnotationBundle\Annotation\AddRoute;
-use Neimheadh\SonataAnnotationBundle\Annotation\RemoveRoute;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\AddRoute;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\RemoveRoute;
 use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use Neimheadh\SonataAnnotationBundle\Reader\RouteReader;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation\ArgumentAnnotation;
 use ReflectionClass;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -127,6 +129,35 @@ class RouteReaderTest extends KernelTestCase
         $this->assertFalse($routes->has('batch'));
     }
 
+    /**
+     * Test the argument system is handled.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldHandlePHP8Arguments(): void
+    {
+        if (!class_exists('ReflectionArgument')) {
+            $this->assertTrue(true);
+        }
+        $class = new ReflectionClass(ArgumentAnnotation::class);
+        $reader = new RouteReader(new AnnotationReader());
+
+        $routes = $reader->getRoutes(
+            $class,
+        );
+
+        $this->assertEquals(
+            [
+                ['test' => new AddRoute('test', '/test')],
+                ['list' => new RemoveRoute('list')],
+            ],
+            $routes
+        );
+    }
 }
 
 /**

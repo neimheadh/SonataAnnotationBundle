@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Neimheadh\SonataAnnotationBundle\Annotation;
+namespace Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 use Attribute;
+use Neimheadh\SonataAnnotationBundle\Annotation\AbstractAnnotation;
+use ReflectionException;
 
 /**
  * Access control annotation.
@@ -18,7 +20,7 @@ use Attribute;
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final class Access implements AnnotationInterface
+final class Access extends AbstractAnnotation
 {
 
     /**
@@ -39,6 +41,8 @@ final class Access implements AnnotationInterface
      * @param array|string|null $role        Allowed role or annotation
      *                                       parameters.
      * @param array             $permissions Allowed permissions.
+     *
+     * @throws ReflectionException
      */
     public function __construct(
         $role = null,
@@ -47,9 +51,7 @@ final class Access implements AnnotationInterface
         $this->permissions = $permissions;
 
         if (is_array($role)) {
-            foreach ($role as $name => $value) {
-                $this->$name = $value;
-            }
+            $this->initAnnotation($role);
         } else {
             $this->role = $role;
         }

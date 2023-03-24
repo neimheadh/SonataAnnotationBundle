@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Neimheadh\SonataAnnotationBundle\Annotation;
+namespace Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 use Attribute;
+use Neimheadh\SonataAnnotationBundle\Annotation\AbstractField;
+use Neimheadh\SonataAnnotationBundle\Annotation\ActionAnnotationInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\PositionAnnotationInterface;
+use ReflectionException;
 
 /**
  * Form field annotation.
@@ -36,9 +40,9 @@ final class FormField extends AbstractField implements
     /**
      * Action name.
      *
-     * @var string
+     * @var string|null
      */
-    public string $action;
+    public ?string $action = null;
 
     /**
      * Field options.
@@ -48,11 +52,25 @@ final class FormField extends AbstractField implements
     public array $options = [];
 
     /**
-     * Field position.
+     * {@inheritDoc}
      *
-     * @var int
+     * @param string|null $action  Action name.
+     * @param array       $options Field options.
+     *
+     * @throws ReflectionException
      */
-    public int $position;
+    public function __construct(
+        $type = null,
+        array $fieldDescriptionOptions = [],
+        ?int $position = null,
+        ?string $action = null,
+        array $options = []
+    ) {
+        $this->action = $action;
+        $this->options = $options;
+
+        parent::__construct($type, $fieldDescriptionOptions, $position);
+    }
 
     /**
      * Get field form settings.
@@ -62,7 +80,7 @@ final class FormField extends AbstractField implements
     public function getSettings(): array
     {
         return [
-            $this->type ?? null,
+            $this->type,
             $this->options,
             $this->fieldDescriptionOptions,
         ];

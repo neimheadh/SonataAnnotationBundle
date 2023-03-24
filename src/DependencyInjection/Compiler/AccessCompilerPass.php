@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use Doctrine\Common\Annotations\Reader;
-use Neimheadh\SonataAnnotationBundle\Annotation\Access;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Access;
 use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;

@@ -230,7 +230,9 @@ class AnnotationAdminTest extends WebTestCase
         /** @var KernelBrowser $client */
         $client = $container->get('test.client');
 
-        $client->request('GET', '/tests/resources/book/create');
+        $client->request('GET', $this->generateRoute(
+            'admin_tests_resources_entity_book_book_create'
+        ));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
             "$this->logDir/create.book.xml",
@@ -266,7 +268,10 @@ class AnnotationAdminTest extends WebTestCase
         /** @var KernelBrowser $client */
         $client = $container->get('test.client');
 
-        $client->request('GET', '/tests/resources/book/1/edit');
+        $client->request('GET', $this->generateRoute(
+            'admin_tests_resources_entity_book_book_edit',
+            ['id' => 1]
+        ));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
             "$this->logDir/edit.book.xml",
@@ -304,7 +309,9 @@ class AnnotationAdminTest extends WebTestCase
         $client = $container->get('test.client');
 
         $route = $container->get('router')
-            ->generate('admin_tests_resources_book_export', ['format' => 'json']
+            ->generate(
+                'admin_tests_resources_entity_book_book_export',
+                ['format' => 'json']
             );
 
         ob_start();
@@ -348,7 +355,7 @@ class AnnotationAdminTest extends WebTestCase
         $client->request(
             'GET',
             $container->get('router')->generate(
-                'admin_tests_resources_book_list'
+                'admin_tests_resources_entity_book_book_list'
             )
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -490,7 +497,10 @@ class AnnotationAdminTest extends WebTestCase
         /** @var KernelBrowser $client */
         $client = $container->get('test.client');
 
-        $client->request('GET', '/tests/resources/book/1/show');
+        $client->request('GET', $this->generateRoute(
+            'admin_tests_resources_entity_book_book_show',
+            ['id' => 1]
+        ));
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
             "$this->logDir/show.book.xml",
@@ -588,7 +598,7 @@ class AnnotationAdminTest extends WebTestCase
         $client->request(
             'GET',
             $container->get('router')->generate(
-                'admin_tests_resources_author_list'
+                'admin_tests_resources_entity_book_author_list'
             )
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -639,7 +649,7 @@ class AnnotationAdminTest extends WebTestCase
         $client->request(
             'GET',
             $container->get('router')->generate(
-                'admin_tests_resources_author_list'
+                'admin_tests_resources_entity_book_author_list'
             )
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -682,7 +692,7 @@ class AnnotationAdminTest extends WebTestCase
         $client->request(
             'GET',
             $container->get('router')->generate(
-                'admin_tests_resources_author_show',
+                'admin_tests_resources_entity_book_author_show',
                 ['id' => 1]
             )
         );
@@ -718,7 +728,7 @@ class AnnotationAdminTest extends WebTestCase
         $client->request(
             'GET',
             $container->get('router')->generate(
-                'admin_tests_resources_author_create'
+                'admin_tests_resources_entity_book_author_create'
             )
         );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -745,4 +755,20 @@ class AnnotationAdminTest extends WebTestCase
         );
     }
 
+    /**
+     * Generate route.
+     *
+     * @param string $name   Route name.
+     * @param array  $params Route params.
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function generateRoute(string $name, array $params = []): string
+    {
+        return static::getContainer()->get('router')->generate(
+            $name,
+            $params
+        );
+    }
 }

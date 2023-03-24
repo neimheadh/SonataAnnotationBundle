@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Neimheadh\SonataAnnotationBundle\Annotation;
+namespace Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 use Attribute;
+use Neimheadh\SonataAnnotationBundle\Annotation\AbstractAction;
 
 /**
  * Action button annotation.

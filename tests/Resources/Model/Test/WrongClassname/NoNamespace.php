@@ -1,6 +1,6 @@
 <?php
 
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin()

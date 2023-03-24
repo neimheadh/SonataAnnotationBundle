@@ -2,7 +2,7 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\BadChildAdmin;
 
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * @Sonata\Admin

@@ -6,7 +6,7 @@ namespace Neimheadh\SonataAnnotationBundle\Reader;
 
 use Doctrine\Common\Annotations\Reader;
 use Doctrine\ORM\Mapping\GeneratedValue;
-use Neimheadh\SonataAnnotationBundle\Annotation\FormField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\FormField;
 use ReflectionClass;
 use Sonata\AdminBundle\Form\FormMapper;
 

@@ -7,13 +7,11 @@ use InvalidArgumentException;
 use Neimheadh\SonataAnnotationBundle\Annotation\ActionAnnotationInterface;
 use Neimheadh\SonataAnnotationBundle\Annotation\PositionAnnotationInterface;
 use ReflectionClass;
-use ReflectionProperty;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Mapper\MapperInterface;
 use Sonata\AdminBundle\Show\ShowMapper;
-use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * Field configuration reader.

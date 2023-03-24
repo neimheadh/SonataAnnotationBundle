@@ -3,7 +3,7 @@
 namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book;
 
 use Doctrine\ORM\Mapping as ORM;
-use Neimheadh\SonataAnnotationBundle\Annotation as Sonata;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 /**
  * Book test model.

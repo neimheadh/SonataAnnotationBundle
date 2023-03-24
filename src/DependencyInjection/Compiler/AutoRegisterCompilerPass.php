@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler;
 
 use Composer\Autoload\ClassLoader;
-use Doctrine\Common\Annotations\Reader;
 use Exception;
 use LogicException;
-use Neimheadh\SonataAnnotationBundle\Annotation\Admin;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Admin;
 use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;
 use ReflectionClass;

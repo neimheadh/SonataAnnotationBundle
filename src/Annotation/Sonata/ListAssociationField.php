@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Neimheadh\SonataAnnotationBundle\Annotation;
+namespace Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 use Attribute;
+use Neimheadh\SonataAnnotationBundle\Annotation\AssociationFieldInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\AssociationFieldTrait;
 
 /**
  * List association field annotation.
@@ -22,11 +24,5 @@ final class ListAssociationField extends ListField implements
     AssociationFieldInterface
 {
 
-    /**
-     * Association field name.
-     *
-     * @var string
-     */
-    public string $field;
-
+    use AssociationFieldTrait;
 }

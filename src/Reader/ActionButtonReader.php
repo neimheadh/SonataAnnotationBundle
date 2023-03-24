@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Neimheadh\SonataAnnotationBundle\Reader;
 
 use Doctrine\Common\Annotations\Reader;
-use Neimheadh\SonataAnnotationBundle\Annotation\ActionButton;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ActionButton;
 
 /**
  * ActionButton annotation reader.

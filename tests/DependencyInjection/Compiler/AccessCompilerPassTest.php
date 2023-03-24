@@ -6,7 +6,7 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Exception;
 use LogicException;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
-use Neimheadh\SonataAnnotationBundle\Annotation\Access;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Access;
 use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AccessCompilerPass;
 use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AutoRegisterCompilerPass;
 use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;

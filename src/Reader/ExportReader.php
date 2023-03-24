@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\Reader;
 
-use Neimheadh\SonataAnnotationBundle\Annotation\ExportAssociationField;
-use Neimheadh\SonataAnnotationBundle\Annotation\ExportField;
-use Neimheadh\SonataAnnotationBundle\Annotation\ExportFormats;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ExportAssociationField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ExportField;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ExportFormats;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -30,9 +30,15 @@ final class ExportReader extends AbstractReader
     public function getFields(ReflectionClass $class): array
     {
         $fields = [];
+        $allFields = [];
 
         foreach ($class->getProperties() as $property) {
             foreach ($this->getPropertyAnnotations($property) as $annotation) {
+                $this->stackExportProperty(
+                    $property,
+                    new ExportField(),
+                    $allFields
+                );
                 if ($annotation instanceof ExportField) {
                     $this->stackExportProperty($property, $annotation, $fields);
                 }
@@ -40,6 +46,12 @@ final class ExportReader extends AbstractReader
         }
 
         foreach ($class->getMethods() as $method) {
+            $this->stackExportProperty(
+                $property,
+                new ExportField(),
+                $allFields
+            );
+
             if ($annotation = $this->getMethodAnnotation(
                 $method,
                 ExportField::class
@@ -48,7 +60,7 @@ final class ExportReader extends AbstractReader
             }
         }
 
-        return $fields;
+        return empty($fields) ? $allFields : $fields;
     }
 
     /**
@@ -74,9 +86,9 @@ final class ExportReader extends AbstractReader
     /**
      * Stack property or method to exported fields.
      *
-     * @param ReflectionProperty|ReflectionMethod $property    Stacked property.
-     * @param object                              $annotation  Annotation.
-     * @param array                               $fields      Fields stack.
+     * @param ReflectionProperty|ReflectionMethod $property Stacked property.
+     * @param object                              $annotation Annotation.
+     * @param array                               $fields Fields stack.
      *
      * @return void
      */
@@ -90,12 +102,12 @@ final class ExportReader extends AbstractReader
                 . '.'
                 . $annotation->field;
 
-            $fields[$annotation->label ?? $fieldName] = $fieldName;
+            $fields[$annotation->label ?: $fieldName] = $fieldName;
 
             return;
         }
 
-        $label = $annotation->label ?? $property->getName();
+        $label = $annotation->label ?: $property->getName();
         $fields[$label] = $property->getName();
     }
 

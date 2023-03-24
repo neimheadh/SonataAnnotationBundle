@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Neimheadh\SonataAnnotationBundle\Annotation;
+namespace Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 
 use Attribute;
+use Neimheadh\SonataAnnotationBundle\Annotation\AbstractField;
+use Neimheadh\SonataAnnotationBundle\Annotation\PositionAnnotationInterface;
 
 /**
  * Show field annotation.
@@ -20,10 +22,5 @@ use Attribute;
 #[Attribute(Attribute::TARGET_METHOD | Attribute::TARGET_PROPERTY)]
 class ShowField extends AbstractField implements PositionAnnotationInterface
 {
-    /**
-     * Field position.
-     *
-     * @var int
-     */
-    public int $position;
+
 }
