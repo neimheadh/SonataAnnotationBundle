@@ -45,11 +45,6 @@ executors:
       - image: neimheadh/sonata-annotation-bundle:php-8.0
     environment:
       SYMFONY_DEPRECATIONS_HELPER: disabled
-  php74:
-    docker:
-      - image: neimheadh/sonata-annotation-bundle:php-7.4
-    environment:
-      SYMFONY_DEPRECATIONS_HELPER: disabled
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
@@ -79,14 +74,6 @@ jobs:
       - install
       - test
 
-  php74-test:
-    executor: php74
-    steps:
-      - checkout
-      - build-env
-      - install
-      - test
-
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -95,4 +82,3 @@ workflows:
       - php82-test
       - php81-test
       - php80-test
-      - php74-test

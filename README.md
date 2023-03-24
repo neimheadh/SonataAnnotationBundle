@@ -114,7 +114,7 @@ bin/console cache:clear
 
 And you will see Admin appear in your sidebar.
 
-Note that if you can also use class attributes on PHP8+ applications:
+Note that if you can also use class attributes:
 
 ```php
 <?php
