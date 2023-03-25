@@ -230,9 +230,12 @@ class AnnotationAdminTest extends WebTestCase
         /** @var KernelBrowser $client */
         $client = $container->get('test.client');
 
-        $client->request('GET', $this->generateRoute(
-            'admin_tests_resources_entity_book_book_create'
-        ));
+        $client->request(
+            'GET',
+            $this->generateRoute(
+                'admin_tests_resources_entity_book_book_create'
+            )
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
             "$this->logDir/create.book.xml",
@@ -268,10 +271,13 @@ class AnnotationAdminTest extends WebTestCase
         /** @var KernelBrowser $client */
         $client = $container->get('test.client');
 
-        $client->request('GET', $this->generateRoute(
-            'admin_tests_resources_entity_book_book_edit',
-            ['id' => 1]
-        ));
+        $client->request(
+            'GET',
+            $this->generateRoute(
+                'admin_tests_resources_entity_book_book_edit',
+                ['id' => 1]
+            )
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
             "$this->logDir/edit.book.xml",
@@ -497,10 +503,13 @@ class AnnotationAdminTest extends WebTestCase
         /** @var KernelBrowser $client */
         $client = $container->get('test.client');
 
-        $client->request('GET', $this->generateRoute(
-            'admin_tests_resources_entity_book_book_show',
-            ['id' => 1]
-        ));
+        $client->request(
+            'GET',
+            $this->generateRoute(
+                'admin_tests_resources_entity_book_book_show',
+                ['id' => 1]
+            )
+        );
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
         file_put_contents(
             "$this->logDir/show.book.xml",
@@ -771,4 +780,5 @@ class AnnotationAdminTest extends WebTestCase
             $params
         );
     }
+
 }

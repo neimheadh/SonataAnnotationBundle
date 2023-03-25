@@ -164,10 +164,12 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
                 ) as $namespace
             ) {
                 if (substr($current, 0, strlen($namespace)) === $namespace) {
-                    $options['group'] = str_replace(
-                        '\\',
-                        ' ',
-                        substr($current, strlen($namespace))
+                    $options['group'] = trim(
+                        str_replace(
+                            '\\',
+                            ' ',
+                            substr($current, strlen($namespace))
+                        )
                     );
                     break;
                 }

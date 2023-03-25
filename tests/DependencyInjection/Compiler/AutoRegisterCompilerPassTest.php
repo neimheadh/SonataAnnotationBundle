@@ -175,4 +175,42 @@ class AutoRegisterCompilerPassTest extends KernelTestCase
         $this->assertEquals(['service_container'], $container->getServiceIds());
     }
 
+
+    /**
+     * Test admin options are correct.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     */
+    public function shouldHaveValidOptions(): void
+    {
+        $container = new ContainerBuilder();
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE,
+            ['Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity']
+        );
+        $container->setParameter(
+            SonataAnnotationExtension::PARAM_MENU_USE_NAMESPACE,
+            true
+        );
+
+        $compiler = new AutoRegisterCompilerPass();
+        $compiler->process($container);
+
+        $definition = $container->getDefinition('app.admin.Book');
+        $tag = current($definition->getTag('sonata.admin'));
+
+        $this->assertNull($tag['code']);
+        $this->assertNull($tag['controller']);
+        $this->assertEquals('orm', $tag['manager_type']);
+        $this->assertEquals('Book', $tag['group']);
+        $this->assertEquals('Book admin', $tag['label']);
+        $this->assertTrue($tag['show_in_dashboard']);
+        $this->assertFalse($tag['keep_open']);
+        $this->assertFalse($tag['on_top']);
+        $this->assertNull($tag['icon']);
+        $this->assertNull($tag['label_translator_strategy']);
+    }
 }

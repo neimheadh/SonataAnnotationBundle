@@ -152,7 +152,7 @@ final class Admin extends AbstractAnnotation
         string $managerType = 'orm',
         ?string $group = null,
         bool $showInDashboard = true,
-        bool $keepOpen = true,
+        bool $keepOpen = false,
         bool $onTop = false,
         ?string $icon = null,
         ?string $labelTranslatorStrategy = null,
