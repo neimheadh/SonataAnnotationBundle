@@ -60,7 +60,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
     }
 
     /**
-     * List PHP files in given directory.
+     * List PHP files in given namespaces.
      *
      * @param string[] $namespaces Entity namespaces.
      *
@@ -148,6 +148,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
         Admin $annotation
     ): array {
         $options = $annotation->getTagOptions();
+
         $options['label'] = $options['label'] ?: $class->getShortName();
 
         if (

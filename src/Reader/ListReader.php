@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neimheadh\SonataAnnotationBundle\Reader;
 
 use Doctrine\Common\Annotations\Reader;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Admin;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListAction;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListField;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
@@ -50,12 +51,23 @@ final class ListReader extends AbstractFieldConfigurationReader
         parent::configureFields($class, $mapper);
 
         if ($mapper instanceof ListMapper) {
-            if ($actions = $this->getListActions($class)) {
+            if (!empty($actions = $this->getListActions($class))) {
+                $mapper->remove(ListMapper::NAME_ACTIONS);
                 $mapper->add(ListMapper::NAME_ACTIONS, null, [
                     'actions' => $actions,
                 ]);
             }
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getAdminAnnotationFields(
+        Admin $annotation,
+        ?string $action
+    ): array {
+        return $annotation->getListFields();
     }
 
     /**

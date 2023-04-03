@@ -4,19 +4,20 @@ namespace Neimheadh\SonataAnnotationBundle\Tests\Reader;
 
 use Exception;
 use InvalidArgumentException;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\FormField;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListField;
 use Neimheadh\SonataAnnotationBundle\AnnotationReader;
-use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;
 use Neimheadh\SonataAnnotationBundle\Reader\FormReader;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation\ArgumentAnnotation;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\TestAdminAnnotationFields;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\TestAdminAnnotationFieldsAttribute;
 use ReflectionClass;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\DoctrineORMAdminBundle\Builder\FormContractor;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\TestContainer;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilder;
@@ -128,6 +129,74 @@ class FormReaderTest extends KernelTestCase
     }
 
     /**
+     * Test admin annotation fields system.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldAdminAnnotationWorks(): void
+    {
+        $formReader = new FormReader(new AnnotationReader());
+        $class = new ReflectionClass(TestAdminAnnotationFields::class);
+
+        $formReader->configureFields(
+            $class,
+            $form = $this->createNewFormMapper()
+        );
+
+        $this->assertEquals(['name'], $form->keys());
+
+        $class = new ReflectionClass(TestAdminAnnotationFieldsAttribute::class);
+
+        $formReader->configureCreateFields(
+            $class,
+            $form = $this->createNewFormMapper()
+        );
+        $this->assertEquals(['name', 'label'], $form->keys());
+
+        $formReader->configureEditFields(
+            $class,
+            $form = $this->createNewFormMapper()
+        );
+        $this->assertEquals(['name', 'title'], $form->keys());
+    }
+
+    /**
+     * Test admin field errors.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     */
+    public function shouldMakeErrorOnAdminFieldTypes(): void
+    {
+        $reader = new FormReader(new AnnotationReader());
+        $class = new ReflectionClass(InvalidAdminFieldClass::class);
+
+        $e = null;
+        try {
+            $reader->configureFields(
+                $class,
+                $form = $this->createNewFormMapper()
+            );
+        } catch (InvalidArgumentException $e) {}
+
+        $this->assertNotNull($e);
+        $this->assertEquals(
+            sprintf(
+                'Array of %s expected, array contains an %s element.',
+                FormField::class,
+                Sonata\DatagridField::class
+            ),
+            $e->getMessage()
+        );
+    }
+
+    /**
      * Create a new form mapper.
      *
      * @return FormMapper
@@ -210,4 +279,10 @@ class FormReaderTestDuplicatePositionCase
      */
     private string $email = '';
 
+}
+
+#[Sonata\Admin(formFields: [new Sonata\DatagridField()])]
+class InvalidAdminFieldClass
+{
+    public ?string $test = null;
 }

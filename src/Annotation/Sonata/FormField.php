@@ -16,7 +16,7 @@ use ReflectionException;
  * Allows you to configure form field for the annotated property.
  *
  * @Annotation
- * @Target("PROPERTY")
+ * @Target({"ANNOTATION", "PROPERTY"})
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>

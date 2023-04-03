@@ -11,6 +11,8 @@ use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentExceptio
 use Neimheadh\SonataAnnotationBundle\Reader\ExportReader;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Author;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation\ArgumentAnnotation;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\TestAdminAnnotationFields;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\TestAdminAnnotationFieldsAttribute;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
@@ -119,6 +121,30 @@ class ExportReaderTest extends TestCase
 
         $this->assertEquals(['json'], $formats);
         $this->assertEquals(['Id', 'Book id'], array_keys($fields));
+    }
+
+    /**
+     * Test Admin annotation exportFields property.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     */
+    public function shouldHandleAdminFields(): void
+    {
+        $reader = new ExportReader(new AnnotationReader());
+        $class = new ReflectionClass(TestAdminAnnotationFields::class);
+
+        $fields = $reader->getFields($class);
+
+        $this->assertEquals(['id', 'name'], array_keys($fields));
+
+        $class = new ReflectionClass(TestAdminAnnotationFieldsAttribute::class);
+
+        $fields = $reader->getFields($class);
+
+        $this->assertEquals(['id', 'name'], array_keys($fields));
     }
 }
 

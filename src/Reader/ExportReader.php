@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Neimheadh\SonataAnnotationBundle\Reader;
 
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Admin;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ExportAssociationField;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ExportField;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ExportFormats;
@@ -29,7 +30,10 @@ final class ExportReader extends AbstractReader
      */
     public function getFields(ReflectionClass $class): array
     {
-        $fields = [];
+        /** @var Admin|null $admin */
+        $admin = $this->getClassAnnotation($class, Admin::class);
+
+        $fields = $admin ? $admin->getExportFields() : [];
         $allFields = [];
         $properties = array_merge(
             $class->getProperties(),

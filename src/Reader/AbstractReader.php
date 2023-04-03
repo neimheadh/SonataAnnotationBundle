@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\Reader;
 use Neimheadh\SonataAnnotationBundle\Annotation\AnnotationInterface;
 use Neimheadh\SonataAnnotationBundle\Annotation\AssociationFieldInterface;
 use Neimheadh\SonataAnnotationBundle\Annotation\RouteAnnotationInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Admin;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use ReflectionClass;
 use ReflectionMethod;

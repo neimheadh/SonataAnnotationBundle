@@ -15,7 +15,7 @@ use ReflectionException;
  * Allow you to configure the datagrid for the annotated field.
  *
  * @Annotation
- * @Target("PROPERTY")
+ * @Target({"ANNOTATION", "PROPERTY"})
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>

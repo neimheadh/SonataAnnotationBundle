@@ -14,7 +14,7 @@ use Neimheadh\SonataAnnotationBundle\Annotation\PositionAnnotationInterface;
  * Allows you to configure your show field.
  *
  * @Annotation
- * @Target({"PROPERTY", "METHOD"})
+ * @Target({"ANNOTATION", "PROPERTY", "METHOD"})
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>

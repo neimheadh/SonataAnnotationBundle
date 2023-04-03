@@ -8,10 +8,13 @@ use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ShowAssociationField;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ShowField;
 use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
+use Neimheadh\SonataAnnotationBundle\Reader\FormReader;
 use Neimheadh\SonataAnnotationBundle\Reader\ShowReader;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\Book\Author;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation\ArgumentAnnotation;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\TestAdminAnnotationFields;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\TestAdminAnnotationFieldsAttribute;
 use ReflectionClass;
 use Sonata\AdminBundle\FieldDescription\FieldDescriptionCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
@@ -138,26 +141,6 @@ class ShowReaderTest extends KernelTestCase
     }
 
     /**
-     * Create a new show mapper.
-     *
-     * @return ShowMapper
-     * @throws Exception
-     */
-    private function createNewShowMapper(): ShowMapper
-    {
-        /** @var TestContainer $container */
-        $container = static::getContainer();
-        /** @var ShowBuilder $showBuilder */
-        $showBuilder = $container->get('sonata.admin.builder.orm_show');
-
-        return new ShowMapper(
-            $showBuilder,
-            new FieldDescriptionCollection(),
-            $this->createNewAnnotationAdmin(),
-        );
-    }
-
-    /**
      * Test the argument system is handled.
      *
      * @test
@@ -185,6 +168,56 @@ class ShowReaderTest extends KernelTestCase
         ], $form->keys());
     }
 
+    /**
+     * Test admin annotation fields system.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldAdminAnnotationWorks(): void
+    {
+        $reader = new ShowReader(new AnnotationReader());
+        $class = new ReflectionClass(TestAdminAnnotationFields::class);
+
+        $reader->configureFields(
+            $class,
+            $mapper = $this->createNewShowMapper()
+        );
+
+        $this->assertEquals(['id', 'name'], $mapper->keys());
+
+        $class = new ReflectionClass(TestAdminAnnotationFieldsAttribute::class);
+
+        $reader->configureFields(
+            $class,
+            $mapper = $this->createNewShowMapper()
+        );
+
+        $this->assertEquals(['id', 'name'], $mapper->keys());
+    }
+
+    /**
+     * Create a new show mapper.
+     *
+     * @return ShowMapper
+     * @throws Exception
+     */
+    private function createNewShowMapper(): ShowMapper
+    {
+        /** @var TestContainer $container */
+        $container = static::getContainer();
+        /** @var ShowBuilder $showBuilder */
+        $showBuilder = $container->get('sonata.admin.builder.orm_show');
+
+        return new ShowMapper(
+            $showBuilder,
+            new FieldDescriptionCollection(),
+            $this->createNewAnnotationAdmin(),
+        );
+    }
 }
 
 class ShowReaderTestCase

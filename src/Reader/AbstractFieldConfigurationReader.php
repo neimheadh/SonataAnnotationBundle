@@ -6,6 +6,7 @@ use Doctrine\Common\Annotations\Reader;
 use InvalidArgumentException;
 use Neimheadh\SonataAnnotationBundle\Annotation\ActionAnnotationInterface;
 use Neimheadh\SonataAnnotationBundle\Annotation\PositionAnnotationInterface;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Admin;
 use ReflectionClass;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -16,7 +17,7 @@ use Sonata\AdminBundle\Show\ShowMapper;
 /**
  * Field configuration reader.
  */
-class AbstractFieldConfigurationReader extends AbstractReader
+abstract class AbstractFieldConfigurationReader extends AbstractReader
 {
 
     /**
@@ -90,6 +91,19 @@ class AbstractFieldConfigurationReader extends AbstractReader
     }
 
     /**
+     * Get fields from the class Admin annotation.
+     *
+     * @param Admin   $annotation Admin annotation.
+     * @param ?string $action     Current action.
+     *
+     * @return array
+     */
+    abstract protected function getAdminAnnotationFields(
+        Admin $annotation,
+        ?string $action
+    ): array;
+
+    /**
      * Check if given annotation is supported.
      *
      * @param object      $annotation Annotation.
@@ -108,7 +122,7 @@ class AbstractFieldConfigurationReader extends AbstractReader
     /**
      * Load default fields.
      *
-     * @param ReflectionClass $class  Entity class.
+     * @param ReflectionClass $class           Entity class.
      * @param string|null     $annotationClass Reader annotation class.
      *
      * @return array
@@ -150,6 +164,13 @@ class AbstractFieldConfigurationReader extends AbstractReader
 
         $propertiesWithPosition = [];
         $propertiesWithoutPosition = [];
+
+        $this->fillAdminProperties(
+            $propertiesWithoutPosition,
+            $propertiesWithPosition,
+            $class,
+            $action
+        );
 
         foreach ($propertiesAndMethods as $name => $annotations) {
             /** @var PositionAnnotationInterface $annotation */
@@ -333,4 +354,49 @@ class AbstractFieldConfigurationReader extends AbstractReader
             $settings[1] ?? [],
         );
     }
+
+    /**
+     * Fill properties arrays with Admin class annotation properties.
+     *
+     * @param array           $withoutPosition Properties without position.
+     * @param array           $withPosition    Properties with position.
+     * @param ReflectionClass $class           Administrated class.
+     * @param string|null     $action          Action name.
+     *
+     * @return void
+     */
+    private function fillAdminProperties(
+        array &$withoutPosition,
+        array &$withPosition,
+        ReflectionClass $class,
+        ?string $action
+    ): void {
+        $admin = $this->annotationReader->getClassAnnotation(
+            $class,
+            Admin::class
+        );
+
+        if ($admin === null) {
+            return;
+        }
+
+        $adminFields = $this->getAdminAnnotationFields($admin, $action);
+
+        /** @var PositionAnnotationInterface $field */
+        foreach ($adminFields as $name => $field) {
+            if (!$this->isSupported($field, $action)) {
+                continue;
+            }
+
+            $name = $this->getAnnotationFieldName($name, $field);
+
+            $this->stackProperty(
+                $name,
+                $field,
+                $withPosition,
+                $withoutPosition
+            );
+        }
+    }
+
 }

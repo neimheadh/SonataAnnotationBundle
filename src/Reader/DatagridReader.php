@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Neimheadh\SonataAnnotationBundle\Reader;
 
 use Doctrine\Common\Annotations\Reader;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Admin;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\DatagridField;
 
 /**
@@ -23,6 +24,16 @@ final class DatagridReader extends AbstractFieldConfigurationReader
         Reader $annotationReader
     ) {
         parent::__construct($annotationReader, DatagridField::class);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function getAdminAnnotationFields(
+        Admin $annotation,
+        ?string $action
+    ): array {
+        return $annotation->getDatagridFields();
     }
 
 }

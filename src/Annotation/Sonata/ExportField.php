@@ -14,7 +14,7 @@ use ReflectionException;
  * Allow you to configure the export for the annotated field.
  *
  * @Annotation
- * @Target({"PROPERTY", "METHOD"})
+ * @Target({"ANNOTATION", "PROPERTY", "METHOD"})
  *
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>

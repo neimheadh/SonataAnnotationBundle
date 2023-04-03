@@ -8,13 +8,15 @@ use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\DatagridAssociationField;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\DatagridField;
 use Neimheadh\SonataAnnotationBundle\AnnotationReader;
-use Neimheadh\SonataAnnotationBundle\DependencyInjection\Compiler\AutoRegisterCompilerPass;
 use Neimheadh\SonataAnnotationBundle\DependencyInjection\SonataAnnotationExtension;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
 use Neimheadh\SonataAnnotationBundle\Reader\DatagridReader;
+use Neimheadh\SonataAnnotationBundle\Reader\FormReader;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\EmptyEntity;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation\ArgumentAnnotation;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\TestAdminAnnotationFields;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\TestAdminAnnotationFieldsAttribute;
 use ReflectionClass;
 use Sonata\AdminBundle\Datagrid\Datagrid;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
@@ -160,6 +162,37 @@ class DatagridReaderTest extends KernelTestCase
             'book.id',
             'id',
         ], $datagrid->keys());
+    }
+
+    /**
+     * Test admin annotation fields system.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldAdminAnnotationWorks(): void
+    {
+        $reader = new DatagridReader(new AnnotationReader());
+        $class = new ReflectionClass(TestAdminAnnotationFields::class);
+
+        $reader->configureFields(
+            $class,
+            $mapper = $this->createNewDatagridMapper()
+        );
+
+        $this->assertEquals(['id', 'name'], $mapper->keys());
+
+        $class = new ReflectionClass(TestAdminAnnotationFieldsAttribute::class);
+
+        $reader->configureFields(
+            $class,
+            $mapper = $this->createNewDatagridMapper()
+        );
+
+        $this->assertEquals(['id', 'name'], $mapper->keys());
     }
 
     /**

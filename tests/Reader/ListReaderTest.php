@@ -15,8 +15,9 @@ use Neimheadh\SonataAnnotationBundle\Reader\ListReader;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\EmptyEntity;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\ArgumentAnnotation\ArgumentAnnotation;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\TestAdminAnnotationFields;
+use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Test\TestAdminAnnotationFieldsAttribute;
 use ReflectionClass;
-use Sonata\AdminBundle\Admin\AdminInterface;
 use Sonata\AdminBundle\Builder\ListBuilderInterface;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\FieldDescription\FieldDescriptionCollection;
@@ -233,9 +234,38 @@ class ListReaderTest extends KernelTestCase
 
         $this->assertEquals([
             'test' => [
-                'template' => 'test.action.html.twig'
-            ]
+                'template' => 'test.action.html.twig',
+            ],
         ], $fields['_actions']->getOption('actions'));
+    }
+
+    /**
+     * Test admin annotation fields system.
+     *
+     * @test
+     * @functionnal
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function shouldAdminAnnotationWorks(): void
+    {
+        $reader = new ListReader(new AnnotationReader());
+        $class = new ReflectionClass(TestAdminAnnotationFields::class);
+        $mapper = $this->createNewListMapper();
+
+        $reader->configureFields($class, $mapper);
+
+        $this->assertEquals(['id', 'name', '_actions'], $mapper->keys());
+
+        $class = new ReflectionClass(TestAdminAnnotationFieldsAttribute::class);
+
+        $reader->configureFields(
+            $class,
+            $mapper = $this->createNewListMapper()
+        );
+
+        $this->assertEquals(['id', 'name', '_actions'], $mapper->keys());
     }
 
     /**

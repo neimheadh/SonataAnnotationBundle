@@ -329,6 +329,37 @@ class Category
 }
 ```
 
+Form fields can also be added on class level through `formFields` class `Admin` annotation property:
+
+```php
+// ...
+
+/**
+ * @Sonata\Admin(
+ *    name="Category",
+ *    formFields={
+ *      "name": @Sonata\FormField (
+ *          action="create",
+ *          type="",
+ *          options={},
+ *          fieldDescriptionOptions={},
+ *          position=1     
+ *     ),
+ *     "description": @Sonata\FormField (
+ *          type="",
+ *          options={},
+ *          fieldDescriptionOptions={},
+ *          position=2
+ *     ),
+ * )
+ */
+class Category {
+//...
+}
+```
+
+By default, if any field configured, all field will be available.
+
 ### ShowField
 
 You are able to set the position of the field. Position 1 would be the first
@@ -369,6 +400,30 @@ class Category
     {
         return 'show value';
     }
+}
+```
+
+Show fields can also be added on class level through `showFields` class `Admin` annotation property:
+
+```php
+<?php
+// ...
+
+/**
+ * @Sonata\Admin(
+ *     name="Category",
+ *     showFields={
+ *         "name": @Sonata\ShowField(
+ *             type="",
+ *             fieldDescriptionOptions={},
+ *             position=1
+ *         )
+ *     }
+ * )
+ */
+class Category
+{
+  // ...
 }
 ```
 
@@ -471,6 +526,29 @@ class Category
 }
 ```
 
+List fields can also be added on class level through `listFields` class `Admin` annotation property:
+
+```php
+// ...
+
+/**
+ * @Sonata\Admin(
+ *   listFields= {
+ *       "id": @Sonata\ListField(identifier=true), 
+ *       "name": @Sonata\ListField(
+ *           type="",
+ *           fieldDescriptionOptions={},
+ *           identifier=false,
+ *           position=1
+ *       )
+ *   }
+ * )
+ */
+class Category {
+// ...
+}
+```
+
 By default, if any field configured, all field will be available.
 
 ### ListAssociationField
@@ -554,6 +632,30 @@ class Category
      * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
+}
+```
+
+List fields can also be added on class level through `datagridFields` class `Admin` annotation property:
+
+```php
+// ...
+
+/**
+ * @Sonata\Admin(
+ *     datagridFields= {
+ *         "name": @Sonata\DatagridField (
+ *             type="",
+ *             fieldDescriptionOptions={},
+ *             filterOptions={},
+ *             fieldType="",
+ *             fieldOptions={},
+ *             position=1 
+ *         )     
+ *     }   
+ * )
+ */
+class Category {
+// ...
 }
 ```
 
