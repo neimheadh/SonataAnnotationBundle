@@ -886,7 +886,7 @@ class Category
 
 ### ActionButton
 
-This will add button next to your add button in a list view. [Here](https://sonata-project.org/bundles/admin/3-x/doc/cookbook/recipe_custom_action.html#custom-action-without-entity)
+This will add button next to your add button in a list view. [Here](https://docs.sonata-project.org/projects/SonataAdminBundle/en/4.x/reference/dashboard/#configuring-what-actions-are-available-for-each-item-on-the-dashboard)
 you can find how the template should look like.
 
 ```php

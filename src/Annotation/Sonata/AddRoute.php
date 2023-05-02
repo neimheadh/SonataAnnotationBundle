@@ -20,7 +20,7 @@ use ReflectionException;
  * @author Marko Kunic <kunicmarko20@gmail.com>
  * @author Mathieu Wambre <contact@neimheadh.fr>
  */
-#[Attribute(Attribute::TARGET_CLASS)]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 final class AddRoute extends AbstractAnnotation implements
     RouteAnnotationInterface
 {

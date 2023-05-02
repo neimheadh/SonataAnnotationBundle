@@ -2,7 +2,6 @@
 
 namespace Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity;
 
-use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -20,4 +19,5 @@ class EmptyEntity
      * @var int
      */
     private int $_id;
+
 }

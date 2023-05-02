@@ -10,7 +10,6 @@ use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListAssociationField;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\ListField;
 use Neimheadh\SonataAnnotationBundle\AnnotationReader;
 use Neimheadh\SonataAnnotationBundle\Exception\MissingAnnotationArgumentException;
-use Neimheadh\SonataAnnotationBundle\Reader\FormReader;
 use Neimheadh\SonataAnnotationBundle\Reader\ListReader;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Extension\CreateNewAnnotationAdminTrait;
 use Neimheadh\SonataAnnotationBundle\Tests\Resources\Model\Entity\EmptyEntity;
@@ -269,6 +268,40 @@ class ListReaderTest extends KernelTestCase
     }
 
     /**
+     * Test multiple list action works.
+     *
+     * @link https://github.com/neimheadh/SonataAnnotationBundle/issues/10
+     * @test
+     * @functionnal
+     *
+     * @return void
+     */
+    public function shouldAllowMultipleListActionAttribute(): void
+    {
+        $reader = new ListReader(new AnnotationReader());
+        $class = new ReflectionClass(MultipleListAction::class);
+        $mapper = $this->createNewListMapper();
+
+        $reader->configureFields($class, $mapper);
+        $actions = $mapper->get('_actions');
+
+        $this->assertEquals([
+            'show' => [
+                'template' => '@SonataAdmin/CRUD/list__action_show.html.twig',
+            ],
+            'edit' => [
+                'template' => '@SonataAdmin/CRUD/list__action_edit.html.twig',
+            ],
+            'delete' => [
+                'template' => '@SonataAdmin/CRUD/list__action_delete.html.twig',
+            ],
+            'import' => [
+                'template' => 'import_list_button.html.twig',
+            ],
+        ], $actions->getOption('actions'));
+    }
+
+    /**
      * Create new empty list mapper.
      *
      * @param string $class Entity class.
@@ -284,11 +317,16 @@ class ListReaderTest extends KernelTestCase
         /** @var ListBuilderInterface $listBuilder */
         $listBuilder = $container->get('sonata.admin.builder.orm_list');
 
-        return new ListMapper(
+        $mapper = new ListMapper(
             $listBuilder,
             new FieldDescriptionCollection(),
             $this->createNewAnnotationAdmin($class),
         );
+
+        $mapper->getAdmin()->hasListFieldDescription('_actions')
+        && $mapper->getAdmin()->removeListFieldDescription('_actions');
+
+        return $mapper;
     }
 
 }
@@ -343,6 +381,16 @@ class DuplicatedListMethodPosition
  * @ListAction()
  */
 class BadListAction
+{
+
+}
+
+
+#[ListAction(name: "show")]
+#[ListAction(name: "edit")]
+#[ListAction(name: "delete")]
+#[ListAction(name: "import", options: ['template' => 'import_list_button.html.twig'])]
+class MultipleListAction
 {
 
 }
