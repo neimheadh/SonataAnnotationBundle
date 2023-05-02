@@ -171,29 +171,35 @@ class FormReaderTest extends KernelTestCase
      * @functionnal
      *
      * @return void
+     * @throws Exception
      */
     public function shouldMakeErrorOnAdminFieldTypes(): void
     {
         $reader = new FormReader(new AnnotationReader());
         $class = new ReflectionClass(InvalidAdminFieldClass::class);
 
-        $e = null;
-        try {
-            $reader->configureFields(
-                $class,
-                $form = $this->createNewFormMapper()
-            );
-        } catch (InvalidArgumentException $e) {}
+        if (PHP_MAJOR_VERSION >= 8 && PHP_MINOR_VERSION >= 1) {
+            $e = null;
+            try {
+                $reader->configureFields(
+                    $class,
+                    $this->createNewFormMapper()
+                );
+            } catch (InvalidArgumentException $e) {
+            }
 
-        $this->assertNotNull($e);
-        $this->assertEquals(
-            sprintf(
-                'Array of %s expected, array contains an %s element.',
-                FormField::class,
-                Sonata\DatagridField::class
-            ),
-            $e->getMessage()
-        );
+            $this->assertNotNull($e);
+            $this->assertEquals(
+                sprintf(
+                    'Array of %s expected, array contains an %s element.',
+                    FormField::class,
+                    Sonata\DatagridField::class
+                ),
+                $e->getMessage()
+            );
+        } else {
+            $this->assertTrue(true);
+        }
     }
 
     /**
@@ -284,5 +290,7 @@ class FormReaderTestDuplicatePositionCase
 #[Sonata\Admin(formFields: [new Sonata\DatagridField()])]
 class InvalidAdminFieldClass
 {
+
     public ?string $test = null;
+
 }

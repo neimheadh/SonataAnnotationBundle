@@ -66,14 +66,6 @@ jobs:
       - install
       - test
 
-  php80-test:
-    executor: php80
-    steps:
-      - checkout
-      - build-env
-      - install
-      - test
-
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -81,4 +73,3 @@ workflows:
     jobs:
       - php82-test
       - php81-test
-      - php80-test
