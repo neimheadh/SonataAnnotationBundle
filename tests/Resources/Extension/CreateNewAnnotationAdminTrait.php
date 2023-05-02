@@ -107,6 +107,7 @@ trait CreateNewAnnotationAdminTrait
         $showBuilder = $container->get('sonata.admin.builder.orm_show');
 
         $admin = new AnnotationAdmin(
+            [],
             $actionButtonReader,
             $datagridReader,
             $datagridValuesReader,

@@ -11,7 +11,7 @@ use Neimheadh\SonataAnnotationBundle\Annotation\Sonata;
  * @author Mathieu Wambre <contact@neimheadh.fr>
  *
  * @ORM\Entity
- * @Sonata\Admin(label="Book admin")
+ * @Sonata\Admin(label="Book admin", defaultSort="title")
  * @Sonata\Access(role="ROLE_USER", permissions={"READ"})
  * @Sonata\ListAction(
  *     name="import",

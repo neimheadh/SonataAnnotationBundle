@@ -6,6 +6,7 @@ namespace Neimheadh\SonataAnnotationBundle\Admin;
 
 use Exception;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\AddRoute;
+use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\Admin;
 use Neimheadh\SonataAnnotationBundle\Annotation\Sonata\RemoveRoute;
 use Neimheadh\SonataAnnotationBundle\Reader\ActionButtonReader;
 use Neimheadh\SonataAnnotationBundle\Reader\DashboardActionReader;
@@ -19,6 +20,7 @@ use Neimheadh\SonataAnnotationBundle\Reader\ShowReader;
 use ReflectionClass;
 use ReflectionException;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
+use Sonata\AdminBundle\Datagrid\DatagridInterface;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
@@ -100,6 +102,7 @@ class AnnotationAdmin extends AbstractAdmin
     private ShowReader $showReader;
 
     /**
+     * @param array                 $options               Admin options.
      * @param ActionButtonReader    $actionButtonReader    Action buttons
      *                                                     annotation reader.
      * @param DatagridReader        $datagridReader        Datagrid annotation
@@ -120,6 +123,7 @@ class AnnotationAdmin extends AbstractAdmin
      *                                                     reader.
      */
     public function __construct(
+        private array $options,
         ActionButtonReader $actionButtonReader,
         DatagridReader $datagridReader,
         DatagridValuesReader $datagridValuesReader,
@@ -214,6 +218,30 @@ class AnnotationAdmin extends AbstractAdmin
             $this->getReflectionClass(),
             $filter
         );
+    }
+
+    /**
+     * Configure default sorting values.
+     *
+     * @param array $sortValues Sorting values.
+     *
+     * @return void
+     */
+    protected function configureDefaultSortValues(array &$sortValues): void
+    {
+        $values = $this->options[Admin::OPTION_SORT_VALUES] ?? [];
+        $fields = [
+            DatagridInterface::PAGE,
+            DatagridInterface::PER_PAGE,
+            DatagridInterface::SORT_ORDER,
+            DatagridInterface::SORT_BY,
+        ];
+
+        foreach ($fields as $field) {
+            if (($values[$field] ?? null) !== null) {
+                $sortValues[$field] = $values[$field];
+            }
+        }
     }
 
     /**

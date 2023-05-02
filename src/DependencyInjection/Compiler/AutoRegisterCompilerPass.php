@@ -164,7 +164,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
                     SonataAnnotationExtension::PARAM_ENTITY_NAMESPACE
                 ) as $namespace
             ) {
-                if (substr($current, 0, strlen($namespace)) === $namespace) {
+                if (str_starts_with($current, $namespace)) {
                     $options['group'] = trim(
                         str_replace(
                             '\\',
@@ -197,6 +197,7 @@ final class AutoRegisterCompilerPass implements CompilerPassInterface
         $definition = new Definition(
             $annotation->admin,
             [
+                $annotation->getOptions(),
                 new Reference('sonata.annotation.reader.action_button'),
                 new Reference('sonata.annotation.reader.datagrid'),
                 new Reference('sonata.annotation.reader.datagrid_values'),

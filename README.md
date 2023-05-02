@@ -168,6 +168,10 @@ use App\Admin\YourAdmin;
  *     serviceId="app.admin.category",
  *     admin=YourAdmin::class,
  *     code="admin_code",
+*      defaultSort="id",
+*      defaultPage=1,
+*      defaultOrder="DESC",
+*      defaultPageSize=10,
  * )
  *
  * @ORM\Table

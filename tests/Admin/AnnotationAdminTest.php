@@ -334,8 +334,8 @@ class AnnotationAdminTest extends WebTestCase
         $this->assertIsArray($json);
         $this->assertEquals(
             [
-                ["Author" => "Stephen King", "title" => "The Stand"],
                 ["Author" => null, "title" => "Les furtifs"],
+                ["Author" => "Stephen King", "title" => "The Stand"],
             ],
             $json
         );
@@ -417,6 +417,40 @@ class AnnotationAdminTest extends WebTestCase
 
         /** @var DOMElement $item */
         $item = $items->getElementsByTagName('item')->item(0);
+
+        /** @var DOMElement $actions */
+        $actions = $item->getElementsByTagName('actions')->item(0);
+        $this->assertEquals(
+            1,
+            $actions->getElementsByTagName('action')->length
+        );
+        /** @var DOMElement $action */
+        $action = $actions->getElementsByTagName('action')->item(0);
+        $this->assertEquals(
+            'import_list_button.html.twig',
+            $action->getAttribute('template')
+        );
+        $this->assertEquals('import', $action->textContent);
+        /** @var DOMElement $fields */
+        $fields = $item->getElementsByTagName('fields')->item(0);
+        /** @var DOMNodeList|DOMElement[] $fieldList */
+        $fieldList = $fields->getElementsByTagName('field');
+        $this->assertEquals(4, $fieldList->length);
+        $this->assertEquals('id', $fieldList[0]->getAttribute('name'));
+        $this->assertEquals('author.name', $fieldList[1]->getAttribute('name'));
+        $this->assertEquals('title', $fieldList[2]->getAttribute('name'));
+        $this->assertEquals(
+            'getCoverTitle',
+            $fieldList[3]->getAttribute('name')
+        );
+        $this->assertEquals('2', $fieldList[0]->textContent);
+        $this->assertEquals('', $fieldList[1]->textContent);
+        $this->assertEquals('Les furtifs', $fieldList[2]->textContent);
+        $this->assertEquals("Les furtifs\n", $fieldList[3]->textContent);
+
+
+        /** @var DOMElement $item */
+        $item = $items->getElementsByTagName('item')->item(1);
         /** @var DOMElement $actions */
         $actions = $item->getElementsByTagName('actions')->item(0);
         $this->assertEquals(
@@ -449,39 +483,6 @@ class AnnotationAdminTest extends WebTestCase
             "The Stand\nStephen King",
             $fieldList[3]->textContent
         );
-
-        /** @var DOMElement $item */
-        $item = $items->getElementsByTagName('item')->item(1);
-        /** @var DOMElement $actions */
-        $actions = $item->getElementsByTagName('actions')->item(0);
-        $this->assertEquals(
-            1,
-            $actions->getElementsByTagName('action')->length
-        );
-        /** @var DOMElement $action */
-        $action = $actions->getElementsByTagName('action')->item(0);
-        $this->assertEquals(
-            'import_list_button.html.twig',
-            $action->getAttribute('template')
-        );
-        $this->assertEquals('import', $action->textContent);
-        /** @var DOMElement $fields */
-        $fields = $item->getElementsByTagName('fields')->item(0);
-        /** @var DOMNodeList|DOMElement[] $fieldList */
-        $fieldList = $fields->getElementsByTagName('field');
-        $this->assertEquals(4, $fieldList->length);
-        $this->assertEquals('id', $fieldList[0]->getAttribute('name'));
-        $this->assertEquals('author.name', $fieldList[1]->getAttribute('name'));
-        $this->assertEquals('title', $fieldList[2]->getAttribute('name'));
-        $this->assertEquals(
-            'getCoverTitle',
-            $fieldList[3]->getAttribute('name')
-        );
-        $this->assertEquals('2', $fieldList[0]->textContent);
-        $this->assertEquals('', $fieldList[1]->textContent);
-        $this->assertEquals('Les furtifs', $fieldList[2]->textContent);
-        $this->assertEquals("Les furtifs\n", $fieldList[3]->textContent);
-
         /** @var DOMElement $format */
         $format = $exports->getElementsByTagName('format')->item(0);
         $this->assertEquals('json', $format->textContent);

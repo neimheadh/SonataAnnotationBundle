@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Neimheadh\SonataAnnotationBundle\Admin\AnnotationAdmin;
 use Neimheadh\SonataAnnotationBundle\Annotation\AbstractAnnotation;
 use ReflectionException;
+use Sonata\AdminBundle\Datagrid\DatagridInterface;
 
 /**
  * Admin annotation.
@@ -26,6 +27,11 @@ use ReflectionException;
 #[Attribute(Attribute::TARGET_CLASS)]
 final class Admin extends AbstractAnnotation
 {
+
+    /**
+     * Sort values option name.
+     */
+    public const OPTION_SORT_VALUES = 'sort_values';
 
     /**
      * Admin service class.
@@ -47,6 +53,34 @@ final class Admin extends AbstractAnnotation
      * @var string|null
      */
     public ?string $controller = null;
+
+    /**
+     * Default sort order.
+     *
+     * @var string
+     */
+    public string $defaultOrder = 'ASC';
+
+    /**
+     * Default list first page.
+     *
+     * @var int
+     */
+    public int $defaultPage = 1;
+
+    /**
+     * Default page size.
+     *
+     * @var int|null
+     */
+    public ?int $defaultPageSize = null;
+
+    /**
+     * Default sort field.
+     *
+     * @var string|null
+     */
+    public ?string $defaultSort = null;
 
     /**
      * Admin group.
@@ -209,6 +243,10 @@ final class Admin extends AbstractAnnotation
         array $listFields = [],
         array $showFields = [],
         array $exportFields = [],
+        int $defaultPage = 1,
+        string $defaultOrder = 'ASC',
+        ?string $defaultSort = null,
+        ?int $defaultPageSize = null,
     ) {
         $this->managerType = $managerType;
         $this->group = $group;
@@ -223,6 +261,10 @@ final class Admin extends AbstractAnnotation
         $this->serviceId = $serviceId;
         $this->admin = $admin;
         $this->code = $code;
+        $this->defaultPage = $defaultPage;
+        $this->defaultOrder = $defaultOrder;
+        $this->defaultSort = $defaultSort;
+        $this->defaultPageSize = $defaultPageSize;
 
         $this->setDatagridFields($datagridFields)
             ->setFormFields($formFields)
@@ -235,6 +277,23 @@ final class Admin extends AbstractAnnotation
         } else {
             $this->label = $label;
         }
+    }
+
+    /**
+     * Get admin options.
+     *
+     * @return array
+     */
+    public function getOptions(): array
+    {
+        return [
+            self::OPTION_SORT_VALUES => [
+                DatagridInterface::PAGE => $this->defaultPage,
+                DatagridInterface::PER_PAGE => $this->defaultPageSize,
+                DatagridInterface::SORT_BY => $this->defaultSort,
+                DatagridInterface::SORT_ORDER => $this->defaultOrder,
+            ]
+        ];
     }
 
     /**
